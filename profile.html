@@ -389,16 +389,6 @@
             <i class="fa-solid fa-gear"></i> Settings
         </a>
     </div>
-
-    <!-- PROFILE CARD -->
-    <div class="profile-card">
-        <img src="mark.jpg" alt="avatar" />
-        <div class="profile-info">
-            <p><strong>Jose Rizal</strong></p>
-            <p>joserizal@gmail.com</p>
-            <span class="student-tag">Student ID: 123456</span>
-        </div>
-    </div>
 </div>
 
 <main class="main">
@@ -462,42 +452,28 @@
               <input id="dob" type="date" value="2006-03-31" disabled />
             </div>
             <div class="full">
-              <label for="dept">Department</label>
+              <label for="dept">Department / College</label>
               <select id="dept" aria-label="Department" disabled>
-                <option>Computer Science</option>
-                <option>Information Technology</option>
-                <option>Business Administration</option>
+                <option value="">Select your college</option>
+                <option value="cafnr">College of Agriculture, Fisheries and Natural Resources</option>
+                <option value="cac">College of Arts and Communication</option>
+                <option value="cba">College of Business Administration</option>
+                <option value="coed">College of Education</option>
+                <option value="coe">College of Engineering</option>
+                <option value="col">College of Law</option>
+                <option value="cnahs">College of Nursing and Allied Health Sciences</option>
+                <option value="cos">College of Science</option>
+                <option value="cvm">College of Veterinary Medicine</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="program">Program / Degree</label>
+              <select id="program" aria-label="Program" disabled>
+                <option value="">Select program</option>
               </select>
             </div>
           </div>
         </form>
-      </div>
-
-      <!-- Security Section -->
-      <div style="margin-top: 28px;">
-        <section class="card" aria-labelledby="security-heading">
-          <h3 id="security-heading">Security</h3>
-          <div class="muted">Manage your password and security settings</div>
-          <form style="margin-top:12px" onsubmit="return false" id="securityForm">
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div>
-                <label for="currentPassword">Current Password</label>
-                <input id="currentPassword" type="password" placeholder="Enter current password" />
-              </div>
-              <div>
-                <label for="newPassword">New Password</label>
-                <input id="newPassword" type="password" placeholder="Enter new password" />
-              </div>
-              <div>
-                <label for="confirmPassword">Confirm Password</label>
-                <input id="confirmPassword" type="password" placeholder="Confirm new password" />
-              </div>
-              <div style="margin-top:8px">
-                <p class="field-note">Make sure your new password is strong and unique.</p>
-              </div>
-            </div>
-          </form>
-        </section>
       </div>
 
       <div class="save-wrap" id="actionButtons" style="display:none">
@@ -575,6 +551,97 @@
       disableEditMode();
     }, 750);
   }
+
+  // Department → Program cascading dropdown logic
+  const deptSelect = document.getElementById("dept");
+  const programSelect = document.getElementById("program");
+
+  const courseMap = {
+    cafnr: {
+      programs: [
+        "Bachelor of Science in Agribusiness",
+        "Bachelor of Science in Agriculture",
+        "Bachelor of Science in Fisheries",
+        "Bachelor of Science in Forestry"
+      ]
+    },
+    cac: {
+      programs: [
+        "Bachelor of Arts in English Language Studies",
+        "Bachelor of Arts in Literature and Cultural Studies",
+        "Bachelor of Arts major in Political Science",
+        "Bachelor of Arts major in Public Administration",
+        "Bachelor of Arts major in Sociology",
+        "Bachelor of Science in Community Development",
+        "Bachelor of Science in Criminology",
+        "Bachelor of Science in Development Communication"
+      ]
+    },
+    cba: {
+      programs: [
+        "Bachelor of Science in Accountancy",
+        "Bachelor of Science in Business Administration",
+        "Bachelor of Science in Business Economics",
+        "Bachelor of Science in Entrepreneurship",
+        "Bachelor of Science in Hospitality Management"
+      ]
+    },
+    coe: {
+      programs: [
+        "Bachelor of Engineering Technology",
+        "Bachelor of Science in Agricultural and Biosystems Engineering",
+        "Bachelor of Science in Civil Engineering",
+        "Bachelor of Science in Electrical Engineering",
+        "Bachelor of Science in Mechanical Engineering"
+      ]
+    },
+    col: {
+      programs: ["Bachelor of Laws"]
+    },
+    coed: {
+      programs: [
+        "Bachelor of Elementary Education",
+        "Bachelor of Elementary Technology and Livelihood Education",
+        "Bachelor of Secondary Education"
+      ]
+    },
+    cnahs: {
+      programs: [
+        "Bachelor of Science in Nursing",
+        "Bachelor of Science in Radiologic Technology"
+      ]
+    },
+    cos: {
+      programs: [
+        "Bachelor of Science in Biology",
+        "Bachelor of Science in Chemistry",
+        "Bachelor of Science in Environmental Science",
+        "Bachelor of Science in Information Technology",
+        "Bachelor of Science in Marine Biology",
+        "Bachelor of Science in Mathematics"
+      ]
+    },
+    cvm: {
+      programs: [
+        "Bachelor of Science in Meat Technology",
+        "Doctor of Veterinary Medicine"
+      ]
+    }
+  };
+
+  deptSelect.addEventListener("change", function () {
+    const selected = this.value;
+    programSelect.innerHTML = '<option value="">Select program</option>';
+    
+    if (courseMap[selected]) {
+      courseMap[selected].programs.forEach((program, index) => {
+        const option = document.createElement("option");
+        option.value = program.toLowerCase().replace(/\s+/g, "_");
+        option.textContent = program;
+        programSelect.appendChild(option);
+      });
+    }
+  });
 
   // Initialize dark mode if enabled in localStorage
   window.addEventListener('DOMContentLoaded', () => {
