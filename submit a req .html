@@ -79,18 +79,32 @@
                 <input type="text" placeholder="Enter your student ID" required/>
             </div>
             <div>
-                <label>Department</label>
+                <label>Department / College</label>
                 <select id="course-category" required>
-                    <option value="">Select your department</option>
-                    <option value="science">College of Science</option>
-                    <option value="engineering">Engineering</option>
-                    <option value="bsn">BSN</option>
+                    <option value="">Select your college</option>
+                    <option value="cos">College of Science</option>
+                    <option value="coe">College of Engineering</option>
+                    <option value="coe_tech">College of Engineering & Technology</option>
+                    <option value="coe_arch">College of Education & Architecture</option>
+                    <option value="coe_bus">College of Business & Economics</option>
+                    <option value="con">College of Nursing</option>
+                    <option value="coag">College of Agriculture</option>
+                    <option value="coa">College of Arts & Sciences</option>
+                    <option value="col">College of Law</option>
+                    <option value="cohs">College of Health Sciences</option>
                 </select>
             </div>
             <div>
-                <label>Program</label>
+                <label>Program / Degree</label>
                 <select id="sub-course" required disabled>
                     <option value="">Select program</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Course / Subject</label>
+                <select id="course-subject" required disabled>
+                    <option value="">Select course</option>
                 </select>
             </div>
 
@@ -102,6 +116,7 @@
                     <option value="2nd_year">2nd year</option>
                     <option value="3rd_year">3rd year</option>
                     <option value="4th_year">4th year</option>
+                    <option value="5th_year">5th year</option>
                 </select>
             </div>
 
@@ -188,8 +203,8 @@ document.querySelectorAll('.upload-box1').forEach(box => {
         formGrid.querySelectorAll('input, select, textarea').forEach(el => {
             if(el.tagName.toLowerCase() === 'select') {
                 el.selectedIndex = 0; // ibalik sa unang option
-                // Kung may disabled select (like sub-course), i-disable din
-                if(el.id === 'sub-course') el.disabled = true;
+                // Kung may disabled select, i-disable din
+                if(el.id === 'sub-course' || el.id === 'course-subject') el.disabled = true;
             } else {
                 el.value = '';
             }
@@ -211,27 +226,133 @@ document.querySelectorAll('.upload-box1').forEach(box => {
 // Department → Program logic
 const categorySelect = document.getElementById("course-category");
 const subCourseSelect = document.getElementById("sub-course");
+const courseSubjectSelect = document.getElementById("course-subject");
 
 const courseMap = {
-    science: ["BSIT", "BS Bio", "BS Math"],
-    engineering: ["CE", "EE", "ME"],
-    bsn: ["BSN"]
+    cos: {
+        programs: ["BS Biology", "BS Chemistry", "BS Physics", "BS Mathematics", "BS Marine Biology"],
+        courses: {
+            "bs_biology": ["General Biology", "Cell Biology", "Ecology", "Genetics", "Marine Biology", "Botany"],
+            "bs_chemistry": ["General Chemistry", "Organic Chemistry", "Inorganic Chemistry", "Analytical Chemistry", "Biochemistry"],
+            "bs_physics": ["General Physics", "Modern Physics", "Mechanics", "Thermodynamics", "Electromagnetism"],
+            "bs_mathematics": ["Calculus", "Linear Algebra", "Differential Equations", "Abstract Algebra", "Real Analysis"],
+            "bs_marine_biology": ["Marine Ecology", "Oceanography", "Marine Conservation", "Ichthyology", "Coral Reef Biology"]
+        }
+    },
+    coe: {
+        programs: ["BS Civil Engineering", "BS Electrical Engineering", "BS Mechanical Engineering", "BS Chemical Engineering"],
+        courses: {
+            "bs_civil_engineering": ["Structural Analysis", "Fluid Mechanics", "Geotechnical Engineering", "Transportation Engineering", "Water Resources"],
+            "bs_electrical_engineering": ["Circuit Theory", "Power Systems", "Electromagnetics", "Electronics", "Digital Systems"],
+            "bs_mechanical_engineering": ["Thermodynamics", "Fluid Mechanics", "Heat Transfer", "Machine Design", "Control Systems"],
+            "bs_chemical_engineering": ["Process Design", "Mass Transfer", "Chemical Kinetics", "Thermodynamics", "Unit Operations"]
+        }
+    },
+    coe_tech: {
+        programs: ["BS Information Technology", "BS Computer Science", "BS Information Systems", "Diploma in Computer Technology"],
+        courses: {
+            "bs_information_technology": ["Programming", "Database Management", "Web Development", "Networking", "Cybersecurity"],
+            "bs_computer_science": ["Algorithms", "Data Structures", "Operating Systems", "Artificial Intelligence", "Software Engineering"],
+            "bs_information_systems": ["System Analysis", "Database Design", "Business Analytics", "IT Management", "Enterprise Systems"],
+            "diploma_computer_technology": ["Basic Programming", "Hardware Repair", "Network Basics", "Web Design"]
+        }
+    },
+    coe_arch: {
+        programs: ["Bachelor of Elementary Education", "Bachelor of Secondary Education", "BS Architecture", "BS Fine Arts"],
+        courses: {
+            "bachelor_elementary_education": ["Teaching Methods", "Child Psychology", "Curriculum Development", "Educational Technology", "Classroom Management"],
+            "bachelor_secondary_education": ["Subject Specialization", "Pedagogy", "Assessment", "Adolescent Psychology", "Educational Research"],
+            "bs_architecture": ["Architectural Design", "Building Construction", "Urban Planning", "Interior Design", "Sustainable Architecture"],
+            "bs_fine_arts": ["Drawing", "Painting", "Sculpture", "Art History", "Contemporary Art"]
+        }
+    },
+    coe_bus: {
+        programs: ["BS Business Administration", "BS Accountancy", "BS Economics", "BS Marketing Management"],
+        courses: {
+            "bs_business_administration": ["Business Management", "Organizational Behavior", "Strategic Planning", "Operations Management", "Business Ethics"],
+            "bs_accountancy": ["Financial Accounting", "Management Accounting", "Auditing", "Taxation", "Corporate Finance"],
+            "bs_economics": ["Microeconomics", "Macroeconomics", "Econometrics", "Development Economics", "International Economics"],
+            "bs_marketing_management": ["Marketing Strategy", "Consumer Behavior", "Digital Marketing", "Brand Management", "Market Research"]
+        }
+    },
+    con: {
+        programs: ["BS Nursing", "Bachelor of Science in Nursing Leadership"],
+        courses: {
+            "bs_nursing": ["Medical-Surgical Nursing", "Maternal Health Nursing", "Community Health Nursing", "Psychiatric Nursing", "Pediatric Nursing"],
+            "bs_nursing_leadership": ["Nursing Management", "Healthcare Leadership", "Clinical Nursing", "Research in Nursing", "Evidence-Based Practice"]
+        }
+    },
+    coag: {
+        programs: ["BS Agronomy", "BS Agricultural Engineering", "BS Animal Science", "BS Agricultural Business"],
+        courses: {
+            "bs_agronomy": ["Crop Production", "Soil Science", "Plant Breeding", "Agricultural Ecology", "Pest Management"],
+            "bs_agricultural_engineering": ["Farm Machinery", "Irrigation Engineering", "Post-Harvest Technology", "Agricultural Design"],
+            "bs_animal_science": ["Animal Breeding", "Animal Nutrition", "Livestock Management", "Veterinary Medicine Basics", "Animal Health"],
+            "bs_agricultural_business": ["Agricultural Economics", "Agribusiness Management", "Marketing of Agricultural Products", "Farm Management"]
+        }
+    },
+    coa: {
+        programs: ["BS Language Studies", "BS Psychology", "BS Sociology", "BS History", "BS English Literature"],
+        courses: {
+            "bs_language_studies": ["English Language", "Filipino Language", "Foreign Languages", "Linguistics", "Technical Writing"],
+            "bs_psychology": ["General Psychology", "Developmental Psychology", "Abnormal Psychology", "Social Psychology", "Research Methods"],
+            "bs_sociology": ["Social Theory", "Cultural Sociology", "Urban Sociology", "Family Studies", "Social Research"],
+            "bs_history": ["Philippine History", "World History", "Asian History", "Historical Research", "Historical Theory"],
+            "bs_english_literature": ["American Literature", "British Literature", "Philippine Literature", "Literary Theory", "Creative Writing"]
+        }
+    },
+    col: {
+        programs: ["Juris Doctor", "BS Legal Management"],
+        courses: {
+            "juris_doctor": ["Civil Law", "Criminal Law", "Commercial Law", "Constitutional Law", "Administrative Law", "Labor Law"],
+            "bs_legal_management": ["Introduction to Law", "Business Law", "Legal Management", "Paralegal Studies", "Legal Research"]
+        }
+    },
+    cohs: {
+        programs: ["BS Public Health", "BS Medical Technology", "BS Pharmacy", "BS Physical Therapy"],
+        courses: {
+            "bs_public_health": ["Epidemiology", "Biostatistics", "Environmental Health", "Community Health", "Health Policy"],
+            "bs_medical_technology": ["Clinical Laboratory Analysis", "Hematology", "Microbiology", "Chemistry", "Blood Banking"],
+            "bs_pharmacy": ["Pharmacology", "Pharmaceutical Chemistry", "Pharmacy Practice", "Therapeutics", "Pharmaceutics"],
+            "bs_physical_therapy": ["Anatomy", "Physiology", "Pathology", "Therapeutic Exercise", "Rehabilitation"]
+        }
+    }
 };
 
 categorySelect.addEventListener("change", function () {
     const selected = this.value;
 
-    subCourseSelect.innerHTML = '<option value="">Select program</option>'; // reset
-    subCourseSelect.disabled = true; // default disabled
+    subCourseSelect.innerHTML = '<option value="">Select program</option>';
+    courseSubjectSelect.innerHTML = '<option value="">Select course</option>';
+    subCourseSelect.disabled = true;
+    courseSubjectSelect.disabled = true;
 
     if (courseMap[selected]) {
-        courseMap[selected].forEach(course => {
+        courseMap[selected].programs.forEach((program, index) => {
+            const option = document.createElement("option");
+            option.value = program.toLowerCase().replace(/\s+/g, "_");
+            option.textContent = program;
+            subCourseSelect.appendChild(option);
+        });
+        subCourseSelect.disabled = false;
+    }
+});
+
+subCourseSelect.addEventListener("change", function () {
+    const dept = categorySelect.value;
+    const selected = this.value;
+
+    courseSubjectSelect.innerHTML = '<option value="">Select course</option>';
+    courseSubjectSelect.disabled = true;
+
+    if (dept && courseMap[dept] && courseMap[dept].courses[selected]) {
+        courseMap[dept].courses[selected].forEach(course => {
             const option = document.createElement("option");
             option.value = course.toLowerCase().replace(/\s+/g, "_");
             option.textContent = course;
-            subCourseSelect.appendChild(option);
+            courseSubjectSelect.appendChild(option);
         });
-        subCourseSelect.disabled = false; // enable kapag may laman
+        courseSubjectSelect.disabled = false;
     }
 });
 
