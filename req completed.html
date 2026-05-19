@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Request Completed — IDEase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #1e88e5; /* blue */
+      --green: #16a34a;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(16,24,40,0.08);
+      --thin-border: rgba(17,24,39,0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,body{height:100%;margin:0;background:var(--bg);color:#0f1724}
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:48px 20px;
+      box-sizing:border-box;
+    }
+
+.back-icon {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  color: #1e88e5;
+
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  box-shadow: 0 8px 20px rgba(16, 24, 40, 0.12);
+
+  cursor: pointer;
+  text-decoration: none;
+  z-index: 999;
+
+  transition: all 0.25s ease;
+}
+
+/* BIG ARROW */
+.back-icon::before {
+  content: "←";
+  font-size: 28px;    /* ✅ bigger */
+  font-weight: 800;   /* ✅ bold */
+  line-height: 1;
+}
+
+/* Hover */
+.back-icon:hover {
+  background: #f3f8ff;
+  transform: translateX(-3px);
+  box-shadow: 0 12px 26px rgba(16, 24, 40, 0.16);
+}
+
+/* Press */
+.back-icon:active {
+  transform: scale(0.95);
+}
+
+
+
+    .inner{
+      width:100%;
+      max-width:980px;
+      display:flex;
+      flex-direction:column;
+      gap:28px;
+      align-items:center;
+    }
+
+    /* success header */
+    .success-icon{
+      width:76px;height:76px;border-radius:50%;
+      background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;
+      box-shadow:0 6px 16px rgba(16,24,40,0.04);
+    }
+    .success-icon svg{width:36px;height:36px;display:block}
+
+    h1{
+      margin:10px 0 6px 0;
+      font-size:26px;
+      letter-spacing:-0.2px;
+      text-align:center;
+    }
+    p.lead{
+      margin:0 0 6px 0;color:var(--muted);text-align:center;font-size:15px;
+    }
+
+    /* main card */
+    .card{
+      width:100%;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+      display:flex;
+      gap:18px;
+      align-items:center;
+      border:1px solid var(--thin-border);
+    }
+
+    .preview{
+      min-width:120px;
+      width:120px;height:120px;border-radius:12px;
+      background:linear-gradient(180deg,#2b6df6,#3bb0ff);
+      color:white;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;padding:12px;box-sizing:border-box;font-weight:700;
+      box-shadow:0 8px 20px rgba(30,86,214,0.12);
+    }
+    .preview svg{width:42px;height:42px;margin-bottom:6px}
+
+    .details{
+      flex:1;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px 24px;
+      padding:6px 6px;
+    }
+
+    .label{color:var(--muted);font-size:14px;padding:14px 0;border-top:1px solid var(--thin-border)}
+    .value{font-weight:700;font-size:14px;padding:14px 0;border-top:1px solid var(--thin-border);text-align:right}
+
+    /* make first row top borders vanish */
+    .details .label:nth-child(-n+2), .details .value:nth-child(-n+2){
+      border-top:0;padding-top:6px;
+    }
+
+    .status { color:var(--green); font-weight:700 }
+
+    /* info box */
+    .info-box{
+      width:100%;
+      background:#eaf4ff;
+      border-radius:10px;padding:14px 18px;border:1px solid rgba(30,136,229,0.12);
+      display:flex;gap:12px;align-items:flex-start;color:#0f1724;
+    }
+    .info-box svg{flex-shrink:0;margin-top:2px}
+    .info-box .msg{color:var(--muted);font-size:14px;line-height:1.4}
+    .info-box a{display:inline-block;margin-top:6px;color:var(--accent);text-decoration:none;font-weight:600}
+
+    /* action buttons */
+    .actions{
+      width:100%;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin-top:8px;
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:10px;border:1px solid var(--thin-border);
+      background:transparent;color:#0f1724;font-weight:700;cursor:pointer;font-size:14px;
+      box-shadow:0 6px 18px rgba(16,24,40,0.03);
+    }
+    .btn .icon{width:18px;height:18px;display:inline-block}
+    .btn.primary{
+      background:linear-gradient(180deg,#10b981,#059669);
+      color:white;border:0;box-shadow:0 10px 22px rgba(6,95,70,0.12);
+    }
+    .btn.ghost{background:white}
+
+    /* responsive */
+    @media (max-width:720px){
+      .card{flex-direction:column;align-items:stretch}
+      .preview{margin:6px auto 0 auto}
+      .details{grid-template-columns:1fr;gap:8px}
+      .details .value{text-align:left}
+      .actions{flex-direction:column-reverse}
+    }
+
+        .return-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 22px;
+        border-radius: 10px;
+        border: 1px solid #d0d0d0;
+        background: white;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .return-btn i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+  </style>
+</head>
+<body>
+  <a href="history.html" class="back-icon" aria-label="Go back"></a>
+  <div class="wrap">
+    <div class="inner" role="main" aria-labelledby="title">
+      <!-- success icon + heading -->
+      <div class="success-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="12" fill="rgba(34,197,94,0.18)"/>
+          <path d="M17 8L10.5 14.5L7 11" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h1 id="title">Request Completed Successfully</h1>
+      <p class="lead">Your new School ID has been processed and is now ready for pickup.</p>
+
+      <!-- main card with preview + details -->
+      <section class="card" aria-label="Request details">
+        <div class="preview" aria-hidden="true">
+          <!-- ID icon -->
+          <svg viewBox="0 0 24 24" fill="none" style="width:48px;height:48px">
+            <rect x="1.5" y="3" width="21" height="14" rx="3" fill="rgba(255,255,255,0.14)"/>
+            <rect x="4.5" y="6.5" width="6" height="6" rx="1.2" fill="white"/>
+            <rect x="11.5" y="7.5" width="7.5" height="2" rx="1" fill="white"/>
+            <rect x="11.5" y="10.5" width="5.5" height="1.6" rx="0.8" fill="white"/>
+          </svg>
+          <div style="font-size:13px;margin-top:6px;opacity:0.95">ID Photo<br/>Preview</div>
+        </div>
+
+        <div class="details" role="table" aria-label="Detail list">
+          <div class="label">Full Name</div><div class="value">Maria Isabel Santos</div>
+
+          <div class="label">Student ID Number</div><div class="value">123456</div>
+
+          <div class="label">Course &amp; Year Level</div><div class="value">BSIT — 2nd Year</div>
+
+          <div class="label">Request Type</div><div class="value">New ID</div>
+
+          <div class="label">Status</div><div class="value status">Completed</div>
+
+          <div class="label">Completion Date</div><div class="value">December 15, 2025</div>
+
+          <div class="label">Pickup Location</div><div class="value">IDEase Office</div>
+
+          <div class="label">Pickup Time</div><div class="value">8:00 AM – 4:00 PM</div>
+        </div>
+      </section>
+
+      <!-- info box -->
+      <div class="info-box" role="note" aria-live="polite">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true" style="margin-left: 50px;">
+          <circle cx="12" cy="12" r="10" fill="#d9f2ff"/>
+          <path d="M12 8.5V13" stroke="#0b6fb3" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 16.2h.01" stroke="#0b6fb3" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div class="msg">
+          <strong>Important:</strong> Please bring one valid supporting document during pickup. For questions, visit the help desk or contact <a href="mailto:IDEase@school.edu">IDEase@school.edu</a>
+        </div>
+      </div>
+
+      <!-- action buttons -->
+      <div class="actions" role="group" aria-label="Actions">
+        <button class="btn ghost" id="downloadBtn" title="Download receipt">
+          <span class="icon" aria-hidden="true">
+            <!-- download svg -->
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 3v10" stroke="#0f1724" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 11l4 4 4-4" stroke="#0f1724" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 21h14" stroke="#0f1724" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          Download Receipt
+        </button>
+
+<a href="dashboard.html" class="return-btn">
+  <i class="fa-solid fa-house"></i> Return to Dashboard
+</a>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const downloadBtn = document.getElementById('downloadBtn');
+  const backBtn = document.getElementById('backBtn');
+
+  downloadBtn.addEventListener('click', () => {
+    const data = {
+      title: "Request Receipt",
+      name: "Maria Isabel Santos",
+      studentId: "2025-10847",
+      requestType: "New ID",
+      status: "Completed",
+      completionDate: "December 15, 2025",
+      pickupLocation: "IDEase Office",
+      pickupTime: "8:00 AM – 4:00 PM"
+    };
+
+    const content = [
+      "=== REQUEST RECEIPT ===",
+      "",
+      `Full Name: ${data.name}`,
+      `Student ID: ${data.studentId}`,
+      `Request Type: ${data.requestType}`,
+      `Status: ${data.status}`,
+      `Completion Date: ${data.completionDate}`,
+      `Pickup Location: ${data.pickupLocation}`,
+      `Pickup Time: ${data.pickupTime}`,
+      "",
+      "Please bring a valid ID during pickup.",
+      ""
+    ].join("\n");
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `receipt_${data.studentId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  backBtn.addEventListener('click', () => {
+    alert('Back to Dashboard (simulate navigation)');
+    // window.location.href = '/dashboard';
+  });
+
+  </script>
+</body>
+</html>

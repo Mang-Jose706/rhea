@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>IDEase Portal — Settings</title>
+  <!-- FONT AWESOME ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root{
+      --sidebar-width: 280px;
+      --navy: #0f2340;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --accent: #1e56d6;
+      --bg: #f5f7fb;
+      --radius: 14px;
+      --shadow: 0 6px 18px rgba(11,18,35,0.06);
+      --max-main-width: 920px;
+      --gap: 20px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f8ff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0a1a33;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .logo h2 {
+      font-size: 24px;
+      margin: 10px 0 0;
+    }
+
+    .sidebar .logo i {
+      font-size: 34px;
+      color: #fff;
+    }
+
+    .logo span,
+    .logo p {
+      font-size: 12px;
+      color: #b9c6e0;
+    }
+
+    .menu {
+      margin-top: 20px;
+      flex-grow: 1;
+    }
+
+    .menu-item {
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d9e3f5;
+      text-decoration: none;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .profile-card {
+      background: #12294d;
+      padding: 15px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .profile-card img {
+      width: 50px;
+      height: 35px;
+      border-radius: 50%;
+    }
+
+    .profile-info p {
+      font-size: 12px;
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .student-tag {
+      background: #1f3a66;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 10px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    /* Main content area */
+    .main {
+      flex: 1;
+      min-height: 100vh;
+      padding: 28px 32px;
+      overflow-y: auto;
+      background: var(--bg);
+      position: relative;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      font-size: 29px;
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: white;
+      border: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    /* Logout button on top-right */
+    .logout-btn {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      background: #dc3545;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #b02a37;
+    }
+
+    .container {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-top: 30px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+    }
+
+    .card .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 0;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid #eef2ff;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .form-row .full {
+      grid-column: 1/-1;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #e6eefc;
+      background: #fbfdff;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    input[disabled] {
+      background: #f3f4f6;
+      color: #9aa4b2;
+    }
+
+    .prefs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pref-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 6px;
+      border-radius: 10px;
+    }
+
+    .pref-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .switch {
+      --w:46px;
+      --h:26px;
+      width: var(--w);
+      height: var(--h);
+      border-radius: 999px;
+      background: #e6eefc;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    .switch .knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 6px rgba(16,24,40,0.12);
+      transition: all .18s ease;
+    }
+
+    .switch.on {
+      background: linear-gradient(90deg,var(--accent), #3ab0ff);
+    }
+
+    .switch.on .knob {
+      left: calc(var(--w) - 3px - 20px);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 20px;
+    }
+
+    @media (max-width:1050px){
+      .two-col{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+      .main{padding:20px}
+    }
+
+    .save-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .save-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 0;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(30,86,214,0.18)
+    }
+
+    .field-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 90%;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #0f2340;
+    }
+
+    .modal-header i {
+      font-size: 24px;
+      color: #1e56d6;
+    }
+
+    .modal-body {
+      margin: 20px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    .modal-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .modal-btn.primary {
+      background: #1e56d6;
+      color: white;
+    }
+
+    .modal-btn.primary:hover {
+      background: #1544b8;
+    }
+
+    .modal-btn.secondary {
+      background: #e6eefc;
+      color: #0f2340;
+    }
+
+    .modal-btn.secondary:hover {
+      background: #d4e5f7;
+    }
+
+    .sms-phone-display {
+      background: #f5f7fb;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 12px 0;
+      border-left: 4px solid #1e56d6;
+      font-size: 14px;
+    }
+
+    .sms-success {
+      background: #d4edda;
+      color: #155724;
+      border-left-color: #28a745;
+    }
+
+    .sms-warning {
+      background: #fff3cd;
+      color: #856404;
+      border-left-color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+    <!-- LOGO -->
+    <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h2>IDEease Portal</h2>
+        <p>Student Services</p>
+    </div>
+
+    <!-- MENU -->
+    <div class="menu">
+        <a href="dashboard.html" class="menu-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+        </a>
+        <a href="history.html" class="menu-item">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+        </a>
+        <a href="help center.html" class="menu-item">
+            <i class="fa-solid fa-headset"></i> Help & Support
+        </a>
+        <a href="profile.html" class="menu-item">
+            <i class="fa-solid fa-user"></i> Profile
+        </a>
+        <a href="setting.html" class="menu-item active">
+            <i class="fa-solid fa-gear"></i> Settings
+        </a>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+        <img src="mark.jpg" alt="avatar" />
+        <div class="profile-info">
+            <p><strong>Jose Rizal</strong></p>
+            <p>joserizal@gmail.com</p>
+            <span class="student-tag">Student ID: 123456</span>
+        </div>
+    </div>
+</div>
+
+<main class="main">
+  <!-- Logout Button -->
+  <button class="logout-btn" onclick="location.href='login.html'">
+    <i class="fa-solid fa-right-from-bracket"></i> Logout
+  </button>
+
+  <div class="container">
+    <div class="header-row">
+      <div class="page-title">Settings</div>
+      <div class="header-controls"></div>
+    </div>
+
+    <!-- Two-column area -->
+    <div class="two-col">
+      <!-- Left column: Notification & Privacy -->
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+        <section class="card" aria-labelledby="notif-heading">
+          <h3 id="notif-heading">Notification Preferences</h3>
+          <div class="muted">Choose how you want to receive notifications</div>
+          <div style="margin-top:12px" class="prefs-list" id="notificationsList">
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Email Notifications</div>
+                <div class="small">Receive updates and announcements via email</div>
+              </div>
+              <div><div class="switch on" data-key="email" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Push Notifications</div>
+                <div class="small">Get instant alerts on your device</div>
+              </div>
+              <div><div class="switch on" data-key="push" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">SMS Notifications</div>
+                <div class="small">Receive important alerts via text message</div>
+              </div>
+              <div><div class="switch" data-key="sms" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Event Reminders</div>
+                <div class="small">Get reminders for upcoming classes and events</div>
+              </div>
+              <div><div class="switch on" data-key="events" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Weekly Digest</div>
+                <div class="small">Receive a weekly summary of your activities</div>
+              </div>
+              <div><div class="switch on" data-key="weekly" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="privacy-heading">
+          <h3 id="privacy-heading">Privacy Settings</h3>
+          <div class="muted">Control who can see your information</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Profile Visibility</div>
+                <div class="small">Make your profile visible to other students</div>
+              </div>
+              <div><div class="switch on" data-key="visibility" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Show Email Address</div>
+                <div class="small">Display your email on your public profile</div>
+              </div>
+              <div><div class="switch" data-key="showEmail" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Show Phone Number</div>
+                <div class="small">Display your phone number on your public profile</div>
+              </div>
+              <div><div class="switch" data-key="showPhone" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700">Activity Status</div>
+                <div class="small">Show when you're online or active</div>
+              </div>
+              <div><div class="switch on" data-key="activity" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right column: Security -->
+      <aside>
+        <section class="card" aria-labelledby="security-heading">
+          <h3 id="security-heading">Security</h3>
+          <div class="muted">Manage your password and security settings</div>
+          <form style="margin-top:12px" onsubmit="return false" id="securityForm">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <label for="currentPassword">Current Password</label>
+                <input id="currentPassword" type="password" placeholder="Enter current password" />
+              </div>
+              <div>
+                <label for="newPassword">New Password</label>
+                <input id="newPassword" type="password" placeholder="Enter new password" />
+              </div>
+              <div>
+                <label for="confirmPassword">Confirm Password</label>
+                <input id="confirmPassword" type="password" placeholder="Confirm new password" />
+              </div>
+              <div style="margin-top:8px">
+                <p class="field-note">Make sure your new password is strong and unique.</p>
+              </div>
+            </div>
+          </form>
+        </section>
+      </aside>
+    </div>
+
+    <div class="save-wrap">
+      <button id="saveChanges" class="save-btn">💾 Save Changes</button>
+    </div>
+
+    <div style="height:40px"></div>
+  </div>
+</main>
+
+<!-- SMS Modal -->
+<div id="smsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <i class="fa-solid fa-message"></i>
+      <h2>SMS Notifications</h2>
+    </div>
+    <div class="modal-body">
+      <p id="smsModalText">We'll send important updates to your phone:</p>
+      <div id="smsPhoneInfo" class="sms-phone-display"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn secondary" onclick="closeSmsModal()">Cancel</button>
+      <button class="modal-btn primary" id="smsConfirmBtn" onclick="confirmSmsNotification()">Enable SMS</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Switch toggles
+  const switches = document.querySelectorAll('.switch');
+  switches.forEach(s => {
+    s.addEventListener('click', () => {
+      const key = s.dataset.key;
+      if (key === 'sms') {
+        handleSmsToggle(s);
+      } else {
+        toggleSwitch(s);
+      }
+    });
+    s.addEventListener('keydown', (ev) => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); const key = s.dataset.key; if (key === 'sms') { handleSmsToggle(s); } else { toggleSwitch(s); } } });
+  });
+
+  // SMS Notification Handler
+  function handleSmsToggle(smsSwitch) {
+    const isCurrentlyOn = smsSwitch.classList.contains('on');
+    
+    if (!isCurrentlyOn) {
+      // Turning SMS ON - show modal to confirm
+      const phone = document.getElementById('phone').value;
+      if (!phone || phone.trim() === '') {
+        alert('Please add a phone number to your profile before enabling SMS notifications.');
+        return;
+      }
+      
+      openSmsModal(phone);
+    } else {
+      // Turning SMS OFF - just disable it
+      toggleSwitch(smsSwitch);
+    }
+  }
+
+  function openSmsModal(phoneNumber) {
+    const modal = document.getElementById('smsModal');
+    const phoneInfo = document.getElementById('smsPhoneInfo');
+    const confirmBtn = document.getElementById('smsConfirmBtn');
+    
+    phoneInfo.innerHTML = `<strong>📱 ${phoneNumber}</strong>`;
+    phoneInfo.className = 'sms-phone-display sms-warning';
+    
+    confirmBtn.textContent = 'Enable SMS Notifications';
+    confirmBtn.onclick = () => confirmSmsNotification();
+    
+    modal.classList.add('show');
+  }
+
+  function closeSmsModal() {
+    document.getElementById('smsModal').classList.remove('show');
+  }
+
+  function confirmSmsNotification() {
+    const smsSwitch = document.querySelector('.switch[data-key="sms"]');
+    toggleSwitch(smsSwitch);
+    
+    // Show success message
+    const phoneInfo = document.getElementById('smsPhoneInfo');
+    const phone = document.getElementById('phone').value;
+    phoneInfo.innerHTML = `<strong>✓ SMS enabled for ${phone}</strong>`;
+    phoneInfo.className = 'sms-phone-display sms-success';
+    
+    setTimeout(() => {
+      closeSmsModal();
+    }, 1500);
+  }
+
+  // Close modal when clicking outside
+  window.addEventListener('click', (event) => {
+    const modal = document.getElementById('smsModal');
+    if (event.target === modal) {
+      closeSmsModal();
+    }
+  });
+
+  function toggleSwitch(el){
+    const isOn = el.classList.toggle('on');
+    el.setAttribute('aria-checked', isOn ? 'true' : 'false');
+    const key = el.dataset.key;
+    try { localStorage.setItem('pref-' + key, isOn ? '1' : '0'); } catch(e) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    switches.forEach(s => {
+      const key = s.dataset.key;
+      try {
+        const v = localStorage.getItem('pref-' + key);
+        if (v === '0') { s.classList.remove('on'); s.setAttribute('aria-checked','false'); }
+        if (v === '1') { s.classList.add('on'); s.setAttribute('aria-checked','true'); }
+      } catch(e){}
+    });
+  });
+
+  // Save changes button
+  const saveBtn = document.getElementById('saveChanges');
+  saveBtn.addEventListener('click', () => {
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
+    setTimeout(() => {
+      saveBtn.textContent = '💾 Save Changes';
+      saveBtn.disabled = false;
+      alert('Settings saved (simulation).');
+    }, 750);
+  });
+</script>
+</body>
+</html>

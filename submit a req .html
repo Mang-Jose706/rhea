@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Submit Request</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h2>IDEease Portal</h2>
+        <p>Student Services</p>
+    </div>
+
+    <div class="menu">
+        <a href="dashboard.html">
+            <div class="menu-item">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </div>
+        </a>
+        <a href="history.html">
+            <div class="menu-item">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                History
+            </div>
+        </a>
+        <a href="help center.html">
+            <div class="menu-item">
+                <i class="fa-solid fa-headset"></i>
+                Help & Support
+            </div>
+        </a>
+        <a href="settings.html">
+            <div class="menu-item">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </div>
+        </a>
+    </div>
+
+    <div class="profile-card">
+        <img src="https://via.placeholder.com/45" alt="avatar" />
+        <div class="profile-info">
+            <p><strong>Alexander Johnson</strong></p>
+            <p>tafallaa@gmail.com</p>
+            <span class="student-tag">Student ID: #123456</span>
+        </div>
+    </div>
+</div>
+
+<div class="main1">
+    <div class="header1">
+        <div>
+            <h1>Submit Request</h1>
+            <p>Complete the form and upload all required files to proceed with your ID request.</p>
+        </div>
+        <div class="header-right1">
+            <i class="fa-regular fa-bell"></i>
+        </div>
+    </div>
+<form id="requestForm">
+<div class="stats-section1">
+    <div class="stat-card1">
+        <h3><i class="fa-solid fa-user"></i> Personal Information</h3>
+        <div class="form-grid1">
+
+            <div>
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter your full name" required/>
+            </div>
+
+            <div>
+                <label>Student ID Number</label>
+                <input type="text" placeholder="Enter your student ID" required/>
+            </div>
+            <div>
+                <label>Department</label>
+                <select id="course-category" required>
+                    <option value="">Select your department</option>
+                    <option value="science">College of Science</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="bsn">BSN</option>
+                </select>
+            </div>
+            <div>
+                <label>Program</label>
+                <select id="sub-course" required disabled>
+                    <option value="">Select program</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Year Level</label>
+                <select required>
+                    <option value="">Select year level</option>
+                    <option value="1st_year">1st year</option>
+                    <option value="2nd_year">2nd year</option>
+                    <option value="3rd_year">3rd year</option>
+                    <option value="4th_year">4th year</option>
+                </select>
+            </div>
+
+            <div style="grid-column: span 2;">
+                <label>Reason for Requesting an ID</label>
+                <textarea placeholder="Please explain why you need a new ID card..." required></textarea>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="upload-grid1">
+    <div class="upload-box1" id="photoBox">
+        Click to upload photo<br>
+        <small>JPG, PNG (Max 5MB)</small>
+        <input type="file" id="photoUpload" accept=".jpg,.jpeg,.png" hidden>
+        <button type="button" class="remove-btn" style="display:none;">&times;</button>
+    </div>
+    <div class="upload-box1" id="docBox">
+        Click to upload your cor according your library id.<br>
+        <small>PDF, JPG, PNG (Max 10MB)</small>
+        <input type="file" id="docUpload" accept=".pdf,.jpg,.jpeg,.png" hidden>
+        <button type="button" class="remove-btn" style="display:none;">&times;</button>
+    </div>
+    <div class="upload-box1" id="signBox">
+        Click to upload signature<br>
+        <small>PNG recommended (Max 2MB)</small>
+        <input type="file" id="signUpload" accept=".png" hidden>
+        <button type="button" class="remove-btn" style="display:none;">&times;</button>
+    </div>
+</div>
+<div class="stats-section">
+    <div class="stat-card" style="display:flex; justify-content:flex-end; gap:12px;">
+        <button class="btn cancel">Cancel</button>
+        <button type="submit" class="btn submit">Submit Request</button>
+
+    </div>
+</div>
+</div>
+</form>
+<script>
+document.querySelectorAll('.upload-box1').forEach(box => {
+    const input = box.querySelector('input[type="file"]');
+    const removeBtn = box.querySelector('.remove-btn');
+
+    // Click sa box → buksan ang file picker
+    box.addEventListener('click', () => {
+        input.click();
+    });
+
+    // Kapag pumili ng file → ipakita filename at X button
+    input.addEventListener('change', () => {
+        if (input.files.length > 0) {
+            box.innerHTML = `
+                <strong>${input.files[0].name}</strong><br>
+                <small>File selected</small>
+            `;
+            box.appendChild(input);
+            box.appendChild(removeBtn);
+            removeBtn.style.display = 'inline-block';
+        }
+    });
+
+    // X button → i-clear ang file
+    removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // para hindi ma-trigger ulit ang file picker
+        input.value = '';
+        removeBtn.style.display = 'none';
+        box.innerHTML = `
+            Click to upload ${box.id === 'photoBox' ? 'picture' : box.id === 'docBox' ? 'documents' : 'signature'}<br>
+            <small>${box.querySelector('small') ? box.querySelector('small').textContent : ''}</small>
+        `;
+        box.appendChild(input);
+        box.appendChild(removeBtn);
+    });
+});
+
+    // Kunin ang Cancel button at form grid
+    const cancelBtn = document.querySelector('.btn.cancel');
+    const formGrid = document.querySelector('.form-grid1');
+
+    cancelBtn.addEventListener('click', () => {
+        // I-reset lahat ng input, select, at textarea sa loob ng form
+        formGrid.querySelectorAll('input, select, textarea').forEach(el => {
+            if(el.tagName.toLowerCase() === 'select') {
+                el.selectedIndex = 0; // ibalik sa unang option
+                // Kung may disabled select (like sub-course), i-disable din
+                if(el.id === 'sub-course') el.disabled = true;
+            } else {
+                el.value = '';
+            }
+        });
+
+        // Kung may upload box na may file name, ibalik sa original na text
+        document.querySelectorAll('.upload-box1').forEach(box => {
+            const input = box.querySelector('input[type="file"]');
+            const defaultLabel = box.getAttribute('data-label') || 'Click to upload';
+            box.innerHTML = `
+                ${defaultLabel}<br>
+                <small>JPG, PNG (Max 5MB)</small>
+            `;
+            if(input) box.appendChild(input); // ibalik ang input sa box
+            input.value = ''; // i-reset ang file input
+        });
+    });
+
+// Department → Program logic
+const categorySelect = document.getElementById("course-category");
+const subCourseSelect = document.getElementById("sub-course");
+
+const courseMap = {
+    science: ["BSIT", "BS Bio", "BS Math"],
+    engineering: ["CE", "EE", "ME"],
+    bsn: ["BSN"]
+};
+
+categorySelect.addEventListener("change", function () {
+    const selected = this.value;
+
+    subCourseSelect.innerHTML = '<option value="">Select program</option>'; // reset
+    subCourseSelect.disabled = true; // default disabled
+
+    if (courseMap[selected]) {
+        courseMap[selected].forEach(course => {
+            const option = document.createElement("option");
+            option.value = course.toLowerCase().replace(/\s+/g, "_");
+            option.textContent = course;
+            subCourseSelect.appendChild(option);
+        });
+        subCourseSelect.disabled = false; // enable kapag may laman
+    }
+});
+
+document.getElementById("requestForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    // 1️⃣ CHECK TEXT / SELECT / TEXTAREA
+    const requiredFields = this.querySelectorAll(
+        "input[type='text'], select, textarea"
+    );
+
+    for (let field of requiredFields) {
+        if (!field.value.trim()) {
+            alert("Please complete all required fields before submitting.");
+            field.focus();
+            return;
+        }
+    }
+
+    // 2️⃣ CHECK FILE UPLOADS
+    const photo = document.getElementById("photoUpload");
+    const doc = document.getElementById("docUpload");
+    const sign = document.getElementById("signUpload");
+
+    if (!photo.files.length || !doc.files.length || !sign.files.length) {
+        alert("Please upload all required files before submitting.");
+        return;
+    }
+
+    // 3️⃣ SUCCESS → REDIRECT
+    window.location.href = "req submitted.html";
+});
+
+
+</script>
+
+
+</body>
+</html>

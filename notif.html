@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --success: #22c55e;
+      --warning: #f97316;
+      --border: #e5e7eb;
+      --radius: 14px;
+      --shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .title h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .title p {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      background: #e0ecff;
+      color: var(--primary);
+      border-color: #dbeafe;
+      font-weight: 600;
+    }
+
+    /* Notification List */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .notification {
+      display: flex;
+      align-items: flex-start;
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      position: relative;
+      background: #fff;
+    }
+
+    .notification::before {
+      content: "";
+      width: 5px;
+      height: 100%;
+      background: var(--primary);
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .icon.info { background: #3b82f6; }
+    .icon.success { background: var(--success); }
+    .icon.warning { background: var(--warning); }
+    .icon.default { background: #9ca3af; }
+
+    .content {
+      flex: 1;
+    }
+
+    .content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .content p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .time {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .dot.success { background: var(--success); }
+    .dot.warning { background: var(--warning); }
+    .dot.gray { background: #9ca3af; }
+
+    /* Footer */
+    .footer {
+      margin-top: 32px;
+    }
+
+    .back {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* READ NOTIFICATION STYLE */
+.notification-item.read {
+    background-color: #f9f9f9;
+    opacity: 0.75;
+}
+
+.notification-item.read .highlight {
+    font-weight: normal;
+}
+
+.notification-item.read .timestamp::before {
+    display: none;
+}
+
+/* READ STATE */
+.notification.read {
+  opacity: 0.65;
+  background: #f9fafb;
+}
+
+.notification.read::before {
+  background: #e5e7eb;
+}
+
+.notification.read .dot {
+  display: none;
+}
+
+/* RETURN TO DASHBOARD (GUIDE STYLE) */
+.return-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: 1px solid #d0d0d0;
+  background: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.return-btn:hover {
+  background: #f5f5f5;
+}
+
+.footer {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+
+
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <div class="title">
+        <h1>Notifications</h1>
+        <p>Stay updated with your latest activities</p>
+      </div>
+      <div class="actions">
+        <a href="setting.html" style="text-decoration: none;"><button class="btn">⚙ Settings</button></a>
+        <button class="btn primary" onclick="markAllRead()">✔ Mark All Read</button>
+
+      </div>
+    </div>
+
+    <div class="list">
+
+      <div class="notification">
+        <div class="icon info">🔔</div>
+        <div class="content">
+          <h3>New feature available</h3>
+          <p>UniID now supports advanced authentication methods including biometric verification.</p>
+        </div>
+        <div class="time"><span class="dot"></span>2 min ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon success">✔</div>
+        <div class="content">
+          <h3>Profile verification completed</h3>
+          <p>Your identity verification has been successfully completed.</p>
+        </div>
+        <div class="time"><span class="dot success"></span>15 min ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon warning">⚠</div>
+        <div class="content">
+          <h3>Security alert</h3>
+          <p>We detected an unusual login attempt from a new device.</p>
+        </div>
+        <div class="time"><span class="dot warning"></span>1 hour ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon default">🔔</div>
+        <div class="content">
+          <h3>System maintenance scheduled</h3>
+          <p>Scheduled maintenance on Sunday from 2:00 AM to 4:00 AM.</p>
+        </div>
+        <div class="time"><span class="dot gray"></span>3 hours ago</div>
+      </div>
+            <div class="notification">
+        <div class="icon info">🔔</div>
+        <div class="content">
+          <h3>New feature available</h3>
+          <p>UniID now supports advanced authentication methods including biometric verification.</p>
+        </div>
+        <div class="time"><span class="dot"></span>2 min ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon success">✔</div>
+        <div class="content">
+          <h3>Profile verification completed</h3>
+          <p>Your identity verification has been successfully completed.</p>
+        </div>
+        <div class="time"><span class="dot success"></span>15 min ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon warning">⚠</div>
+        <div class="content">
+          <h3>Security alert</h3>
+          <p>We detected an unusual login attempt from a new device.</p>
+        </div>
+        <div class="time"><span class="dot warning"></span>1 hour ago</div>
+      </div>
+
+      <div class="notification">
+        <div class="icon default">🔔</div>
+        <div class="content">
+          <h3>System maintenance scheduled</h3>
+          <p>Scheduled maintenance on Sunday from 2:00 AM to 4:00 AM.</p>
+        </div>
+        <div class="time"><span class="dot gray"></span>3 hours ago</div>
+      </div>
+    </div>
+  </div>
+
+<div class="footer">
+<a href="dashboard.html" class="return-btn" >
+  <i class="fa-solid fa-house"></i> Return to Dashboard
+</a>
+</div>
+
+<script>
+function markAllRead() {
+  const notifications = document.querySelectorAll('.notification');
+
+  notifications.forEach(notification => {
+    notification.classList.add('read');
+  });
+}
+</script>
+
+  
+</body>
+</html>

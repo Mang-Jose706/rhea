@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Successfully Submitted</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+    body {
+        font-family: "Inter", Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 40px;
+        color: #333;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        text-align: center;
+    }
+
+    /* Success Icon */
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: #28c76f;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        color: white;
+        font-size: 40px;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-top: 20px;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        margin-top: 8px;
+        font-size: 16px;
+        color: #555;
+    }
+
+    /* Cards */
+    .card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        padding: 25px;
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    /* Summary Table */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #ececec;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .status-badge {
+        background: #15e071;
+        color: #14560f;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Steps Section */
+    .step {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .blue { background: #3b82f6; }
+    .purple { background: #8b5cf6; }
+    .green { background: #22c55e; }
+
+    .step-title {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .step-desc {
+        font-size: 14px;
+        color: #666;
+    }
+
+    /* Uploaded Files List */
+    .file-row {
+        background: #e9f9ef;
+        border: 1px solid #c7f1d8;
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .file-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .check-icon {
+        width: 25px;
+        height: 25px;
+        background: #28c76f;
+        border-radius: 50%;
+        color: white;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .file-title {
+        font-weight: 600;
+    }
+
+    .file-desc {
+        font-size: 13px;
+        color: #555;
+    }
+
+    /* Return Button */
+    .return-btn {
+        margin-top: 35px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 22px;
+        border-radius: 10px;
+        border: 1px solid #d0d0d0;
+        background: white;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .return-btn i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Success Header -->
+    <div class="success-icon">✓</div>
+
+    <h1>Request Successfully Submitted!</h1>
+    <p class="subtitle">Your ID request has been received and is now being processed.</p>
+
+    <!-- Request Summary Card -->
+    <div class="card">
+        <div class="card-title">Request Summary</div>
+
+        <div class="summary-row">
+            <span>Request Type:</span>
+            <strong>New Student ID</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Request ID:</span>
+            <strong>#REQ-2024-8742</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Date Submitted:</span>
+            <strong>December 16, 2025</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Status:</span>
+            <span class="status-badge">Submitted</span>
+        </div>
+    </div>
+
+    <!-- What Happens Next Card -->
+    <div class="card">
+        <div class="card-title">What Happens Next</div>
+
+        <div class="step">
+            <div class="step-icon blue">✓</div>
+            <div>
+                <div class="step-title">Step 1: Request Verification</div>
+                <div class="step-desc">Our team will review your submitted documents and information for accuracy and completeness.</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-icon purple">✓</div>
+            <div>
+                <div class="step-title">Step 2: ID Production</div>
+                <div class="step-desc">Once approved, your ID card will be printed and prepared with all necessary security features.</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-icon green">✓</div>
+            <div>
+                <div class="step-title">Step 3: Ready for Pickup</div>
+                <div class="step-desc">You'll receive a notification when your ID is ready for collection at the designated office.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submitted Files Confirmation Card -->
+    <div class="card">
+        <div class="card-title">Submitted Files Confirmation</div>
+
+        <div class="file-row">
+            <div class="check-icon">✓</div>
+            <div>
+                <div class="file-title">1×1 Photo</div>
+                <div class="file-desc">Successfully uploaded</div>
+            </div>
+        </div>
+
+        <div class="file-row">
+            <div class="check-icon">✓</div>
+            <div>
+                <div class="file-title">Valid ID / Requirements</div>
+                <div class="file-desc">Successfully uploaded</div>
+            </div>
+        </div>
+
+        <div class="file-row">
+            <div class="check-icon">✓</div>
+            <div>
+                <div class="file-title">Digital Signature</div>
+                <div class="file-desc">Successfully uploaded</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Button -->
+<a href="dashboard.html" class="return-btn">
+  <i class="fa-solid fa-house"></i> Return to Dashboard
+</a>
+
+
+</div>
+
+</body>
+</html>

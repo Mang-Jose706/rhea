@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Variables */
+        :root {
+            --color-primary: #007bff;
+            --color-secondary: #f0f2f5; /* Background */
+            --color-white: #ffffff;
+            --color-text-dark: #333;
+            --color-text-medium: #6c757d;
+            --color-text-light: #9ea4ac;
+            --color-success: #28a745;
+            --color-warning: #ffc107;
+            --color-danger: #dc3545;
+            --color-border: #e9ecef;
+            --card-radius: 10px;
+            --spacing-md: 20px;
+            --spacing-lg: 30px;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--color-secondary);
+            color: var(--color-text-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Utility Classes */
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+
+        /* Navigation/Header Bar (Simplified) */
+        .top-nav {
+            background-color: var(--color-white);
+            border-bottom: 1px solid var(--color-border);
+            padding: 10px var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            padding: 5px 15px;
+            border-radius: 5px;
+            background-color: var(--color-secondary);
+            max-width: 300px;
+            color: var(--color-text-medium);
+            font-size: 0.9rem;
+            margin-right: 1000px;
+        }
+        
+        /* Main Container and Layout */
+        .main-content {
+            padding: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-lg);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .left-column {
+            flex: 3;
+            min-width: 0; /* Ensures proper shrinking */
+        }
+
+        .right-column {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: var(--color-text-medium);
+        }
+
+        .breadcrumb a {
+            color: var(--color-text-medium);
+            text-decoration: none;
+        }
+
+        .breadcrumb span {
+            font-weight: 600;
+            color: var(--color-text-dark);
+        }
+
+        .page-header h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .page-header p {
+            color: var(--color-text-medium);
+            font-size: 0.95rem;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: var(--color-white);
+            border-radius: var(--card-radius);
+            padding: var(--spacing-md);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Request Header Card */
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .request-id {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .submitted-date {
+            font-size: 0.9rem;
+            color: var(--color-text-medium);
+        }
+
+        .status-badge {
+            background-color: var(--color-warning);
+            color: var(--color-white);
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-badge i {
+            margin-right: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            margin-top: var(--spacing-md);
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: var(--color-border);
+            border-radius: 4px;
+            margin-top: 8px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            width: 50%; /* Step 2 of 4 is approx 50% */
+            height: 100%;
+            background-color: var(--color-primary);
+            border-radius: 4px;
+        }
+
+        .progress-step {
+            font-size: 0.8rem;
+            color: var(--color-text-medium);
+            text-align: right;
+        }
+
+        /* Info Grid Styling */
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            color: var(--color-primary);
+        }
+
+        .card-title i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .info-item .label {
+            font-size: 0.85rem;
+            color: var(--color-text-medium);
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .info-item .value {
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Right Column Cards */
+
+        /* Photo Card */
+        .photo-card .card-title {
+            color: var(--color-text-dark);
+            font-size: 1rem;
+        }
+
+        .student-photo-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .student-photo {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .photo-caption {
+            font-size: 0.8rem;
+            color: var(--color-text-medium);
+        }
+
+        /* Actions Card */
+        .actions-card .card-title {
+            color: var(--color-text-dark);
+            font-size: 1rem;
+        }
+
+        .reject-button {
+            width: 100%;
+            background-color: var(--color-danger);
+            color: var(--color-white);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+        
+        .reject-button {
+             /* Styled to match the light red button in the image */
+            background-color: var(--color-red-light);
+            color: var(--color-danger);
+            border: 1px solid var(--color-red-light);
+            font-weight: 600;
+        }
+        
+        .reject-button:hover {
+            background-color: #f5c6cb;
+        }
+
+        .reject-button i {
+            margin-right: 8px;
+        }
+
+        /* Assigned Card */
+        .assigned-card .card-title {
+            color: var(--color-text-dark);
+            font-size: 1rem;
+        }
+
+        .reviewer-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--color-primary); /* Placeholder color */
+            margin-right: 10px;
+            object-fit: cover;
+        }
+.back-arrow {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-right: 15px;
+    transition: all 0.2s ease;
+}
+
+.back-arrow:hover {
+    background-color: #f0f2f5;
+    transform: translateX(-2px);
+}
+
+
+
+        .reviewer-info .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .reviewer-info .role {
+            font-size: 0.8rem;
+            color: var(--color-text-medium);
+        }
+        
+        /* Documents */
+        .document-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 0.9rem;
+        }
+
+        .document-item:last-child {
+            border-bottom: none;
+        }
+
+        .document-icon {
+            color: var(--color-danger);
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        .document-info .name {
+            font-weight: 500;
+            color: var(--color-text-dark);
+            margin-bottom: 2px;
+        }
+
+        .document-info .details {
+            font-size: 0.8rem;
+            color: var(--color-text-medium);
+        }
+
+        /* Activity Timeline */
+        .timeline-item {
+            display: flex;
+            margin-bottom: var(--spacing-md);
+        }
+
+
+        
+        .timeline-icon-container {
+            width: 20px;
+            margin-right: var(--spacing-md);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timeline-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--color-white);
+            font-size: 0.7rem;
+            z-index: 10;
+        }
+
+        .timeline-icon.submitted { background-color: var(--color-primary); }
+        .timeline-icon.verified { background-color: var(--color-primary); }
+        .timeline-icon.waiting { background-color: var(--color-warning); }
+
+        .timeline-line {
+            position: absolute;
+            top: 20px;
+            bottom: -20px;
+            width: 2px;
+            background-color: var(--color-border);
+        }
+
+        .timeline-item:last-child .timeline-line {
+            display: none;
+        }
+
+        .timeline-content {
+            flex-grow: 1;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .timeline-time {
+            color: var(--color-text-medium);
+            font-weight: normal;
+        }
+    
+
+        .timeline-description {
+            font-size: 0.85rem;
+            color: var(--color-text-medium);
+            margin-top: 5px;
+        }
+
+        .page-footer {
+            padding-top: 30px;
+            padding-bottom: 20px;
+        }
+
+        /* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: #dc3545;
+}
+
+.modal-content p {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+.close-btn:hover {
+    background-color: #b02a37;
+}
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .right-column {
+                min-width: unset;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: var(--spacing-md);
+            }
+            .right-column .card {
+                flex: 1 1 calc(50% - 10px);
+            }
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 10px var(--spacing-md);
+            }
+            .main-content {
+                padding: var(--spacing-md);
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .right-column {
+                flex-direction: column;
+            }
+            .right-column .card {
+                flex: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <div class="back-arrow" title="Back to Dashboard" onclick="window.location.href='history.html'">
+    ←
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="left-column">
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <a href="#">History</a> / <span>View Details</span>
+                </div>
+                <h2>Pending Review</h2>
+                <p>View complete information for this ID request.</p>
+            </div>
+
+            <div class="card mb-4">
+                <div class="request-header">
+                    <div>
+                        <div class="request-id">ID# 654321</div>
+                        <div class="submitted-date">Submitted on December 16, 2025 at 10:32 AM</div>
+                    </div>
+                    <div class="status-badge" style="background: #f1c40f; color: white;">
+                        <i class="fas fa-history"></i> Pending
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-step">Step 2 of 4</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <div class="submitted-date">Processing Progress</div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-title" style="color: var(--color-primary);">
+                    <i class="fas fa-user-circle"></i> Student Information
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Full Name</span>
+                        <span class="value">Jose Rizal</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Date of Birth</span>
+                        <span class="value">March 31, 2006</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Student ID</span>
+                        <span class="value">654321</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Phone Number</span>
+                        <span class="value">09123456789</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Program</span>
+                        <span class="value">BSIT</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Year Level</span>
+                        <span class="value">2nd Year</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Department</span>
+                        <span class="value">COLLEGE OF SCIENCE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-title" style="color: var(--color-primary);">
+                    <i class="fas fa-id-card"></i> ID Card Details
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Request Type</span>
+                        <span class="value">New Student ID</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Card Type</span>
+                        <span class="value">School ID</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-title" style="color: var(--color-primary);">
+                    <i class="fas fa-paperclip"></i> Attached Documents
+                </div>
+                
+                <div class="document-item">
+                    <i class="fas fa-file-image document-icon" style="color: #63d191;"></i>
+                    <div class="document-info">
+                        <div class="name">photo.jpg</div>
+                        <div class="details">2.4 MB • Uploaded Mar 15, 2024</div>
+                    </div>
+                </div>
+                
+                <div class="document-item">
+                    <i class="fas fa-file-image document-icon" style="color: #63d191;"></i>
+                    <div class="document-info">
+                        <div class="name">library_id.jpeg</div>
+                        <div class="details">3.8 MB • Uploaded Dec 16, 2025</div>
+                    </div>
+                </div>
+                
+                <div class="document-item" style="border-bottom: none;">
+                    <i class="fas fa-file-image document-icon" style="color: #63d191;"></i>
+                    <div class="document-info">
+                        <div class="name">signature.jpeg</div>
+                        <div class="details">956 KB • Uploaded Dec 15, 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-title" style="color: var(--color-primary);">
+                    <i class="far fa-clock"></i> Activity Timeline
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon-container">
+                        <div class="timeline-icon submitted"><i class="fas fa-check"></i></div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div>Request Submitted</div>
+                            <div class="timeline-time">10:32 AM</div>
+                        </div>
+                        <div class="timeline-description">Student submitted new ID card request with all required documents.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon-container">
+                        <div class="timeline-icon waiting"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div>Documents Verified</div>
+                            <div class="timeline-time">10:35 AM</div>
+                        </div>
+                        <div class="timeline-description">Admin verified all submitted documents. Request moved to pending review.</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-icon-container">
+                        <div class="timeline-icon waiting"><i class="fas fa-hourglass-half"></i></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div>Awaiting Approval</div>
+                            <div class="timeline-time">Mar 15, 2024</div>
+                        </div>
+                        <div class="timeline-description">Request is currently under review by the ID office.</div>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+        <div class="right-column" style="margin-top: 130px;">
+            <div class="card photo-card">
+                <div class="card-title" style="color: var(--color-text-dark); margin-bottom: 10px;">
+                    Student Photo
+                </div>
+                <div class="student-photo-container">
+                    <img src="mark.jpg" alt="Student Photo" class="student-photo">
+                    <p class="photo-caption">Photo will be used for ID card</p>
+                </div>
+            </div>
+
+            <div class="card actions-card">
+                <div class="card-title" style="color: var(--color-text-dark); margin-bottom: 10px;">
+                    Actions
+                </div>
+                <button class="reject-button">
+                    <i class="fas fa-times-circle"></i>
+                    <a href=".html" style="color: #dc3545; text-decoration: none;">Reject Request</a>
+                </button>
+            </div>
+
+            <div class="card assigned-card">
+                <div class="card-title" style="color: var(--color-text-dark); margin-bottom: 10px;">
+                    Assigned To
+                </div>
+                <div class="reviewer-details">
+                    <img src="mark.jpg" alt="Reviewer Avatar" class="reviewer-avatar">
+                    <div class="reviewer-info">
+                        <div class="name">Lebron James</div>
+                        <div class="role">ID Office Reviewer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal Overlay -->
+<div id="rejectModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Request Rejected</h2>
+        <p>This request has been marked as rejected. The student will be notified and can make the necessary corrections.</p>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+<script>
+// Show modal when Reject Request button is clicked
+document.querySelector('.reject-button').addEventListener('click', function(e) {
+    e.preventDefault(); // Prevent default link action
+    document.getElementById('rejectModal').style.display = 'flex';
+});
+
+// Close modal function
+function closeModal() {
+    // mark request as rejected
+    localStorage.setItem('ID_654321_status', 'rejected');
+
+    // balik sa history page
+    window.location.href = 'history.html';
+}
+
+</script>
+
+
+</body>
+</html>

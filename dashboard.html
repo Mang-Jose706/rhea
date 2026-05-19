@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IDEease Portal Dashboard</title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- FONT AWESOME ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>IDEease Portal</h2>
+            <p>Student Services</p>
+        </div>
+        <div class="menu">
+            <div class="menu-item active">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </div>
+
+            <a href="history.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    History
+                </div>
+            </a>
+
+            <a href="help center.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-headset"></i>
+                    Help & Support
+                </div>
+            </a>
+
+            <a href="profile.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </div>
+            </a>
+
+            <a href="setting.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </div>
+            </a>
+        </div>
+
+    </div>
+    <div class="main">
+        <div class="header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back, Tafalla! Manage your school ID requests and student services.</p>
+            </div>
+
+            <div class="header-right">
+                <a href="notif.html"><i class="fa-regular fa-bell"></i></a>
+                <a href="submit a req .html">
+                    <button class="new-request-btn">
+                        <i class="fa-solid fa-plus"></i> New Request
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fa-solid fa-spinner" style="color: blue;"></i>
+                <h3>Active Requests: 3</h3>
+            </div>
+
+            <div class="stat-card">
+                <i class="fa-solid fa-circle-check" style="color: rgb(59, 197, 59);"></i>
+                <h3>Completed: 12</h3>
+            </div>
+
+            <div class="stat-card">
+                <i class="fa-solid fa-hourglass-half" style="color: orange;"></i>
+                <h3>Pending Review: 1</h3>
+            </div>
+
+            <div class="stat-card">
+                <i class="fa-solid fa-list"></i>
+                <h3>Total Requests: 16</h3>
+            </div>
+        </div>
+
+        <div class="recent-section">
+            <h2>Recent Requests</h2>
+            <table>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>#ID-134243</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill pending">
+    <i class="fa-solid fa-clock"></i> Pending
+</span></td>
+                </tr>                    <td>#ID-134256</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill processing">
+    <i class="fa-solid fa-spinner"></i> Processing
+</span></td>
+                </tr>                    <td>#ID-131342</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill completed">
+    <i class="fa-solid fa-circle-check"></i> Completed
+</span></td>
+                </tr>                    <td>#ID-156342</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill processing">
+    <i class="fa-solid fa-spinner"></i> Processing
+</span></td>
+                </tr>
+                <tr>
+                    <td>#ID-129978</td>
+                    <td>New ID</td>
+                    <td>Jan 08, 2025</td>
+                    <td><span class="pill rejected">
+    <i class="fa-solid fa-circle-xmark"></i> Rejected
+</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

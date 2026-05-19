@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>IDEase Portal — Profile</title>
+  <!-- FONT AWESOME ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root{
+      --sidebar-width: 280px;
+      --navy: #0f2340;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --accent: #1e56d6;
+      --bg: #f5f7fb;
+      --radius: 14px;
+      --shadow: 0 6px 18px rgba(11,18,35,0.06);
+      --max-main-width: 920px;
+      --gap: 20px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f8ff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0a1a33;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .logo h2 {
+      font-size: 24px;
+      margin: 10px 0 0;
+    }
+
+    .sidebar .logo i {
+      font-size: 34px;
+      color: #fff;
+    }
+
+    .logo span,
+    .logo p {
+      font-size: 12px;
+      color: #b9c6e0;
+    }
+
+    .menu {
+      margin-top: 20px;
+      flex-grow: 1;
+    }
+
+    .menu-item {
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d9e3f5;
+      text-decoration: none;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .profile-card {
+      background: #12294d;
+      padding: 15px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .profile-card img {
+      width: 50px;
+      height: 35px;
+      border-radius: 50%;
+    }
+
+    .profile-info p {
+      font-size: 12px;
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .student-tag {
+      background: #1f3a66;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 10px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    /* Main content area */
+    .main {
+      flex: 1;
+      min-height: 100vh;
+      padding: 28px 32px;
+      overflow-y: auto;
+      background: var(--bg);
+      position: relative;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      font-size: 29px;
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: white;
+      border: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+
+    /* Logout button on top-right */
+    .logout-btn {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      background: #dc3545;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #b02a37;
+    }
+
+    .container {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-top: 30px;
+    }
+
+    .card h3 {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+    }
+
+    .card .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      border: 6px solid #fff;
+      box-shadow: 0 6px 24px rgba(32,45,90,0.08);
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #374151;
+      overflow: hidden;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 0;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid #eef2ff;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .form-row .full {
+      grid-column: 1/-1;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #e6eefc;
+      background: #fbfdff;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    input[disabled] {
+      background: #f3f4f6;
+      color: #9aa4b2;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(30,86,214,0.1);
+    }
+
+    .field-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .save-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+      gap: 12px;
+    }
+
+    .save-btn {
+      background: var(--accent);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 0;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(30,86,214,0.18);
+      transition: 0.2s;
+    }
+
+    .save-btn:hover {
+      background: #1544b8;
+    }
+
+    .cancel-btn {
+      background: transparent;
+      color: var(--muted);
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid #e6eefc;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cancel-btn:hover {
+      background: #f5f7fb;
+    }
+
+    .edit-mode input,
+    .edit-mode select {
+      border-color: var(--accent);
+      background: #fbfdff;
+    }
+
+    @media (max-width:1050px){
+      .profile-grid{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+      .main{padding:20px}
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+    <!-- LOGO -->
+    <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h2>IDEease Portal</h2>
+        <p>Student Services</p>
+    </div>
+
+    <!-- MENU -->
+    <div class="menu">
+        <a href="dashboard.html" class="menu-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+        </a>
+        <a href="history.html" class="menu-item">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+        </a>
+        <a href="help center.html" class="menu-item">
+            <i class="fa-solid fa-headset"></i> Help & Support
+        </a>
+        <a href="profile.html" class="menu-item active">
+            <i class="fa-solid fa-user"></i> Profile
+        </a>
+        <a href="setting.html" class="menu-item">
+            <i class="fa-solid fa-gear"></i> Settings
+        </a>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+        <img src="mark.jpg" alt="avatar" />
+        <div class="profile-info">
+            <p><strong>Jose Rizal</strong></p>
+            <p>joserizal@gmail.com</p>
+            <span class="student-tag">Student ID: 123456</span>
+        </div>
+    </div>
+</div>
+
+<main class="main">
+  <!-- Logout Button -->
+  <button class="logout-btn" onclick="location.href='login.html'">
+    <i class="fa-solid fa-right-from-bracket"></i> Logout
+  </button>
+
+  <div class="container">
+    <div class="header-row">
+      <div class="page-title">Profile</div>
+      <div class="header-controls"></div>
+    </div>
+
+    <!-- Profile Settings card -->
+    <section class="card" aria-labelledby="profile-heading">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <h3 id="profile-heading">Your Profile</h3>
+          <div class="muted">View and manage your personal information</div>
+        </div>
+        <button class="btn" id="editProfileBtn" onclick="enableEditMode()">
+          <i class="fa-solid fa-pen"></i> Edit Profile
+        </button>
+      </div>
+
+      <!-- PROFILE GRID -->
+      <div class="profile-grid" style="margin-top:20px">
+        <div class="avatar-wrap">
+          <div class="avatar-preview" id="avatarPreview" title="Profile photo preview">
+            <img id="avatarImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Crect width='24' height='24' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' alignment-baseline='central' text-anchor='middle' fill='%23374651' font-size='10'%3EJR%3C/text%3E%3C/svg%3E" alt="Profile preview">
+          </div>
+          <div style="display:flex;gap:8px;display:none" id="photoButtons">
+            <label class="btn" for="photoUpload">Upload Photo</label>
+            <input id="photoUpload" type="file" accept="image/*" style="display:none">
+            <button class="btn ghost" id="removePhoto" type="button">Remove</button>
+          </div>
+          <div class="field-note">JPG, PNG or GIF. Max size 5MB.</div>
+        </div>
+
+        <form class="profile-form" id="profileForm" onsubmit="return false">
+          <div class="form-row">
+            <div>
+              <label for="fullName">Full Name</label>
+              <input id="fullName" type="text" value="Jose Rizal" disabled />
+            </div>
+            <div>
+              <label for="studentId">Student ID</label>
+              <input id="studentId" type="text" value="243500" disabled />
+            </div>
+            <div class="full">
+              <label for="email">Email Address</label>
+              <input id="email" type="email" value="joserizal@gmail.com" disabled />
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input id="phone" type="tel" value="09123456789" disabled />
+            </div>
+            <div>
+              <label for="dob">Date of Birth</label>
+              <input id="dob" type="date" value="2006-03-31" disabled />
+            </div>
+            <div class="full">
+              <label for="dept">Department</label>
+              <select id="dept" aria-label="Department" disabled>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Business Administration</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="save-wrap" id="actionButtons" style="display:none">
+        <button class="cancel-btn" onclick="disableEditMode()">Cancel</button>
+        <button class="save-btn" id="saveProfileBtn" onclick="saveProfile()">
+          <i class="fa-solid fa-check"></i> Save Changes
+        </button>
+      </div>
+    </section>
+
+    <div style="height:40px"></div>
+  </div>
+</main>
+
+<script>
+  // Avatar file preview and remove
+  const photoUpload = document.getElementById('photoUpload');
+  const avatarImg = document.getElementById('avatarImg');
+  const removeBtn = document.getElementById('removePhoto');
+  const photoButtons = document.getElementById('photoButtons');
+
+  photoUpload.addEventListener('change', function(e){
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return alert('Please choose an image file.');
+    const reader = new FileReader();
+    reader.onload = () => { avatarImg.src = reader.result; };
+    reader.readAsDataURL(file);
+  });
+
+  removeBtn.addEventListener('click', () => {
+    avatarImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Crect width='24' height='24' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' alignment-baseline='central' text-anchor='middle' fill='%23374651' font-size='10'%3EJR%3C/text%3E%3C/svg%3E";
+    photoUpload.value = "";
+  });
+
+  // Edit mode functions
+  function enableEditMode() {
+    const inputs = document.querySelectorAll('#profileForm input, #profileForm select');
+    inputs.forEach(input => input.disabled = false);
+    
+    document.getElementById('profileForm').classList.add('edit-mode');
+    document.getElementById('editProfileBtn').style.display = 'none';
+    document.getElementById('actionButtons').style.display = 'flex';
+    document.getElementById('photoButtons').style.display = 'flex';
+  }
+
+  function disableEditMode() {
+    const inputs = document.querySelectorAll('#profileForm input, #profileForm select');
+    inputs.forEach(input => input.disabled = true);
+    
+    document.getElementById('profileForm').classList.remove('edit-mode');
+    document.getElementById('editProfileBtn').style.display = 'inline-flex';
+    document.getElementById('actionButtons').style.display = 'none';
+    document.getElementById('photoButtons').style.display = 'none';
+  }
+
+  function saveProfile() {
+    const saveBtn = document.getElementById('saveProfileBtn');
+    const fullName = document.getElementById('fullName').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+
+    if (!fullName || !email || !phone) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
+
+    setTimeout(() => {
+      saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Save Changes';
+      saveBtn.disabled = false;
+      alert('Profile updated successfully!');
+      disableEditMode();
+    }, 750);
+  }
+</script>
+</body>
+</html>
