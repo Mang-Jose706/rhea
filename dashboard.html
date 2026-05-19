@@ -140,5 +140,16 @@
         </div>
     </div>
 
+<script>
+  // Initialize dark mode if enabled in localStorage (shared across all pages)
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+      if (darkModeEnabled) {
+        document.body.classList.add('dark-mode');
+      }
+    } catch(e) {}
+  });
+</script>
 </body>
 </html>

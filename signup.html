@@ -5,24 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <style>
+:root {
+    --bg-gradient: linear-gradient(110deg, #1A214B 0%, #dfe1ea 100%);
+    --card-bg: #ffffff;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    --text-primary: #000000;
+    --text-secondary: #555;
+    --input-bg: #fafafa;
+    --input-border: #ccc;
+    --input-focus: #1b234b;
+    --btn-bg: #5d6fd2;
+    --btn-hover: #4b5ecc;
+    --link-color: #4b8acb;
+}
+
+body.dark-mode {
+    --bg-gradient: linear-gradient(110deg, #0d0d0d 0%, #1a1a1a 100%);
+    --card-bg: #2a2a2a;
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    --text-primary: #ffffff;
+    --text-secondary: #d0d0d0;
+    --input-bg: #333333;
+    --input-border: #444444;
+    --input-focus: #5d6fd2;
+    --btn-bg: #5d6fd2;
+    --btn-hover: #4b5ecc;
+    --link-color: #7ba3d4;
+}
+
 body {
     margin: 0;
     padding: 0;
     font-family: "Poppins", sans-serif;
-    background: linear-gradient(110deg, #1A214B 0%, #dfe1ea 100%);
+    background: var(--bg-gradient);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    color: var(--text-primary);
 }
 .auth-card {
     width: 420px;
-    background: white;
+    background: var(--card-bg);
     margin-top: 8rem;
     padding: 40px;
     border-radius: 22px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: var(--card-shadow);
     text-align: center;
+    color: var(--text-primary);
 }
 .auth-card h2 { 
     font-size: 24px; 
@@ -30,7 +60,7 @@ body {
 }
 .auth-card p.sub-topic {
     font-size: 14px;
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 25px;
 }
 .input-row {
@@ -43,14 +73,15 @@ body {
     width: 40%;
     padding: 12px 15px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
     font-size: 14px;
     outline: none;
-    background: #fafafa;
 }
 .input-row input:focus {
-    border-color: #1b234b;
-    box-shadow: 0 0 5px rgba(27,35,75,0.3);
+    border-color: var(--input-focus);
+    box-shadow: 0 0 5px rgba(93,111,210,0.3);
 }
 .input-box { 
     width: 100%; 
@@ -62,19 +93,20 @@ body {
     width: 80%;
     padding: 12px 15px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
     font-size: 14px;
     outline: none;
-    background: #fafafa;
 }
 .input-box input:focus {
-    border-color: #1b234b;
-    box-shadow: 0 0 5px rgba(27,35,75,0.3);
+    border-color: var(--input-focus);
+    box-shadow: 0 0 5px rgba(93,111,210,0.3);
 }
 .auth-btn {
     width: 100%;
     padding: 12px;
-    background: #5d6fd2;
+    background: var(--btn-bg);
     border: none;
     border-radius: 10px;
     font-size: 15px;
@@ -82,9 +114,9 @@ body {
     cursor: pointer;
     margin-top: 5px;
 }
-.auth-btn:hover { background: #4b5ecc; }
-.auth-text { margin-top: 12px; font-size: 13px; }
-.auth-text a { color: #4b8acb; text-decoration: none; font-weight: 600; }
+.auth-btn:hover { background: var(--btn-hover); }
+.auth-text { margin-top: 12px; font-size: 13px; color: var(--text-secondary); }
+.auth-text a { color: var(--link-color); text-decoration: none; font-weight: 600; }
 .auth-text a:hover { text-decoration: underline; }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -160,6 +192,16 @@ body {
             alert("Account created successfully! Redirecting to login...");
             window.location.href = "login.html";
         }
+
+        // Initialize dark mode if enabled in localStorage
+        window.addEventListener('DOMContentLoaded', () => {
+          try {
+            const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+            if (darkModeEnabled) {
+              document.body.classList.add('dark-mode');
+            }
+          } catch(e) {}
+        });
     </script>
 </body>
 </html>
