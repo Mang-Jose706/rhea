@@ -451,26 +451,6 @@
       background: #d4e5f7;
     }
 
-    .sms-phone-display {
-      background: #f5f7fb;
-      padding: 12px;
-      border-radius: 8px;
-      margin: 12px 0;
-      border-left: 4px solid #1e56d6;
-      font-size: 14px;
-    }
-
-    .sms-success {
-      background: #d4edda;
-      color: #155724;
-      border-left-color: #28a745;
-    }
-
-    .sms-warning {
-      background: #fff3cd;
-      color: #856404;
-      border-left-color: #ffc107;
-    }
   </style>
 </head>
 <body>
@@ -546,13 +526,6 @@
                 <div class="small">Get instant alerts on your device</div>
               </div>
               <div><div class="switch on" data-key="push" role="switch" aria-checked="true" tabindex="0"><div class="knob"></div></div></div>
-            </div>
-            <div class="pref-item">
-              <div class="pref-left">
-                <div style="font-weight:700">SMS Notifications</div>
-                <div class="small">Receive important alerts via text message</div>
-              </div>
-              <div><div class="switch" data-key="sms" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
             </div>
             <div class="pref-item">
               <div class="pref-left">
@@ -643,97 +616,14 @@
   </div>
 </main>
 
-<!-- SMS Modal -->
-<div id="smsModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <i class="fa-solid fa-message"></i>
-      <h2>SMS Notifications</h2>
-    </div>
-    <div class="modal-body">
-      <p id="smsModalText">We'll send important updates to your phone:</p>
-      <div id="smsPhoneInfo" class="sms-phone-display"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-btn secondary" onclick="closeSmsModal()">Cancel</button>
-      <button class="modal-btn primary" id="smsConfirmBtn" onclick="confirmSmsNotification()">Enable SMS</button>
-    </div>
-  </div>
-</div>
-
 <script>
   // Switch toggles
   const switches = document.querySelectorAll('.switch');
   switches.forEach(s => {
     s.addEventListener('click', () => {
-      const key = s.dataset.key;
-      if (key === 'sms') {
-        handleSmsToggle(s);
-      } else {
-        toggleSwitch(s);
-      }
+      toggleSwitch(s);
     });
-    s.addEventListener('keydown', (ev) => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); const key = s.dataset.key; if (key === 'sms') { handleSmsToggle(s); } else { toggleSwitch(s); } } });
-  });
-
-  // SMS Notification Handler
-  function handleSmsToggle(smsSwitch) {
-    const isCurrentlyOn = smsSwitch.classList.contains('on');
-    
-    if (!isCurrentlyOn) {
-      // Turning SMS ON - show modal to confirm
-      const phone = document.getElementById('phone').value;
-      if (!phone || phone.trim() === '') {
-        alert('Please add a phone number to your profile before enabling SMS notifications.');
-        return;
-      }
-      
-      openSmsModal(phone);
-    } else {
-      // Turning SMS OFF - just disable it
-      toggleSwitch(smsSwitch);
-    }
-  }
-
-  function openSmsModal(phoneNumber) {
-    const modal = document.getElementById('smsModal');
-    const phoneInfo = document.getElementById('smsPhoneInfo');
-    const confirmBtn = document.getElementById('smsConfirmBtn');
-    
-    phoneInfo.innerHTML = `<strong>📱 ${phoneNumber}</strong>`;
-    phoneInfo.className = 'sms-phone-display sms-warning';
-    
-    confirmBtn.textContent = 'Enable SMS Notifications';
-    confirmBtn.onclick = () => confirmSmsNotification();
-    
-    modal.classList.add('show');
-  }
-
-  function closeSmsModal() {
-    document.getElementById('smsModal').classList.remove('show');
-  }
-
-  function confirmSmsNotification() {
-    const smsSwitch = document.querySelector('.switch[data-key="sms"]');
-    toggleSwitch(smsSwitch);
-    
-    // Show success message
-    const phoneInfo = document.getElementById('smsPhoneInfo');
-    const phone = document.getElementById('phone').value;
-    phoneInfo.innerHTML = `<strong>✓ SMS enabled for ${phone}</strong>`;
-    phoneInfo.className = 'sms-phone-display sms-success';
-    
-    setTimeout(() => {
-      closeSmsModal();
-    }, 1500);
-  }
-
-  // Close modal when clicking outside
-  window.addEventListener('click', (event) => {
-    const modal = document.getElementById('smsModal');
-    if (event.target === modal) {
-      closeSmsModal();
-    }
+    s.addEventListener('keydown', (ev) => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); toggleSwitch(s); } });
   });
 
   function toggleSwitch(el){
