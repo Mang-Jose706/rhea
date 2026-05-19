@@ -273,8 +273,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 6px;
+      padding: 14px 12px;
       border-radius: 10px;
+      border: 1px solid #f0f0f0;
     }
 
     .pref-left {
@@ -322,8 +323,9 @@
 
     .two-col {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1fr;
       gap: 20px;
+      max-width: 700px;
     }
 
     @media (max-width:1050px){
@@ -480,16 +482,6 @@
             <i class="fa-solid fa-gear"></i> Settings
         </a>
     </div>
-
-    <!-- PROFILE CARD -->
-    <div class="profile-card">
-        <img src="mark.jpg" alt="avatar" />
-        <div class="profile-info">
-            <p><strong>Jose Rizal</strong></p>
-            <p>joserizal@gmail.com</p>
-            <span class="student-tag">Student ID: 123456</span>
-        </div>
-    </div>
 </div>
 
 <main class="main">
@@ -578,6 +570,20 @@
             </div>
           </div>
         </section>
+
+        <section class="card" aria-labelledby="display-heading">
+          <h3 id="display-heading">Display</h3>
+          <div class="muted">Customize your display preferences</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+            <div class="pref-item">
+              <div class="pref-left">
+                <div style="font-weight:700"><i class="fa-solid fa-moon" style="margin-right:8px;color:#1e56d6"></i>Dark Mode</div>
+                <div class="small">Use dark theme for reduced eye strain</div>
+              </div>
+              <div><div class="switch" data-key="darkMode" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
+            </div>
+          </div>
+        </section>
       </div>
 
     </div>
@@ -601,6 +607,53 @@
     el.setAttribute('aria-checked', isOn ? 'true' : 'false');
     const key = el.dataset.key;
     try { localStorage.setItem('pref-' + key, isOn ? '1' : '0'); } catch(e) {}
+    
+    // Handle dark mode toggle
+    if (key === 'darkMode') {
+      applyDarkMode(isOn);
+    }
+  }
+
+  function applyDarkMode(isDark) {
+    if (isDark) {
+      document.body.style.background = '#1a1a1a';
+      document.body.style.color = '#ffffff';
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.background = '#2a2a2a';
+        card.style.color = '#ffffff';
+      });
+      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"]').forEach(input => {
+        input.style.background = '#333333';
+        input.style.color = '#ffffff';
+        input.style.borderColor = '#444444';
+      });
+      document.querySelectorAll('.pref-item').forEach(item => {
+        item.style.borderColor = '#444444';
+      });
+      document.querySelectorAll('.muted').forEach(el => {
+        el.style.color = '#aaaaaa';
+      });
+      document.querySelector('.sidebar').style.background = '#0d0d0d';
+    } else {
+      document.body.style.background = '#f5f8ff';
+      document.body.style.color = '#000000';
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.background = '#ffffff';
+        card.style.color = '#000000';
+      });
+      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"]').forEach(input => {
+        input.style.background = '#fbfdff';
+        input.style.color = '#000000';
+        input.style.borderColor = '#e6eefc';
+      });
+      document.querySelectorAll('.pref-item').forEach(item => {
+        item.style.borderColor = '#f0f0f0';
+      });
+      document.querySelectorAll('.muted').forEach(el => {
+        el.style.color = '#6b7280';
+      });
+      document.querySelector('.sidebar').style.background = '#0a1a33';
+    }
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -610,6 +663,11 @@
         const v = localStorage.getItem('pref-' + key);
         if (v === '0') { s.classList.remove('on'); s.setAttribute('aria-checked','false'); }
         if (v === '1') { s.classList.add('on'); s.setAttribute('aria-checked','true'); }
+        
+        // Apply dark mode on page load if it was previously enabled
+        if (key === 'darkMode' && v === '1') {
+          applyDarkMode(true);
+        }
       } catch(e){}
     });
   });
