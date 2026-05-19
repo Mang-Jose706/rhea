@@ -101,13 +101,6 @@
             </div>
 
             <div>
-                <label>Course / Subject</label>
-                <select id="course-subject" required disabled>
-                    <option value="">Select course</option>
-                </select>
-            </div>
-
-            <div>
                 <label>Year Level</label>
                 <select required>
                     <option value="">Select year level</option>
@@ -115,7 +108,6 @@
                     <option value="2nd_year">2nd year</option>
                     <option value="3rd_year">3rd year</option>
                     <option value="4th_year">4th year</option>
-                    <option value="5th_year">5th year</option>
                 </select>
             </div>
 
@@ -202,8 +194,8 @@ document.querySelectorAll('.upload-box1').forEach(box => {
         formGrid.querySelectorAll('input, select, textarea').forEach(el => {
             if(el.tagName.toLowerCase() === 'select') {
                 el.selectedIndex = 0; // ibalik sa unang option
-                // Kung may disabled select, i-disable din
-                if(el.id === 'sub-course' || el.id === 'course-subject') el.disabled = true;
+                // Kung may disabled select (like sub-course), i-disable din
+                if(el.id === 'sub-course') el.disabled = true;
             } else {
                 el.value = '';
             }
@@ -225,7 +217,6 @@ document.querySelectorAll('.upload-box1').forEach(box => {
 // Department → Program logic
 const categorySelect = document.getElementById("course-category");
 const subCourseSelect = document.getElementById("sub-course");
-const courseSubjectSelect = document.getElementById("course-subject");
 
 const courseMap = {
     cafnr: {
@@ -234,13 +225,7 @@ const courseMap = {
             "Bachelor of Science in Agriculture",
             "Bachelor of Science in Fisheries",
             "Bachelor of Science in Forestry"
-        ],
-        courses: {
-            "bs_agribusiness": ["Agribusiness Enterprise", "Agricultural Business Management", "Cooperative Development"],
-            "bs_agriculture": ["Agricultural Economics", "Animal Science", "Crop Protection"],
-            "bs_fisheries": ["Aquaculture", "Fisheries Management", "Marine Resources Management"],
-            "bs_forestry": ["Community Forestry", "Forest Management", "Timber Production Technology"]
-        }
+        ]
     },
     cac: {
         programs: [
@@ -252,17 +237,7 @@ const courseMap = {
             "Bachelor of Science in Community Development",
             "Bachelor of Science in Criminology",
             "Bachelor of Science in Development Communication"
-        ],
-        courses: {
-            "ba_english_language": ["English Composition", "English Literature", "Language Studies"],
-            "ba_literature_cultural": ["Cultural Analysis", "Literary Criticism", "Philippine Literature"],
-            "ba_political_science": ["International Relations", "Political Theory", "Public Policy"],
-            "ba_public_administration": ["Government Management", "Public Finance", "Public Service"],
-            "ba_sociology": ["Social Development", "Social Organization", "Sociological Research"],
-            "bs_community_development": ["Community Planning", "Community Programs", "Local Development"],
-            "bs_criminology": ["Criminal Justice", "Criminological Theory", "Investigation Methods"],
-            "bs_development_communication": ["Communication Strategy", "Development Projects", "Rural Communication"]
-        }
+        ]
     },
     cba: {
         programs: [
@@ -271,14 +246,7 @@ const courseMap = {
             "Bachelor of Science in Business Economics",
             "Bachelor of Science in Entrepreneurship",
             "Bachelor of Science in Hospitality Management"
-        ],
-        courses: {
-            "bs_accountancy": ["Auditing", "Financial Accounting", "Management Accounting", "Taxation"],
-            "bs_business_administration": ["Business Economics", "Human Resources Management", "Marketing Management"],
-            "bs_business_economics": ["Economic Analysis", "Market Economics", "Quantitative Economics"],
-            "bs_entrepreneurship": ["Business Development", "Entrepreneurial Management", "Venture Creation"],
-            "bs_hospitality_management": ["Food & Beverage Management", "Hotel Management", "Tourism Management"]
-        }
+        ]
     },
     coe: {
         programs: [
@@ -287,42 +255,23 @@ const courseMap = {
             "Bachelor of Science in Civil Engineering",
             "Bachelor of Science in Electrical Engineering",
             "Bachelor of Science in Mechanical Engineering"
-        ],
-        courses: {
-            "bachelor_engineering_technology": ["Automotive Technology", "Electrical Engineering Technology"],
-            "bs_agricultural_biosystems": ["Agricultural Machinery", "Biosystems Engineering", "Farm Structures"],
-            "bs_civil_engineering": ["Construction Engineering", "Hydraulics Engineering", "Structural Design"],
-            "bs_electrical_engineering": ["Electrical Machines", "Power Systems", "Telecommunications"],
-            "bs_mechanical_engineering": ["Heat Transfer", "Machine Design", "Thermodynamics"]
-        }
+        ]
     },
     col: {
-        programs: ["Bachelor of Laws"],
-        courses: {
-            "bachelor_laws": ["Administrative Law", "Civil Law", "Commercial Law", "Constitutional Law", "Criminal Law"]
-        }
+        programs: ["Bachelor of Laws"]
     },
     coed: {
         programs: [
             "Bachelor of Elementary Education",
             "Bachelor of Elementary Technology and Livelihood Education",
             "Bachelor of Secondary Education"
-        ],
-        courses: {
-            "bachelor_elementary_education": ["Early Childhood Education", "Elementary Teaching", "Literacy Development"],
-            "bachelor_elementary_tle": ["Agri-Fishery Arts", "Home Economics", "Industrial Arts"],
-            "bachelor_secondary_education": ["English", "Filipino", "Mathematics", "Science", "Social Studies", "Values Education"]
-        }
+        ]
     },
     cnahs: {
         programs: [
             "Bachelor of Science in Nursing",
             "Bachelor of Science in Radiologic Technology"
-        ],
-        courses: {
-            "bs_nursing": ["Clinical Nursing Practice", "Community Health Nursing", "Maternal and Child Health"],
-            "bs_radiologic_technology": ["Diagnostic Radiography", "Image Processing", "Radiotherapy Technology"]
-        }
+        ]
     },
     cos: {
         programs: [
@@ -332,25 +281,13 @@ const courseMap = {
             "Bachelor of Science in Information Technology",
             "Bachelor of Science in Marine Biology",
             "Bachelor of Science in Mathematics"
-        ],
-        courses: {
-            "bs_biology": ["Botany", "Ecology", "Genetics", "Human Biology", "Microbiology", "Zoology"],
-            "bs_chemistry": ["Analytical Chemistry", "Biochemistry", "Inorganic Chemistry", "Organic Chemistry", "Physical Chemistry"],
-            "bs_environmental_science": ["Environmental Management", "Environmental Monitoring", "Pollution Control", "Waste Management"],
-            "bs_information_technology": ["Database Management", "Networking", "Software Development", "Web Development"],
-            "bs_marine_biology": ["Coastal Management", "Marine Ecology", "Marine Resources", "Oceanography"],
-            "bs_mathematics": ["Abstract Algebra", "Analysis", "Applied Mathematics", "Discrete Mathematics", "Statistics"]
-        }
+        ]
     },
     cvm: {
         programs: [
             "Bachelor of Science in Meat Technology",
             "Doctor of Veterinary Medicine"
-        ],
-        courses: {
-            "bs_meat_technology": ["Meat Inspection", "Meat Processing", "Meat Products Technology"],
-            "doctor_veterinary_medicine": ["Animal Surgery", "Clinical Veterinary Medicine", "Veterinary Pathology", "Veterinary Public Health"]
-        }
+        ]
     }
 };
 
@@ -358,9 +295,7 @@ categorySelect.addEventListener("change", function () {
     const selected = this.value;
 
     subCourseSelect.innerHTML = '<option value="">Select program</option>';
-    courseSubjectSelect.innerHTML = '<option value="">Select course</option>';
     subCourseSelect.disabled = true;
-    courseSubjectSelect.disabled = true;
 
     if (courseMap[selected]) {
         courseMap[selected].programs.forEach((program, index) => {
@@ -370,24 +305,6 @@ categorySelect.addEventListener("change", function () {
             subCourseSelect.appendChild(option);
         });
         subCourseSelect.disabled = false;
-    }
-});
-
-subCourseSelect.addEventListener("change", function () {
-    const dept = categorySelect.value;
-    const selected = this.value;
-
-    courseSubjectSelect.innerHTML = '<option value="">Select course</option>';
-    courseSubjectSelect.disabled = true;
-
-    if (dept && courseMap[dept] && courseMap[dept].courses[selected]) {
-        courseMap[dept].courses[selected].forEach(course => {
-            const option = document.createElement("option");
-            option.value = course.toLowerCase().replace(/\s+/g, "_");
-            option.textContent = course;
-            courseSubjectSelect.appendChild(option);
-        });
-        courseSubjectSelect.disabled = false;
     }
 });
 
