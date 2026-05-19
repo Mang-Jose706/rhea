@@ -1,4 +1,27 @@
 /* ================= RESET / GLOBAL ================= */
+:root {
+    --bg: #f5f8ff;
+    --card-bg: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #555;
+    --text-muted: #6b7280;
+    --input-bg: #fbfdff;
+    --input-border: #e6eefc;
+    --sidebar-bg: #0a1a33;
+    --accent: #1e56d6;
+}
+
+body.dark-mode {
+    --bg: #1a1a1a;
+    --card-bg: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #d0d0d0;
+    --text-muted: #aaaaaa;
+    --input-bg: #333333;
+    --input-border: #444444;
+    --sidebar-bg: #0d0d0d;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,17 +30,18 @@
 }
 
 body {
-    background: #f5f8ff;
+    background: var(--bg);
     display: flex;
     height: 100vh;
     overflow: hidden;
+    color: var(--text-primary);
 }
 
 /* ================= SIDEBAR (SUPPORTS BOTH DESIGNS) ================= */
 .sidebar {
     width: 220px;
     height: 100vh;
-    background: #0a1a33;
+    background: var(--sidebar-bg);
     color: white;
     padding: 20px;
     display: flex;
@@ -125,6 +149,8 @@ body {
     flex-grow: 1;
     padding: 30px;
     overflow-y: auto;
+    background: var(--bg);
+    color: var(--text-primary);
 }
 
 /* ================= HEADER ================= */
@@ -178,7 +204,9 @@ body {
 .search-row select {
     padding: 12px 15px;
     border-radius: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
     font-size: 14px;
 }
 
@@ -201,11 +229,12 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 15px;
     flex: 1;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: var(--text-primary);
 }
 
 .stat-card h3 {
@@ -221,28 +250,31 @@ body {
 
 /* ================= TABLE ================= */
 .table-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    color: var(--text-primary);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-primary);
 }
 
 th, td {
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--input-border);
     text-align: left;
+    color: var(--text-primary);
 }
 
 th {
-    background: #f0f4ff;
-    color: #555;
+    background: var(--input-bg);
+    color: var(--text-secondary);
 }
 
 /* ================= STATUS ================= */
@@ -447,7 +479,9 @@ a {
     width: 100%;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
     font-size: 14px;
 }
 

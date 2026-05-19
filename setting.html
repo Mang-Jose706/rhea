@@ -14,11 +14,25 @@
       --card-bg: #ffffff;
       --accent: #1e56d6;
       --bg: #f5f7fb;
+      --text-primary: #000000;
+      --text-secondary: #6b7280;
+      --input-bg: #fbfdff;
+      --input-border: #e6eefc;
       --radius: 14px;
       --shadow: 0 6px 18px rgba(11,18,35,0.06);
       --max-main-width: 920px;
       --gap: 20px;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial;
+    }
+
+    body.dark-mode {
+      --card-bg: #2a2a2a;
+      --bg: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: #aaaaaa;
+      --input-bg: #333333;
+      --input-border: #444444;
+      --muted: #aaaaaa;
     }
 
     * {
@@ -29,10 +43,11 @@
     }
 
     body {
-      background: #f5f8ff;
+      background: var(--bg);
       display: flex;
       height: 100vh;
       overflow: hidden;
+      color: var(--text-primary);
     }
 
     /* ================= SIDEBAR ================= */
@@ -130,6 +145,7 @@
       overflow-y: auto;
       background: var(--bg);
       position: relative;
+      color: var(--text-primary);
     }
 
     .header-row {
@@ -245,15 +261,16 @@
       display: block;
       font-size: 13px;
       margin-bottom: 6px;
-      color: #374151;
+      color: var(--text-primary);
     }
 
     input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"] {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
-      border: 1px solid #e6eefc;
-      background: #fbfdff;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
       box-sizing: border-box;
       font-size: 14px;
     }
@@ -275,7 +292,7 @@
       justify-content: space-between;
       padding: 14px 12px;
       border-radius: 10px;
-      border: 1px solid #f0f0f0;
+      border: 1px solid var(--input-border);
     }
 
     .pref-left {
@@ -325,7 +342,6 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
-      max-width: 700px;
     }
 
     @media (max-width:1050px){
@@ -610,49 +626,11 @@
     
     // Handle dark mode toggle
     if (key === 'darkMode') {
-      applyDarkMode(isOn);
-    }
-  }
-
-  function applyDarkMode(isDark) {
-    if (isDark) {
-      document.body.style.background = '#1a1a1a';
-      document.body.style.color = '#ffffff';
-      document.querySelectorAll('.card').forEach(card => {
-        card.style.background = '#2a2a2a';
-        card.style.color = '#ffffff';
-      });
-      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"]').forEach(input => {
-        input.style.background = '#333333';
-        input.style.color = '#ffffff';
-        input.style.borderColor = '#444444';
-      });
-      document.querySelectorAll('.pref-item').forEach(item => {
-        item.style.borderColor = '#444444';
-      });
-      document.querySelectorAll('.muted').forEach(el => {
-        el.style.color = '#aaaaaa';
-      });
-      document.querySelector('.sidebar').style.background = '#0d0d0d';
-    } else {
-      document.body.style.background = '#f5f8ff';
-      document.body.style.color = '#000000';
-      document.querySelectorAll('.card').forEach(card => {
-        card.style.background = '#ffffff';
-        card.style.color = '#000000';
-      });
-      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input[type="password"]').forEach(input => {
-        input.style.background = '#fbfdff';
-        input.style.color = '#000000';
-        input.style.borderColor = '#e6eefc';
-      });
-      document.querySelectorAll('.pref-item').forEach(item => {
-        item.style.borderColor = '#f0f0f0';
-      });
-      document.querySelectorAll('.muted').forEach(el => {
-        el.style.color = '#6b7280';
-      });
-      document.querySelector('.sidebar').style.background = '#0a1a33';
+      if (isOn) {
+        document.body.classList.add('dark-mode');
+      } else {
+        document.body.classList.remove('dark-mode');
+      }
     }
   }
 
@@ -666,7 +644,7 @@
         
         // Apply dark mode on page load if it was previously enabled
         if (key === 'darkMode' && v === '1') {
-          applyDarkMode(true);
+          document.body.classList.add('dark-mode');
         }
       } catch(e){}
     });
