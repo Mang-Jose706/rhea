@@ -85,7 +85,9 @@
                     <option value="cafnr">College of Agriculture, Fisheries and Natural Resources</option>
                     <option value="cac">College of Arts and Communication</option>
                     <option value="cba">College of Business Administration</option>
+                    <option value="coed">College of Education</option>
                     <option value="coe">College of Engineering</option>
+                    <option value="col">College of Law</option>
                     <option value="cnahs">College of Nursing and Allied Health Sciences</option>
                     <option value="cos">College of Science</option>
                     <option value="cvm">College of Veterinary Medicine</option>
@@ -227,69 +229,127 @@ const courseSubjectSelect = document.getElementById("course-subject");
 
 const courseMap = {
     cafnr: {
-        programs: ["BS Agriculture", "BS Agricultural Engineering", "BS Fisheries", "BS Forestry", "BS Environmental Science"],
+        programs: [
+            "Bachelor of Science in Agribusiness",
+            "Bachelor of Science in Agriculture",
+            "Bachelor of Science in Fisheries",
+            "Bachelor of Science in Forestry"
+        ],
         courses: {
-            "bs_agriculture": ["Crop Science", "Soil Science", "Agronomy", "Agricultural Economics", "Plant Breeding", "Pest Management"],
-            "bs_agricultural_engineering": ["Farm Machinery", "Irrigation Engineering", "Post-Harvest Technology", "Agricultural Design", "Soil & Water Conservation"],
-            "bs_fisheries": ["Aquaculture", "Fish Production", "Fisheries Management", "Marine Biology", "Aquatic Ecology"],
-            "bs_forestry": ["Forest Management", "Silviculture", "Forest Products", "Environmental Conservation", "Forest Ecology"],
-            "bs_environmental_science": ["Environmental Management", "Ecology", "Pollution Control", "Environmental Assessment", "Conservation Biology"]
+            "bs_agribusiness": ["Agribusiness Enterprise", "Agricultural Business Management", "Cooperative Development"],
+            "bs_agriculture": ["Agricultural Economics", "Animal Science", "Crop Protection"],
+            "bs_fisheries": ["Aquaculture", "Fisheries Management", "Marine Resources Management"],
+            "bs_forestry": ["Community Forestry", "Forest Management", "Timber Production Technology"]
         }
     },
     cac: {
-        programs: ["BS Communication", "BA English", "BA Filipino", "BA History", "BA Philosophy"],
+        programs: [
+            "Bachelor of Arts in English Language Studies",
+            "Bachelor of Arts in Literature and Cultural Studies",
+            "Bachelor of Arts major in Political Science",
+            "Bachelor of Arts major in Public Administration",
+            "Bachelor of Arts major in Sociology",
+            "Bachelor of Science in Community Development",
+            "Bachelor of Science in Criminology",
+            "Bachelor of Science in Development Communication"
+        ],
         courses: {
-            "bs_communication": ["Mass Communication", "Journalism", "Broadcast Communication", "Public Relations", "Advertising"],
-            "ba_english": ["English Literature", "American Literature", "British Literature", "Creative Writing", "Linguistics"],
-            "ba_filipino": ["Filipino Literature", "Philippine Language", "Tagalog Communication", "Creative Writing in Filipino", "Language & Culture"],
-            "ba_history": ["Philippine History", "Asian History", "World History", "Historical Research", "Contemporary History"],
-            "ba_philosophy": ["Logic", "Metaphysics", "Ethics", "Epistemology", "Political Philosophy"]
+            "ba_english_language": ["English Composition", "English Literature", "Language Studies"],
+            "ba_literature_cultural": ["Cultural Analysis", "Literary Criticism", "Philippine Literature"],
+            "ba_political_science": ["International Relations", "Political Theory", "Public Policy"],
+            "ba_public_administration": ["Government Management", "Public Finance", "Public Service"],
+            "ba_sociology": ["Social Development", "Social Organization", "Sociological Research"],
+            "bs_community_development": ["Community Planning", "Community Programs", "Local Development"],
+            "bs_criminology": ["Criminal Justice", "Criminological Theory", "Investigation Methods"],
+            "bs_development_communication": ["Communication Strategy", "Development Projects", "Rural Communication"]
         }
     },
     cba: {
-        programs: ["BS Business Administration", "BS Accountancy", "BS Economics", "BS Entrepreneurship"],
+        programs: [
+            "Bachelor of Science in Accountancy",
+            "Bachelor of Science in Business Administration",
+            "Bachelor of Science in Business Economics",
+            "Bachelor of Science in Entrepreneurship",
+            "Bachelor of Science in Hospitality Management"
+        ],
         courses: {
-            "bs_business_administration": ["Management", "Marketing", "Finance", "Operations Management", "Business Strategy", "Organizational Behavior"],
-            "bs_accountancy": ["Financial Accounting", "Management Accounting", "Auditing", "Taxation", "Corporate Finance"],
-            "bs_economics": ["Microeconomics", "Macroeconomics", "Econometrics", "Development Economics", "International Trade"],
-            "bs_entrepreneurship": ["Business Planning", "Startup Management", "Financial Management", "Marketing for Entrepreneurs", "Innovation & Technology"]
+            "bs_accountancy": ["Auditing", "Financial Accounting", "Management Accounting", "Taxation"],
+            "bs_business_administration": ["Business Economics", "Human Resources Management", "Marketing Management"],
+            "bs_business_economics": ["Economic Analysis", "Market Economics", "Quantitative Economics"],
+            "bs_entrepreneurship": ["Business Development", "Entrepreneurial Management", "Venture Creation"],
+            "bs_hospitality_management": ["Food & Beverage Management", "Hotel Management", "Tourism Management"]
         }
     },
     coe: {
-        programs: ["BS Civil Engineering", "BS Electrical Engineering", "BS Mechanical Engineering", "BS Chemical Engineering", "BS Electronics Engineering"],
+        programs: [
+            "Bachelor of Engineering Technology",
+            "Bachelor of Science in Agricultural and Biosystems Engineering",
+            "Bachelor of Science in Civil Engineering",
+            "Bachelor of Science in Electrical Engineering",
+            "Bachelor of Science in Mechanical Engineering"
+        ],
         courses: {
-            "bs_civil_engineering": ["Structural Design", "Fluid Mechanics", "Geotechnical Engineering", "Transportation Engineering", "Water Resources Engineering"],
-            "bs_electrical_engineering": ["Circuit Analysis", "Power Systems", "Electromagnetics", "Electronics", "Control Systems"],
-            "bs_mechanical_engineering": ["Thermodynamics", "Heat Transfer", "Fluid Mechanics", "Machine Design", "Control Systems"],
-            "bs_chemical_engineering": ["Unit Operations", "Process Design", "Transport Phenomena", "Chemical Kinetics", "Process Control"],
-            "bs_electronics_engineering": ["Digital Electronics", "Analog Electronics", "Communications", "Microprocessors", "Signal Processing"]
+            "bachelor_engineering_technology": ["Automotive Technology", "Electrical Engineering Technology"],
+            "bs_agricultural_biosystems": ["Agricultural Machinery", "Biosystems Engineering", "Farm Structures"],
+            "bs_civil_engineering": ["Construction Engineering", "Hydraulics Engineering", "Structural Design"],
+            "bs_electrical_engineering": ["Electrical Machines", "Power Systems", "Telecommunications"],
+            "bs_mechanical_engineering": ["Heat Transfer", "Machine Design", "Thermodynamics"]
+        }
+    },
+    col: {
+        programs: ["Bachelor of Laws"],
+        courses: {
+            "bachelor_laws": ["Administrative Law", "Civil Law", "Commercial Law", "Constitutional Law", "Criminal Law"]
+        }
+    },
+    coed: {
+        programs: [
+            "Bachelor of Elementary Education",
+            "Bachelor of Elementary Technology and Livelihood Education",
+            "Bachelor of Secondary Education"
+        ],
+        courses: {
+            "bachelor_elementary_education": ["Early Childhood Education", "Elementary Teaching", "Literacy Development"],
+            "bachelor_elementary_tle": ["Agri-Fishery Arts", "Home Economics", "Industrial Arts"],
+            "bachelor_secondary_education": ["English", "Filipino", "Mathematics", "Science", "Social Studies", "Values Education"]
         }
     },
     cnahs: {
-        programs: ["BS Nursing", "BS Physical Therapy", "BS Occupational Therapy", "BS Medical Technology"],
+        programs: [
+            "Bachelor of Science in Nursing",
+            "Bachelor of Science in Radiologic Technology"
+        ],
         courses: {
-            "bs_nursing": ["Medical-Surgical Nursing", "Maternal Health Nursing", "Community Health Nursing", "Psychiatric Nursing", "Pediatric Nursing", "Critical Care Nursing"],
-            "bs_physical_therapy": ["Anatomy", "Physiology", "Pathology", "Therapeutic Exercise", "Clinical Practice", "Rehabilitation"],
-            "bs_occupational_therapy": ["Occupational Science", "Therapeutic Activities", "Assistive Technology", "Community Practice", "Mental Health Occupational Therapy"],
-            "bs_medical_technology": ["Clinical Laboratory Analysis", "Hematology", "Microbiology", "Chemistry", "Immunology", "Blood Banking"]
+            "bs_nursing": ["Clinical Nursing Practice", "Community Health Nursing", "Maternal and Child Health"],
+            "bs_radiologic_technology": ["Diagnostic Radiography", "Image Processing", "Radiotherapy Technology"]
         }
     },
     cos: {
-        programs: ["BS Biology", "BS Chemistry", "BS Physics", "BS Mathematics", "BS Applied Physics"],
+        programs: [
+            "Bachelor of Science in Biology",
+            "Bachelor of Science in Chemistry",
+            "Bachelor of Science in Environmental Science",
+            "Bachelor of Science in Information Technology",
+            "Bachelor of Science in Marine Biology",
+            "Bachelor of Science in Mathematics"
+        ],
         courses: {
-            "bs_biology": ["General Biology", "Anatomy", "Physiology", "Genetics", "Ecology", "Microbiology", "Botany"],
-            "bs_chemistry": ["Inorganic Chemistry", "Organic Chemistry", "Physical Chemistry", "Analytical Chemistry", "Biochemistry"],
-            "bs_physics": ["General Physics", "Classical Mechanics", "Thermodynamics", "Electromagnetism", "Modern Physics", "Quantum Mechanics"],
-            "bs_mathematics": ["Calculus", "Linear Algebra", "Differential Equations", "Abstract Algebra", "Real Analysis", "Numerical Methods"],
-            "bs_applied_physics": ["Applied Electronics", "Physics Applications", "Materials Science", "Energy Systems", "Computational Physics"]
+            "bs_biology": ["Botany", "Ecology", "Genetics", "Human Biology", "Microbiology", "Zoology"],
+            "bs_chemistry": ["Analytical Chemistry", "Biochemistry", "Inorganic Chemistry", "Organic Chemistry", "Physical Chemistry"],
+            "bs_environmental_science": ["Environmental Management", "Environmental Monitoring", "Pollution Control", "Waste Management"],
+            "bs_information_technology": ["Database Management", "Networking", "Software Development", "Web Development"],
+            "bs_marine_biology": ["Coastal Management", "Marine Ecology", "Marine Resources", "Oceanography"],
+            "bs_mathematics": ["Abstract Algebra", "Analysis", "Applied Mathematics", "Discrete Mathematics", "Statistics"]
         }
     },
     cvm: {
-        programs: ["Doctor of Veterinary Medicine", "BS Animal Science", "BS Veterinary Technology"],
+        programs: [
+            "Bachelor of Science in Meat Technology",
+            "Doctor of Veterinary Medicine"
+        ],
         courses: {
-            "doctor_veterinary_medicine": ["Anatomy & Physiology", "Pathology", "Pharmacology", "Surgery", "Medicine", "Public Health", "Clinical Practice"],
-            "bs_animal_science": ["Animal Breeding", "Animal Nutrition", "Livestock Production", "Veterinary Science Basics", "Animal Health & Welfare"],
-            "bs_veterinary_technology": ["Laboratory Techniques", "Radiography", "Surgical Assistance", "Animal Husbandry", "Veterinary Pathology"]
+            "bs_meat_technology": ["Meat Inspection", "Meat Processing", "Meat Products Technology"],
+            "doctor_veterinary_medicine": ["Animal Surgery", "Clinical Veterinary Medicine", "Veterinary Pathology", "Veterinary Public Health"]
         }
     }
 };
