@@ -185,6 +185,31 @@
 
         </div>
 
+        <!-- COMPACT REQUEST TABLE -->
+        <div class="recent-section" id="requestsTableSection" style="background:#fff; border-radius:12px; padding:24px; box-shadow:0 10px 25px rgba(0,0,0,0.05); margin-bottom:25px;">
+            <h2 style="margin-top:0; margin-bottom:20px; font-size:18px; font-weight:700;">Recent Requests</h2>
+            
+            <div id="requestsTableContainer" style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="border-bottom:2px solid #e5e7eb; background:#f9fafb;">
+                            <th style="padding:12px; text-align:left; font-weight:600; font-size:13px; color:#374151;">Student Name</th>
+                            <th style="padding:12px; text-align:left; font-weight:600; font-size:13px; color:#374151;">ID Number</th>
+                            <th style="padding:12px; text-align:left; font-weight:600; font-size:13px; color:#374151;">Status</th>
+                            <th style="padding:12px; text-align:left; font-weight:600; font-size:13px; color:#374151;">Last Updated</th>
+                            <th style="padding:12px; text-align:center; font-weight:600; font-size:13px; color:#374151;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <!-- Rows populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div id="noRequestsMessage" style="text-align:center; padding:40px; color:#6b7280;">
+                    <p style="margin:0; font-size:14px;">No requests found</p>
+                </div>
+            </div>
+        </div>
+
         <!-- ADMIN TABLE -->
         <div class="recent-section hidden" id="studentRequestsTable"></div>
 
@@ -310,6 +335,134 @@ function updateStatusCounts() {
     document.getElementById('countRejected').textContent = counts.rejected;
 }
 
+function getStatusBadgeHTML(status) {
+    const statusLower = (status || '').toLowerCase();
+    let bgColor, textColor, icon;
+
+    if (statusLower === 'submitted' || statusLower === 'pending') {
+        bgColor = '#e0f2fe';
+        textColor = '#0c4a6e';
+        icon = '📋';
+    } else if (statusLower === 'processing') {
+        bgColor = '#fef3c7';
+        textColor = '#78350f';
+        icon = '⏳';
+    } else if (statusLower === 'completed') {
+        bgColor = '#d1fae5';
+        textColor = '#065f46';
+        icon = '✓';
+    } else if (statusLower === 'rejected') {
+        bgColor = '#fee2e2';
+        textColor = '#7f1d1d';
+        icon = '✕';
+    } else {
+        bgColor = '#e5e7eb';
+        textColor = '#374151';
+        icon = '?';
+    }
+
+    return `<span style="background:${bgColor}; color:${textColor}; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; display:inline-block;">${icon} ${status}</span>`;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+function populateRequestsTable() {
+    const requests = getVisibleRequests();
+    const tbody = document.getElementById('requestsTableBody');
+    const noRequestsMsg = document.getElementById('noRequestsMessage');
+
+    tbody.innerHTML = '';
+
+    if (requests.length === 0) {
+        noRequestsMsg.style.display = 'block';
+        return;
+    }
+
+    noRequestsMsg.style.display = 'none';
+
+    requests.slice(0, 10).forEach(req => {
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid #e5e7eb';
+        row.style.transition = 'background 0.2s';
+        row.onmouseover = () => row.style.background = '#f9fafb';
+        row.onmouseout = () => row.style.background = 'transparent';
+
+        const lastUpdated = req.submittedAt || req.date || new Date().toLocaleDateString();
+        const studentName = req.studentName || 'Unknown';
+        const studentId = req.studentId || 'N/A';
+
+        row.innerHTML = `
+            <td style="padding:12px; font-size:13px; color:#111827;">${studentName}</td>
+            <td style="padding:12px; font-size:13px; color:#6b7280; font-family:monospace;">${studentId}</td>
+            <td style="padding:12px; font-size:13px;">${getStatusBadgeHTML(req.status)}</td>
+            <td style="padding:12px; font-size:13px; color:#6b7280;">${formatDate(lastUpdated)}</td>
+            <td style="padding:12px; text-align:center;">
+                <button onclick="viewRequest('${req.id}')" style="background:none; border:none; color:#3b82f6; cursor:pointer; font-size:12px; font-weight:600; padding:6px 12px; border-radius:4px; transition:background 0.2s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">View</button>
+                <button onclick="updateRequest('${req.id}')" style="background:none; border:none; color:#10b981; cursor:pointer; font-size:12px; font-weight:600; padding:6px 12px; border-radius:4px; transition:background 0.2s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">Update</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function viewRequest(requestId) {
+    const requests = getAllRequests();
+    const request = requests.find(r => r.id === requestId);
+    
+    if (!request) {
+        alert('Request not found');
+        return;
+    }
+
+    // Verify access
+    if (!isAdmin() && request.studentId !== getCurrentStudentId()) {
+        alert('Access denied: This request belongs to another student');
+        return;
+    }
+
+    // Map status to page
+    const statusMap = {
+        'pending': 'pending.html',
+        'submitted': 'pending.html',
+        'processing': 'processing.html',
+        'completed': 'req completed.html',
+        'rejected': 'req rejected.html'
+    };
+
+    const pageName = statusMap[(request.status || 'pending').toLowerCase()] || 'pending.html';
+    localStorage.setItem('currentRequestId', requestId);
+    window.location.href = pageName;
+}
+
+function updateRequest(requestId) {
+    const requests = getAllRequests();
+    const request = requests.find(r => r.id === requestId);
+    
+    if (!request) {
+        alert('Request not found');
+        return;
+    }
+
+    // Verify access - only admins can update
+    if (!isAdmin()) {
+        alert('Access denied: Only admins can update requests');
+        return;
+    }
+
+    // For admin update, navigate to update page with request ID
+    localStorage.setItem('currentRequestId', requestId);
+    // This would navigate to an admin request management page (can be created later)
+    alert('Admin update functionality - navigate to request details');
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
     if (darkModeEnabled) document.body.classList.add('dark-mode');
@@ -343,6 +496,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Populate status counts
     updateStatusCounts();
+
+    // Populate requests table
+    populateRequestsTable();
 });
 </script>
 
