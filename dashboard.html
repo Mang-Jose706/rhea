@@ -5,65 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IDEease Portal Dashboard</title>
 
-    <!-- MAIN CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- FONT AWESOME ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body>
     <div class="sidebar">
         <div class="logo">
             <i class="fa-solid fa-graduation-cap"></i>
             <h2>IDEease Portal</h2>
-            <p>Student Services</p>
+            <p id="roleLabel">Student Services</p>
         </div>
+
         <div class="menu">
             <div class="menu-item active">
                 <i class="fa-solid fa-house"></i>
                 Dashboard
             </div>
 
-            <a href="history.html">
+            <a href="history.html" id="historyLink">
                 <div class="menu-item">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     History
                 </div>
             </a>
 
-            <a href="help center.html">
+            <a href="help center.html" id="helpLink">
                 <div class="menu-item">
                     <i class="fa-solid fa-headset"></i>
                     Help & Support
                 </div>
             </a>
 
-            <a href="profile.html">
+            <a href="profile.html" id="profileLink">
                 <div class="menu-item">
                     <i class="fa-solid fa-user"></i>
                     Profile
                 </div>
             </a>
 
-            <a href="setting.html">
+            <a href="setting.html" id="settingLink">
                 <div class="menu-item">
                     <i class="fa-solid fa-gear"></i>
                     Settings
                 </div>
             </a>
-        </div>
 
+            <div class="menu-item logout-item" onclick="logout()" id="logoutBtn" style="display: none;">
+                <i class="fa-solid fa-sign-out"></i>
+                Logout
+            </div>
+        </div>
     </div>
+
     <div class="main">
         <div class="header">
             <div>
                 <h1>Dashboard</h1>
-                <p>Welcome back, Tafalla! Manage your school ID requests and student services.</p>
+                <p id="welcomeMsg">
+                    Welcome back, Tafalla! Manage your school ID requests and student services.
+                </p>
             </div>
 
             <div class="header-right">
-                <a href="notif.html"><i class="fa-regular fa-bell"></i></a>
-                <a href="submit a req .html">
+                <a href="notif.html" id="notifBell">
+                    <i class="fa-regular fa-bell"></i>
+                </a>
+
+                <a href="submit a req .html" id="newRequestLink">
                     <button class="new-request-btn">
                         <i class="fa-solid fa-plus"></i> New Request
                     </button>
@@ -71,85 +81,270 @@
             </div>
         </div>
 
-        <div class="stats-section">
-            <div class="stat-card">
-                <i class="fa-solid fa-spinner" style="color: blue;"></i>
-                <h3>Active Requests: 3</h3>
+        <!-- PROCESSING STATUS -->
+        <div class="stats-section" id="studentStats" style="background: transparent; padding: 0;">
+
+            <!-- STATUS SUMMARY BOXES -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:25px;">
+                <div style="background:#e0f2fe; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left:5px solid #0284c7;">
+                    <div style="color:#0284c7; font-size:28px; font-weight:700; margin-bottom:8px;" id="countReceived">0</div>
+                    <p style="color:#0c4a6e; font-size:14px; font-weight:600; margin:0;">Received</p>
+                    <small style="color:#075985; font-size:12px;">Pending</small>
+                </div>
+
+                <div style="background:#fef3c7; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left:5px solid #f59e0b;">
+                    <div style="color:#f59e0b; font-size:28px; font-weight:700; margin-bottom:8px;" id="countProcessing">0</div>
+                    <p style="color:#78350f; font-size:14px; font-weight:600; margin:0;">In Process</p>
+                    <small style="color:#92400e; font-size:12px;">Processing</small>
+                </div>
+
+                <div style="background:#d1fae5; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left:5px solid #10b981;">
+                    <div style="color:#10b981; font-size:28px; font-weight:700; margin-bottom:8px;" id="countCompleted">0</div>
+                    <p style="color:#065f46; font-size:14px; font-weight:600; margin:0;">Completed</p>
+                    <small style="color:#047857; font-size:12px;">Approved</small>
+                </div>
+
+                <div style="background:#fee2e2; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left:5px solid #ef4444;">
+                    <div style="color:#ef4444; font-size:28px; font-weight:700; margin-bottom:8px;" id="countRejected">0</div>
+                    <p style="color:#7f1d1d; font-size:14px; font-weight:600; margin:0;">Rejected</p>
+                    <small style="color:#991b1b; font-size:12px;">Declined</small>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <i class="fa-solid fa-circle-check" style="color: rgb(59, 197, 59);"></i>
-                <h3>Completed: 12</h3>
-            </div>
+            <section style="background:#fff; border-radius:12px; padding:40px 24px; box-shadow:0 10px 25px rgba(0,0,0,0.05); margin-bottom:25px;">
+                <h3 style="text-align:center; margin-bottom:40px; font-weight:700; font-size:20px;">
+                    Processing Status
+                </h3>
 
-            <div class="stat-card">
-                <i class="fa-solid fa-hourglass-half" style="color: orange;"></i>
-                <h3>Pending Review: 1</h3>
-            </div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:40px;">
 
-            <div class="stat-card">
-                <i class="fa-solid fa-list"></i>
-                <h3>Total Requests: 16</h3>
-            </div>
+                    <div style="text-align:center;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; border-radius:50%; background:#e5e7eb; margin-bottom:12px; font-size:28px;">
+                            ✓
+                        </span>
+                        <p style="font-weight:600; font-size:15px;">Request Received</p>
+                        <small style="color:#6b7280; display:block; margin-top:4px;">Pending</small>
+                    </div>
+
+                    <div style="flex:1; height:4px; background:#e5e7eb; max-width:80px;"></div>
+
+                    <div style="text-align:center;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; border-radius:50%; background:#e5e7eb; margin-bottom:12px; font-size:28px;">
+                            ⏳
+                        </span>
+                        <p style="font-weight:600; font-size:15px;">Under Verification</p>
+                        <small style="color:#6b7280; display:block; margin-top:4px;">Pending</small>
+                    </div>
+
+                    <div style="flex:1; height:4px; background:#e5e7eb; max-width:80px;"></div>
+
+                    <div style="text-align:center;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; border-radius:50%; background:#e5e7eb; margin-bottom:12px; font-size:28px;">
+                            ⚙️
+                        </span>
+                        <p style="font-weight:600; font-size:15px;">In Production</p>
+                        <small style="color:#6b7280; display:block; margin-top:4px;">Pending</small>
+                    </div>
+
+                    <div style="flex:1; height:4px; background:#e5e7eb; max-width:80px;"></div>
+
+                    <div style="text-align:center;">
+                        <span style="display:inline-flex; align-items:center; justify-content:center; width:60px; height:60px; border-radius:50%; background:#e5e7eb; margin-bottom:12px; font-size:28px;">
+                            🏁
+                        </span>
+                        <p style="font-weight:600; font-size:15px;">Ready for Release</p>
+                        <small style="color:#6b7280; display:block; margin-top:4px;">Pending</small>
+                    </div>
+
+                </div>
+            </section>
+
+            <section style="background:linear-gradient(135deg,#e0e7ff 0%,#f0e7ff 100%); border-radius:12px; padding:32px 24px; margin-bottom:25px;">
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+
+                    <div style="text-align:center;">
+                        <div style="font-size:32px; font-weight:700; color:#1e3a8a;">1-3</div>
+                        <p style="color:#4c51bf; font-size:14px;">Working Days</p>
+                        <small style="color:#6366f1;">Typical processing time</small>
+                    </div>
+
+                    <div style="text-align:center;">
+                        <div style="font-size:32px; font-weight:700; color:#1e3a8a;">24/7</div>
+                        <p style="color:#4c51bf; font-size:14px;">Support Available</p>
+                        <small style="color:#6366f1;">We're here to help anytime</small>
+                    </div>
+
+                    <div style="text-align:center;">
+                        <div style="font-size:32px; font-weight:700; color:#1e3a8a;">100%</div>
+                        <p style="color:#4c51bf; font-size:14px;">Secure Process</p>
+                        <small style="color:#6366f1;">Your data is protected</small>
+                    </div>
+
+                </div>
+            </section>
+
         </div>
 
-        <div class="recent-section">
-            <h2>Recent Requests</h2>
+        <!-- ADMIN TABLE -->
+        <div class="recent-section hidden" id="studentRequestsTable"></div>
+
+        <div class="recent-section hidden" id="adminRequestsTable">
+            <h2>All Student Requests</h2>
+
             <table>
                 <tr>
                     <th>Request ID</th>
+                    <th>Student Name</th>
                     <th>Type</th>
                     <th>Date</th>
                     <th>Status</th>
                 </tr>
+
                 <tr>
                     <td>#ID-134243</td>
+                    <td>John Doe</td>
                     <td>ID Replacement</td>
                     <td>Jan 12, 2025</td>
-                    <td><span class="pill pending">
-    <i class="fa-solid fa-clock"></i> Pending
-</span></td>
-                </tr>                    <td>#ID-134256</td>
-                    <td>ID Replacement</td>
-                    <td>Jan 12, 2025</td>
-                    <td><span class="pill processing">
-    <i class="fa-solid fa-spinner"></i> Processing
-</span></td>
-                </tr>                    <td>#ID-131342</td>
-                    <td>ID Replacement</td>
-                    <td>Jan 12, 2025</td>
-                    <td><span class="pill completed">
-    <i class="fa-solid fa-circle-check"></i> Completed
-</span></td>
-                </tr>                    <td>#ID-156342</td>
-                    <td>ID Replacement</td>
-                    <td>Jan 12, 2025</td>
-                    <td><span class="pill processing">
-    <i class="fa-solid fa-spinner"></i> Processing
-</span></td>
+                    <td><span class="pill pending"><i class="fa-solid fa-clock"></i> Submitted</span></td>
                 </tr>
+
+                <tr>
+                    <td>#ID-134256</td>
+                    <td>Jane Smith</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill processing"><i class="fa-solid fa-spinner"></i> Processing</span></td>
+                </tr>
+
+                <tr>
+                    <td>#ID-131342</td>
+                    <td>Mike Johnson</td>
+                    <td>ID Replacement</td>
+                    <td>Jan 12, 2025</td>
+                    <td><span class="pill completed"><i class="fa-solid fa-circle-check"></i> Completed</span></td>
+                </tr>
+
                 <tr>
                     <td>#ID-129978</td>
+                    <td>Sarah Williams</td>
                     <td>New ID</td>
                     <td>Jan 08, 2025</td>
-                    <td><span class="pill rejected">
-    <i class="fa-solid fa-circle-xmark"></i> Rejected
-</span></td>
+                    <td><span class="pill rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span></td>
                 </tr>
             </table>
         </div>
     </div>
 
 <script>
-  // Initialize dark mode if enabled in localStorage (shared across all pages)
-  window.addEventListener('DOMContentLoaded', () => {
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function getCurrentUser() {
     try {
-      const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
-      if (darkModeEnabled) {
-        document.body.classList.add('dark-mode');
-      }
-    } catch(e) {}
-  });
+        const user = JSON.parse(localStorage.getItem('user')) || {};
+        return user;
+    } catch (e) {
+        return {};
+    }
+}
+
+function isAdmin() {
+    const user = getCurrentUser();
+    return user.role === 'admin' || user.accountType === 'admin';
+}
+
+function getCurrentStudentId() {
+    const user = getCurrentUser();
+    return user.studentId || null;
+}
+
+function getAllRequests() {
+    try {
+        const stored = localStorage.getItem('requests');
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function getVisibleRequests() {
+    const allRequests = getAllRequests();
+    const admin = isAdmin();
+    const currentStudentId = getCurrentStudentId();
+
+    if (admin) {
+        return allRequests;
+    } else {
+        return allRequests.filter(req => req.studentId === currentStudentId);
+    }
+}
+
+function updateStatusCounts() {
+    const requests = getVisibleRequests();
+    
+    let counts = {
+        received: 0,
+        processing: 0,
+        completed: 0,
+        rejected: 0
+    };
+
+    requests.forEach(req => {
+        const status = (req.status || '').toLowerCase();
+        if (status === 'submitted' || status === 'pending') {
+            counts.received++;
+        } else if (status === 'processing') {
+            counts.processing++;
+        } else if (status === 'completed') {
+            counts.completed++;
+        } else if (status === 'rejected') {
+            counts.rejected++;
+        }
+    });
+
+    document.getElementById('countReceived').textContent = counts.received;
+    document.getElementById('countProcessing').textContent = counts.processing;
+    document.getElementById('countCompleted').textContent = counts.completed;
+    document.getElementById('countRejected').textContent = counts.rejected;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+    if (darkModeEnabled) document.body.classList.add('dark-mode');
+
+    const userStr = localStorage.getItem('user');
+
+    if (userStr) {
+        const currentUser = JSON.parse(userStr);
+        const userSurname = currentUser.surname || currentUser.lastName || currentUser.firstName || 'Student';
+
+        if (currentUser.role === 'admin') {
+            document.getElementById('roleLabel').textContent = 'Admin Panel';
+            document.getElementById('welcomeMsg').textContent =
+                `Welcome back, ${userSurname}! Manage all student requests and track their status.`;
+
+            document.getElementById('historyLink').style.display = 'none';
+            document.getElementById('helpLink').style.display = 'none';
+            document.getElementById('profileLink').style.display = 'none';
+            document.getElementById('settingLink').style.display = 'none';
+
+            document.getElementById('notifBell').style.display = 'none';
+            document.getElementById('newRequestLink').style.display = 'none';
+
+            document.getElementById('logoutBtn').style.display = 'flex';
+        } else {
+            document.getElementById('historyLink').style.display = 'none';
+            document.getElementById('welcomeMsg').innerText =
+                `Welcome back, ${userSurname}! Manage your school ID requests and student services.`;
+        }
+    }
+
+    // Populate status counts
+    updateStatusCounts();
+});
 </script>
+
 </body>
 </html>
