@@ -23,7 +23,7 @@
                 Dashboard
             </div>
         </a>
-        <a href="history.html">
+        <a href="history.html" id="historyLink" style="display: none;">
             <div class="menu-item">
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 History
@@ -141,6 +141,67 @@
 </div>
 </form>
 <script>
+// Role-based access control
+function getCurrentUser() {
+    try {
+        const user = JSON.parse(localStorage.getItem('user')) || {};
+        return user;
+    } catch (e) {
+        return {};
+    }
+}
+
+function isAdmin() {
+    const user = getCurrentUser();
+    return user.role === 'admin' || user.accountType === 'admin';
+}
+
+// Initialize - restrict admins and auto-fill student data
+window.addEventListener('DOMContentLoaded', () => {
+    const user = getCurrentUser();
+    const admin = isAdmin();
+
+    if (admin) {
+        // Admins cannot submit requests; redirect or show message
+        document.getElementById('requestForm').style.display = 'none';
+        const mainDiv = document.querySelector('.main1');
+        const msg = document.createElement('div');
+        msg.style.cssText = 'background:#fee;color:#c33;padding:20px;border-radius:8px;margin-top:20px;text-align:center';
+        msg.innerHTML = '<strong>Access Denied:</strong> Admins cannot submit requests. Please access the History page to manage student requests.';
+        mainDiv.appendChild(msg);
+        return;
+    }
+
+    // Auto-fill personal info from user profile
+    if (user.firstName || user.lastName) {
+        const nameInput = document.querySelector('input[placeholder="Enter your full name"]');
+        if (nameInput) {
+            nameInput.value = [user.firstName, user.lastName].filter(Boolean).join(' ');
+        }
+    }
+    if (user.studentId) {
+        const idInput = document.querySelector('input[placeholder="Enter your student ID"]');
+        if (idInput) {
+            idInput.value = user.studentId;
+        }
+    }
+    if (user.dept) {
+        const deptSelect = document.getElementById('course-category');
+        if (deptSelect) {
+            deptSelect.value = user.dept;
+            deptSelect.dispatchEvent(new Event('change'));
+        }
+    }
+    if (user.program) {
+        setTimeout(() => {
+            const progSelect = document.getElementById('sub-course');
+            if (progSelect) {
+                progSelect.value = user.program;
+            }
+        }, 100);
+    }
+});
+
 document.querySelectorAll('.upload-box1').forEach(box => {
     const input = box.querySelector('input[type="file"]');
     const removeBtn = box.querySelector('.remove-btn');
@@ -193,20 +254,15 @@ document.querySelectorAll('.upload-box1').forEach(box => {
             }
         });
 
-        // Kung may upload box na may file name, ibalik sa original na text
+        // reset upload boxes safely
         document.querySelectorAll('.upload-box1').forEach(box => {
-            const input = box.querySelector('input[type="file"]');
-            const defaultLabel = box.getAttribute('data-label') || 'Click to upload';
-            box.innerHTML = `
-                ${defaultLabel}<br>
-                <small>JPG, PNG (Max 5MB)</small>
-            `;
-            if(input) box.appendChild(input); // ibalik ang input sa box
-            input.value = ''; // i-reset ang file input
+            location.reload(); // safe reset (no DOM corruption)
         });
     });
 
-// Department → Program logic
+/* =========================
+   Department → Program logic
+========================= */
 const categorySelect = document.getElementById("course-category");
 const subCourseSelect = document.getElementById("sub-course");
 
@@ -290,7 +346,7 @@ categorySelect.addEventListener("change", function () {
     subCourseSelect.disabled = true;
 
     if (courseMap[selected]) {
-        courseMap[selected].programs.forEach((program, index) => {
+        courseMap[selected].programs.forEach((program) => {
             const option = document.createElement("option");
             option.value = program.toLowerCase().replace(/\s+/g, "_");
             option.textContent = program;
@@ -300,6 +356,9 @@ categorySelect.addEventListener("change", function () {
     }
 });
 
+/* =========================
+   SUBMIT HANDLER (UPDATED)
+========================= */
 document.getElementById("requestForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -326,13 +385,58 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
         return;
     }
 
+    // =========================
+    // ADDED: REQUEST ID + STATUS + STUDENT ASSOCIATION
+    // =========================
+    const user = getCurrentUser();
+    const requestId = "REQ-" + Date.now();
+    const requestType = this.querySelector('textarea')?.value || 'ID Request';
+    
+    // Store request with student association
+    const requests = getAllRequests();
+    const newRequest = {
+        id: requestId,
+        type: requestType,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
+        status: 'submitted',
+        studentId: user.studentId,
+        studentName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+        submittedAt: new Date().toISOString()
+    };
+    requests.push(newRequest);
+    localStorage.setItem('requests', JSON.stringify(requests));
+
+    // Keep legacy single-request storage for compatibility
+    localStorage.setItem("request_id", requestId);
+    localStorage.setItem("request_status", "submitted");
+    const nameInput = this.querySelector("input[type='text']");
+    if (nameInput) {
+        localStorage.setItem("request_name", nameInput.value);
+    }
+
     // 3️⃣ SUCCESS → REDIRECT
     window.location.href = "req submitted.html";
 });
 
+function getAllRequests() {
+    try {
+        const stored = localStorage.getItem('requests');
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        return [];
+    }
+}
 
+// Initialize dark mode if enabled
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+    if (darkModeEnabled) {
+      document.body.classList.add('dark-mode');
+    }
+  } catch(e) {}
+});
 </script>
-
 
 </body>
 </html>

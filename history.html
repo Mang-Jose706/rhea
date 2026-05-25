@@ -263,25 +263,96 @@
 </div>
 
 <script>
+    // Role-based access control
+    function getCurrentUser() {
+        try {
+            const user = JSON.parse(localStorage.getItem('user')) || {};
+            return user;
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function isAdmin() {
+        const user = getCurrentUser();
+        return user.role === 'admin' || user.accountType === 'admin';
+    }
+
+    function getCurrentStudentId() {
+        const user = getCurrentUser();
+        return user.studentId || null;
+    }
+
+    // Request database: stores all requests with student associations
+    function getAllRequests() {
+        try {
+            const stored = localStorage.getItem('requests');
+            return stored ? JSON.parse(stored) : getDefaultRequests();
+        } catch (e) {
+            return getDefaultRequests();
+        }
+    }
+
+    // Default sample requests with student IDs
+    function getDefaultRequests() {
+        return [
+            { id: 'ID-123456', type: 'New Student ID', date: 'Dec 15, 2024', status: 'processing', studentId: '123456' },
+            { id: 'ID-654321', type: 'ID Replacement', date: 'Dec 16, 2025', status: 'completed', studentId: '654321' },
+            { id: 'ID-234165', type: 'New Student ID', date: 'Dec 15, 2025', status: 'pending', studentId: '234165' },
+            { id: 'ID-987654', type: 'ID Replacement', date: 'Dec 17, 2025', status: 'rejected', studentId: '987654' }
+        ];
+    }
+
+    // Filter requests based on role
+    function getVisibleRequests() {
+        const allRequests = getAllRequests();
+        const admin = isAdmin();
+        const currentStudentId = getCurrentStudentId();
+
+        if (admin) {
+            return allRequests; // admins see all
+        } else {
+            return allRequests.filter(req => req.studentId === currentStudentId);
+        }
+    }
+
     const statusSelect = document.getElementById('statusFilter');
     const tableRows = document.querySelectorAll('.table-card table tr');
     const searchInput = document.querySelector('.search-row input');
+    const user = getCurrentUser();
+    const adminMode = isAdmin();
+
+    // Show admin indicator if user is admin
+    if (adminMode) {
+        const header = document.querySelector('.table-header');
+        if (header) {
+            const adminBadge = document.createElement('div');
+            adminBadge.style.cssText = 'display:inline-block;background:#3b82f6;color:white;padding:6px 12px;border-radius:6px;margin-left:12px;font-size:12px;font-weight:600';
+            adminBadge.textContent = 'ADMIN VIEW: All Requests';
+            header.parentNode.insertBefore(adminBadge, header.nextSibling);
+        }
+    }
 
     function filterTable() {
         const selectedStatus = statusSelect.value.toLowerCase();
         const searchText = searchInput.value.toLowerCase();
+        const visibleRequests = getVisibleRequests();
+        const visibleIds = new Set(visibleRequests.map(r => r.id));
 
         tableRows.forEach((row, index) => {
             if(index === 0) return; // skip header row
 
+            const requestId = row.querySelector('td:nth-child(1)')?.textContent?.trim();
             const statusSpan = row.querySelector('td:nth-child(4) span');
-            const rowStatus = statusSpan.getAttribute('data-status').toLowerCase();
+            const rowStatus = statusSpan?.getAttribute('data-status')?.toLowerCase() || '';
             const rowText = row.innerText.toLowerCase();
 
+            // Check if this request is visible to the current user
+            const isAccessible = adminMode || visibleIds.has(requestId);
             const statusMatch = selectedStatus === 'all' || rowStatus === selectedStatus;
             const searchMatch = rowText.includes(searchText);
 
-            row.style.display = (statusMatch && searchMatch) ? '' : 'none';
+            row.style.display = (isAccessible && statusMatch && searchMatch) ? '' : 'none';
         });
     }
 
@@ -289,30 +360,25 @@
     searchInput.addEventListener('input', filterTable);
 
     document.addEventListener('DOMContentLoaded', () => {
-    const rows = document.querySelectorAll('tr[data-id]');
-
-    rows.forEach(row => {
-        const id = row.getAttribute('data-id');
-        const status = localStorage.getItem(id + '_status');
-
-        if (status === 'rejected') {
-            row.remove(); 
-            // OR kung gusto mo ilipat sa Rejected instead:
-            // row.querySelector('.pill').className = 'pill rejected';
-            // row.querySelector('.pill').innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Rejected';
-        }
+        const rows = document.querySelectorAll('tr[data-id]');
+        rows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const status = localStorage.getItem(id + '_status');
+            if (status === 'rejected') {
+                row.remove();
+            }
+        });
     });
-});
 
-// Initialize dark mode if enabled in localStorage
-window.addEventListener('DOMContentLoaded', () => {
-  try {
-    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
-    if (darkModeEnabled) {
-      document.body.classList.add('dark-mode');
-    }
-  } catch(e) {}
-});
+    // Initialize dark mode if enabled in localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+        try {
+            const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+            if (darkModeEnabled) {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    });
 </script>
 
 
