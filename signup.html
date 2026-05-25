@@ -133,6 +133,30 @@ body {
         <div class="input-box">
             <input type="text" id="studentId" placeholder="Enter your 6-digit Student ID" maxlength="6">
         </div>
+        <div class="input-row" style="margin-bottom: 18px; gap: 10px; justify-content: center;">
+            <select id="dept" style="width: 40%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 14px;">
+                <option value="">Select Department</option>
+                <option value="cafnr">College of Agriculture, Fisheries and Natural Resources</option>
+                <option value="cac">College of Arts and Communication</option>
+                <option value="cba">College of Business Administration</option>
+                <option value="coed">College of Education</option>
+                <option value="coe">College of Engineering</option>
+                <option value="col">College of Law</option>
+                <option value="cnahs">College of Nursing and Allied Health Sciences</option>
+                <option value="cos">College of Science</option>
+                <option value="cvm">College of Veterinary Medicine</option>
+            </select>
+            <select id="program" style="width: 40%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 14px;" disabled>
+                <option value="">Select Program</option>
+            </select>
+        </div>
+        <div class="input-box">
+            <select id="role" style="width: 80%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 14px;">
+                <option value="student" selected>Student</option>
+                <option value="alumni">Alumni</option>
+                <option value="researcher">Researcher</option>
+            </select>
+        </div>
         <div class="input-box">
             <input type="email" id="email" placeholder="Enter your email address">
         </div>
@@ -155,6 +179,9 @@ body {
             const firstName = document.getElementById("firstName").value;
             const lastName = document.getElementById("lastName").value;
             const studentId = document.getElementById("studentId").value;
+            const dept = document.getElementById("dept").value;
+            const program = document.getElementById("program").value;
+            const role = document.getElementById("role").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
@@ -166,6 +193,11 @@ body {
 
             if(studentId.length !== 6) {
                 alert("Student ID must be exactly 6 digits.");
+                return;
+            }
+
+            if(!dept || !program) {
+                alert("Please select your department and program.");
                 return;
             }
 
@@ -183,9 +215,15 @@ body {
             const userData = {
                 firstName: firstName,
                 lastName: lastName,
+                surname: lastName,
                 studentId: studentId,
-                email: email,
-                password: password
+                authEmail: email,
+                password: password,
+                accountType: role,
+                role: role,
+                dept: dept,
+                program: program,
+                activityHistory: []
             };
             localStorage.setItem("user", JSON.stringify(userData));
 
@@ -193,8 +231,85 @@ body {
             window.location.href = "login.html";
         }
 
-        // Initialize dark mode if enabled in localStorage
-        window.addEventListener('DOMContentLoaded', () => {
+        const signupCourseMap = {
+            cafnr: [
+                "Bachelor of Science in Agribusiness",
+                "Bachelor of Science in Agriculture",
+                "Bachelor of Science in Fisheries",
+                "Bachelor of Science in Forestry"
+            ],
+            cac: [
+                "Bachelor of Arts in English Language Studies",
+                "Bachelor of Arts in Literature and Cultural Studies",
+                "Bachelor of Arts major in Political Science",
+                "Bachelor of Arts major in Public Administration",
+                "Bachelor of Arts major in Sociology",
+                "Bachelor of Science in Community Development",
+                "Bachelor of Science in Criminology",
+                "Bachelor of Science in Development Communication"
+            ],
+            cba: [
+                "Bachelor of Science in Accountancy",
+                "Bachelor of Science in Business Administration",
+                "Bachelor of Science in Business Economics",
+                "Bachelor of Science in Entrepreneurship",
+                "Bachelor of Science in Hospitality Management"
+            ],
+            coed: [
+                "Bachelor of Elementary Education",
+                "Bachelor of Elementary Technology and Livelihood Education",
+                "Bachelor of Secondary Education"
+            ],
+            coe: [
+                "Bachelor of Engineering Technology",
+                "Bachelor of Science in Agricultural and Biosystems Engineering",
+                "Bachelor of Science in Civil Engineering",
+                "Bachelor of Science in Electrical Engineering",
+                "Bachelor of Science in Mechanical Engineering"
+            ],
+            col: ["Bachelor of Laws"],
+            cnahs: [
+                "Bachelor of Science in Nursing",
+                "Bachelor of Science in Radiologic Technology"
+            ],
+            cos: [
+                "Bachelor of Science in Biology",
+                "Bachelor of Science in Chemistry",
+                "Bachelor of Science in Environmental Science",
+                "Bachelor of Science in Information Technology",
+                "Bachelor of Science in Marine Biology",
+                "Bachelor of Science in Mathematics"
+            ],
+            cvm: [
+                "Bachelor of Science in Meat Technology",
+                "Doctor of Veterinary Medicine"
+            ]
+        };
+
+        function populateSignupProgramOptions(department) {
+            const programElement = document.getElementById('program');
+            programElement.innerHTML = '<option value="">Select Program</option>';
+            if (!department || !signupCourseMap[department]) {
+                programElement.disabled = true;
+                return;
+            }
+            signupCourseMap[department].forEach(program => {
+                const option = document.createElement('option');
+                option.value = program.toLowerCase().replace(/\s+/g, '_');
+                option.textContent = program;
+                programElement.appendChild(option);
+            });
+            programElement.disabled = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const deptSelect = document.getElementById('dept');
+            if (deptSelect) {
+                deptSelect.addEventListener('change', function() {
+                    populateSignupProgramOptions(this.value);
+                });
+            }
+
           try {
             const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
             if (darkModeEnabled) {

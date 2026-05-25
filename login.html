@@ -131,8 +131,15 @@ function loginForm() {
     }
 
     // Retrieve user from LocalStorage
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("user")) || {};
     if(user && user.studentId === studentId && user.password === password){
+        const now = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+        user.lastLogin = now;
+        user.activityHistory = user.activityHistory || [];
+        user.activityHistory.unshift(`Logged in on ${now}`);
+        user.activityHistory = user.activityHistory.slice(0, 5);
+        localStorage.setItem("user", JSON.stringify(user));
+
         alert("Login successful!");
         window.location.href = "dashboard.html"; // Redirect to dashboard
     } else {
