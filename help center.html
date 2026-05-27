@@ -603,7 +603,7 @@
       <a href="dashboard.html" class="menu-item">
         <i class="fa-solid fa-house"></i> Dashboard
       </a>
-      <a href="history.html" class="menu-item">
+      <a href="history.html" class="menu-item" id="historyLink">
         <i class="fa-solid fa-clock-rotate-left"></i> History
       </a>
       <a href="help center.html" class="menu-item active">
@@ -1005,6 +1005,14 @@
         const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
         if (darkModeEnabled) {
           document.body.classList.add('dark-mode');
+        }
+        
+        // Check if user is admin - if not, hide history link
+        const userStr = localStorage.getItem('user');
+        if(userStr) {
+          const user = JSON.parse(userStr);
+          // History link is hidden by default for students, no need to change
+          // (already set to display: none)
         }
       } catch(e) {}
     });

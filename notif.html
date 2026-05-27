@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notifications</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/common.css">
   <style>
     :root {
       --bg: #f5f7fb;
@@ -17,6 +18,18 @@
       --border: #e5e7eb;
       --radius: 14px;
       --shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    body.dark-mode {
+      --bg: #1a1a1a;
+      --card: #1a1a1a;
+      --primary: #3b82f6;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --success: #22c55e;
+      --warning: #f97316;
+      --border: #374151;
+      --shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -39,6 +52,8 @@
       padding: 32px;
       box-shadow: var(--shadow);
     }
+
+    
 
     /* Header */
     .header {
@@ -213,26 +228,7 @@
   display: none;
 }
 
-/* RETURN TO DASHBOARD (GUIDE STYLE) */
-.return-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
-  border-radius: 10px;
-  border: 1px solid #d0d0d0;
-  background: white;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.return-btn:hover {
-  background: #f5f5f5;
-}
+    
 
 .footer {
   margin-top: 32px;
@@ -337,9 +333,7 @@
   </div>
 
 <div class="footer">
-<a href="dashboard.html" class="return-btn" >
-  <i class="fa-solid fa-house"></i> Return to Dashboard
-</a>
+  <a href="dashboard.html" class="return-dashboard"><i class="fa-solid fa-house"></i> Return to Dashboard</a>
 </div>
 
 <script>
@@ -350,6 +344,16 @@ function markAllRead() {
     notification.classList.add('read');
   });
 }
+
+// Initialize dark mode from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+    if (darkModeEnabled) {
+      document.body.classList.add('dark-mode');
+    }
+  } catch(e) {}
+});
 </script>
 
   

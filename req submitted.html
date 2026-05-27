@@ -3,283 +3,1025 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Request Successfully Submitted</title>
+<title>IDEease Portal — Submit Request</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+  <link rel="stylesheet" href="assets/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-    body {
-        font-family: "Inter", Arial, sans-serif;
-        background: #f4f6f8;
-        margin: 0;
-        padding: 40px;
-        color: #333;
-    }
+  :root {
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #475569;
+    --border: #d8dee7;
+    --muted: #6b7280;
+    --accent: #3b82f6;
+    --accent-strong: #1d4ed8;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    --radius: 18px;
+    --font: "Inter", "Poppins", "Roboto", Arial, sans-serif;
+  }
 
-    .container {
-        max-width: 800px;
-        margin: auto;
-        text-align: center;
-    }
+  body.dark-mode {
+    --bg: #0f172a;
+    --surface: #111827;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --border: #27303f;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --accent-strong: #3b82f6;
+    --success: #22c55e;
+    --danger: #f87171;
+    --shadow: 0 22px 60px rgba(15, 23, 42, 0.45);
+  }
 
-    /* Success Icon */
-    .success-icon {
-        width: 80px;
-        height: 80px;
-        background: #28c76f;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        color: white;
-        font-size: 40px;
-    }
+  * {
+    box-sizing: border-box;
+  }
 
-    h1 {
-        font-size: 28px;
-        margin-top: 20px;
-        font-weight: 700;
-    }
+  html {
+    scroll-behavior: smooth;
+  }
 
-    .subtitle {
-        margin-top: 8px;
-        font-size: 16px;
-        color: #555;
-    }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--text-primary);
+    background: var(--bg);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
 
-    /* Cards */
-    .card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        padding: 25px;
-        margin-top: 30px;
-        text-align: left;
-    }
+  .page-shell {
+    width: min(1150px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 30px 0 40px;
+  }
 
-    .card-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
-    }
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
 
-    /* Summary Table */
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid #ececec;
-    }
+  .page-title {
+    margin: 0;
+    font-size: clamp(2rem, 2.4vw, 2.5rem);
+    font-weight: 800;
+  }
 
-    .summary-row:last-child {
-        border-bottom: none;
-    }
+  .page-copy {
+    margin: 12px 0 0;
+    max-width: 640px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
 
-    .status-badge {
-        background: #15e071;
-        color: #14560f;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-    }
 
-    /* Steps Section */
-    .step {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
+  .stage-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
 
-    .step-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        font-size: 18px;
-        flex-shrink: 0;
-    }
+  .progress-track {
+    width: 100%;
+    height: 10px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 12px 0 20px;
+  }
 
-    .blue { background: #3b82f6; }
-    .purple { background: #8b5cf6; }
-    .green { background: #22c55e; }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+    transition: width 420ms cubic-bezier(.2,.9,.2,1);
+    will-change: width;
+  }
 
-    .step-title {
-        font-weight: 600;
-        font-size: 16px;
-    }
+  .stage-pill {
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-    .step-desc {
-        font-size: 14px;
-        color: #666;
-    }
+  .stage-pill.active {
+    color: var(--accent-strong);
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.08);
+  }
 
-    /* Uploaded Files List */
-    .file-row {
-        background: #e9f9ef;
-        border: 1px solid #c7f1d8;
-        padding: 15px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-    }
+  .window-carousel {
+    position: relative;
+    width: 100%;
+    min-height: 680px;
+    overflow: hidden;
+  }
 
-    .file-row:last-child {
-        margin-bottom: 0;
-    }
+  .step-window {
+    position: absolute;
+    inset: 0;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 620px;
+    padding-bottom: 28px; /* give room for anchored actions */
+    pointer-events: none;
+  }
 
-    .check-icon {
-        width: 25px;
-        height: 25px;
-        background: #28c76f;
-        border-radius: 50%;
-        color: white;
-        font-size: 14px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  .step-window.active {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
 
-    .file-title {
-        font-weight: 600;
-    }
+  .step-window.step-out {
+    opacity: 0;
+    transform: translateX(-40px);
+    visibility: hidden;
+  }
 
-    .file-desc {
-        font-size: 13px;
-        color: #555;
-    }
+  /* Fade-out animation used when confirming from Review -> Confirmation */
+  @keyframes fadeOutWindow {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-12px); }
+  }
 
-    /* Return Button */
-    .return-btn {
-        margin-top: 35px;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 22px;
-        border-radius: 10px;
-        border: 1px solid #d0d0d0;
-        background: white;
-        font-size: 16px;
-        cursor: pointer;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-        text-decoration: none;
-        color: #333;
-        font-weight: 500;
-    }
+  .fade-out {
+    animation: fadeOutWindow 420ms ease forwards;
+  }
 
-    .return-btn i {
+  
+
+  .panel {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .panel-heading {
+    margin: 0 0 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+    margin-bottom: 18px;
+  }
+
+  .form-grid > div {
+    display: grid;
+    gap: 18px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  }
+
+  .form-hint {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .field-error {
+    margin-top: 8px;
+    color: var(--danger);
+    font-size: 0.92rem;
+    display: none;
+  }
+
+  .field-error.visible {
+    display: block;
+  }
+
+  .file-upload {
+    display: grid;
+    gap: 12px;
+  }
+
+  .file-upload label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .file-upload label:hover {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.06);
+  }
+
+  .file-upload input {
+    display: none;
+  }
+
+  .preview-box {
+    margin-top: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .preview-details {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .preview-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-item:last-child {
+    border-bottom: none;
+  }
+
+  .preview-label {
+    color: var(--text-secondary);
+  }
+
+  .preview-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+  }
+
+  .preview-image-wrap {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .preview-image {
+    width: 100%;
+    min-height: 180px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(59,130,246,0.12), rgba(59,130,246,0.02));
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .preview-image img {
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+  }
+
+  .action-group {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: auto; /* keep actions anchored at bottom */
+    padding-top: 12px;
+  }
+
+  /* Buttons: fixed size to avoid layout shifts on click/focus */
+  .btn,
+  .btn-secondary,
+  .btn-primary {
+    border: none;
+    border-radius: 14px;
+    box-sizing: border-box;
+    min-width: 140px;
+    height: 48px;
+    padding: 0 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(59, 130, 246, 0.06);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-strong);
+  }
+
+  .btn:focus-visible {
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+  }
+
+  .summary-card {
+    display: grid;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .summary-card .summary-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 4px 0;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  /* Label/value columns: fixed label width, flexible value */
+  .summary-card .summary-row span {
+    font-weight: 700; /* label */
+    color: var(--text-secondary);
+    flex: 0 0 160px; /* slightly narrower label column */
+    max-width: 48%;
+    text-align: left;
     margin-right: 8px;
-    font-size: 16px;
-}
+  }
 
+  .summary-card .summary-row strong {
+    color: var(--text-primary);
+    font-weight: 400; /* value */
+    flex: 1 1 auto;
+    text-align: left;
+    word-break: break-word;
+    margin-left: 0;
+  }
+
+  @media (max-width: 680px) {
+    .summary-card .summary-row {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 6px 0;
+    }
+
+    .summary-card .summary-row span,
+    .summary-card .summary-row strong {
+      flex: none;
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .summary-card .summary-row strong { margin-top: 6px; }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .badge.submitted {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--accent-strong);
+  }
+
+  .badge.pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+  }
+
+  .badge.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--success);
+  }
+
+  /* Screen-reader only utility */
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .confirmation-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .confirmation-card .confirmation-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--success);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 22px;
+  }
+
+  .confirmation-title {
+    margin: 0;
+    font-size: clamp(1.8rem, 2.6vw, 2.2rem);
+  }
+
+  .confirmation-copy {
+    margin: 16px auto 0;
+    max-width: 630px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  /* Centered primary-style return button for confirmation */
+  .return-dashboard {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 18px auto 0;
+    min-width: 200px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.18);
+  }
+
+  .return-dashboard:hover {
+    background: var(--accent-strong);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 960px) {
+    .window-carousel {
+      min-height: auto;
+    }
+
+    .step-window {
+      position: relative;
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+      min-height: auto;
+      margin-bottom: 20px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .action-group {
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    
+  }
 </style>
 </head>
-
 <body>
-
-<div class="container">
-
-    <!-- Success Header -->
-    <div class="success-icon">✓</div>
-
-    <h1>Request Successfully Submitted!</h1>
-    <p class="subtitle">Your ID request has been received and is now being processed.</p>
-
-    <!-- Request Summary Card -->
-    <div class="card">
-        <div class="card-title">Request Summary</div>
-
-        <div class="summary-row">
-            <span>Request Type:</span>
-            <strong>New Student ID</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Request ID:</span>
-            <strong>#REQ-2024-8742</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Date Submitted:</span>
-            <strong>December 16, 2025</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Status:</span>
-            <span class="status-badge">Submitted</span>
-        </div>
+  <div class="page-shell">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Student Request Submission</h1>
+        <p class="page-copy">Complete your request using the guided flow below. The page will follow your preferred theme from Settings.</p>
+      </div>
     </div>
 
-    <!-- What Happens Next Card -->
-    <div class="card">
-        <div class="card-title">What Happens Next</div>
-
-        <div class="step">
-            <div class="step-icon blue">✓</div>
-            <div>
-                <div class="step-title">Step 1: Request Verification</div>
-                <div class="step-desc">Our team will review your submitted documents and information for accuracy and completeness.</div>
-            </div>
-        </div>
-
-        <div class="step">
-            <div class="step-icon purple">✓</div>
-            <div>
-                <div class="step-title">Step 2: ID Production</div>
-                <div class="step-desc">Once approved, your ID card will be printed and prepared with all necessary security features.</div>
-            </div>
-        </div>
-
-        <div class="step">
-            <div class="step-icon green">✓</div>
-            <div>
-                <div class="step-title">Step 3: Ready for Pickup</div>
-                <div class="step-desc">You'll receive a notification when your ID is ready for collection at the designated office.</div>
-            </div>
-        </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <!-- Submitted Files Confirmation Card -->
-    <div class="card">
-        <div class="card-title">Submitted Files Confirmation</div>
+    <!-- Accessible live region for stage announcements -->
+    <div id="stageAnnounce" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-        <div class="file-row">
-            <div class="check-icon">✓</div>
-            <div>
-                <div class="file-title">1×1 Photo</div>
-                <div class="file-desc">Successfully uploaded</div>
-            </div>
-        </div>
-
-        <div class="file-row">
-            <div class="check-icon">✓</div>
-            <div>
-                <div class="file-title">Valid ID / Requirements</div>
-                <div class="file-desc">Successfully uploaded</div>
-            </div>
-        </div>
-
-        <div class="file-row">
-            <div class="check-icon">✓</div>
-            <div>
-                <div class="file-title">Digital Signature</div>
-                <div class="file-desc">Successfully uploaded</div>
-            </div>
-        </div>
+    <div class="stage-row" aria-label="Submission stages">
+      <span class="stage-pill active" id="stageForm">1. Fill Details</span>
+      <span class="stage-pill" id="stageReview">2. Review</span>
+      <span class="stage-pill" id="stageConfirm">3. Confirmed</span>
     </div>
 
-    <!-- Return Button -->
-<a href="dashboard.html" class="return-btn">
-  <i class="fa-solid fa-house"></i> Return to Dashboard
-</a>
+    <div class="window-carousel" aria-live="polite">
+      <section class="step-window active" id="windowStep1" aria-labelledby="requestFormHeading">
+        <h2 class="panel-heading sr-only" id="requestFormHeading" tabindex="-1">Fill Details</h2>
+        <form id="requestForm" novalidate>
+          <div class="form-grid">
+            <div>
+              <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" autocomplete="name" required>
+                <p class="form-hint">Enter the full name that should appear on the student ID.</p>
+                <div class="field-error" id="errorFullName">Please enter your full name.</div>
+              </div>
 
+              <div class="form-group">
+                <label for="department">Department / College</label>
+                <select id="department" name="department" required>
+                  <option value="" disabled selected hidden>Choose your department or college</option>
+                  <option value="College of Science">College of Science</option>
+                  <option value="College of Arts">College of Arts</option>
+                  <option value="College of Engineering">College of Engineering</option>
+                  <option value="School of Business">School of Business</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div class="field-error" id="errorDepartment">Please select your department or college.</div>
+              </div>
 
-</div>
+              <div class="form-group">
+                <label for="yearLevel">Year Level</label>
+                <select id="yearLevel" name="yearLevel" required>
+                  <option value="" disabled selected hidden>Select year level</option>
+                  <option value="1">1st Year</option>
+                  <option value="2">2nd Year</option>
+                  <option value="3">3rd Year</option>
+                  <option value="4">4th Year</option>
+                  <option value="Graduate">Graduate</option>
+                </select>
+                <div class="field-error" id="errorYearLevel">Please select your year level.</div>
+              </div>
+            </div>
 
+            <div>
+              <div class="form-group">
+                <label for="studentId">Student ID Number</label>
+                <input type="text" id="studentId" name="studentId" autocomplete="off" required>
+                <p class="form-hint">Use the official ID number assigned by the school.</p>
+                <div class="field-error" id="errorStudentId">Please enter your student ID number.</div>
+              </div>
+
+              <div class="form-group">
+                <label for="program">Program / Degree</label>
+                <select id="program" name="program" required>
+                  <option value="" disabled selected hidden>Choose your program or degree</option>
+                  <option value="BSc Computer Science">BSc Computer Science</option>
+                  <option value="BA Psychology">BA Psychology</option>
+                  <option value="BEng Mechanical">BEng Mechanical</option>
+                  <option value="MBA">MBA</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div class="field-error" id="errorProgram">Please select your program or degree.</div>
+              </div>
+
+              <div class="form-group">
+                <label for="requestType">Request Type</label>
+                <select id="requestType" name="requestType" required>
+                  <option value="" disabled selected hidden>Choose a request type</option>
+                  <option value="New ID">New ID</option>
+                  <option value="Replacement">Replacement</option>
+                  <option value="Photo Update">Photo Update</option>
+                </select>
+                <div class="field-error" id="errorRequestType">Please select a request type.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group file-upload">
+            <label for="photoUpload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo (optional)</label>
+            <input type="file" id="photoUpload" name="photoUpload" accept="image/*">
+            <div class="form-hint">Supported formats: JPG, PNG. Preview appears below once selected.</div>
+            <div class="preview-box hidden" id="photoPreviewBox">
+              <div class="preview-image" id="photoPreview"></div>
+              <div class="preview-details">
+                <div class="preview-item">
+                  <span class="preview-label">File name</span>
+                  <strong class="preview-value" id="photoName">None selected</strong>
+                </div>
+                <div class="preview-item">
+                  <span class="preview-label">File size</span>
+                  <strong class="preview-value" id="photoSize">—</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <button type="button" class="btn-secondary" id="cancelButton">Cancel</button>
+            <button type="submit" class="btn-primary" id="reviewButton">Next</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="step-window" id="windowStep2" aria-labelledby="reviewHeading">
+        <h2 class="panel-heading" id="reviewHeading" tabindex="-1">Review Your Request</h2>
+        <div class="summary-card" id="reviewSummary">
+          <div class="summary-row"><span>Full Name</span><strong id="reviewFullName">—</strong></div>
+          <div class="summary-row"><span>Student ID</span><strong id="reviewStudentId">—</strong></div>
+          <div class="summary-row"><span>Request Type</span><strong id="reviewType">—</strong></div>
+          <div class="summary-row"><span>Department / College</span><strong id="reviewDepartment">—</strong></div>
+          <div class="summary-row"><span>Program / Degree</span><strong id="reviewProgram">—</strong></div>
+          <div class="summary-row"><span>Year Level</span><strong id="reviewYear">—</strong></div>
+          <div class="summary-row"><span>Submission Date</span><strong id="reviewDate">—</strong></div>
+          <div class="summary-row"><span>Status</span><span class="badge submitted">Submitted</span></div>
+        </div>
+        <div class="preview-box hidden" id="reviewPhotoBox">
+          <div class="preview-image" id="reviewPhoto"></div>
+          <div class="preview-details">
+            <div class="preview-item">
+              <span class="preview-label">Photo file</span>
+              <strong class="preview-value" id="reviewPhotoName">No file attached</strong>
+            </div>
+          </div>
+        </div>
+        <div class="action-group" style="margin-top: 20px;">
+          <button type="button" class="btn-secondary" id="editButton">Edit Details</button>
+          <button type="button" class="btn-primary" id="submitButton">Confirm and Submit</button>
+        </div>
+      </section>
+
+      <section class="step-window confirmation-card" id="windowStep3" aria-labelledby="confirmationHeading">
+        <div class="confirmation-icon"><i class="fa-solid fa-check"></i></div>
+        <h2 class="confirmation-title" id="confirmationHeading" tabindex="-1">Request Submitted</h2>
+        <p class="confirmation-copy">Your request is now recorded. You will receive an update when the status changes.</p>
+        <div class="summary-card" id="confirmationSummary">
+          <div class="summary-row"><span>Request ID</span><strong id="confirmationRequestId">—</strong></div>
+          <div class="summary-row"><span>Full Name</span><strong id="confirmationFullName">—</strong></div>
+          <div class="summary-row"><span>Student ID</span><strong id="confirmationStudentId">—</strong></div>
+          <div class="summary-row"><span>Department / College</span><strong id="confirmationDepartment">—</strong></div>
+          <div class="summary-row"><span>Program / Degree</span><strong id="confirmationProgram">—</strong></div>
+          <div class="summary-row"><span>Year Level</span><strong id="confirmationYear">—</strong></div>
+          <div class="summary-row"><span>Request Type</span><strong id="confirmationType">—</strong></div>
+          <div class="summary-row"><span>Submitted</span><strong id="confirmationDate">—</strong></div>
+          <div class="summary-row"><span>Status</span><span class="badge submitted">Submitted</span></div>
+        </div>
+          <a href="dashboard.html" class="return-dashboard">Return to Dashboard</a>
+      </section>
+    </div>
+  </div>
+
+<script>
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const form = document.getElementById('requestForm');
+  const fullNameInput = document.getElementById('fullName');
+  const studentIdInput = document.getElementById('studentId');
+  const requestTypeInput = document.getElementById('requestType');
+  const departmentInput = document.getElementById('department');
+  const programInput = document.getElementById('program');
+  const yearLevelInput = document.getElementById('yearLevel');
+  const photoInput = document.getElementById('photoUpload');
+  const photoPreviewBox = document.getElementById('photoPreviewBox');
+  const photoPreview = document.getElementById('photoPreview');
+  const photoName = document.getElementById('photoName');
+  const photoSize = document.getElementById('photoSize');
+  const windowStep1 = document.getElementById('windowStep1');
+  const windowStep2 = document.getElementById('windowStep2');
+  const windowStep3 = document.getElementById('windowStep3');
+  const reviewFullName = document.getElementById('reviewFullName');
+  const reviewStudentId = document.getElementById('reviewStudentId');
+  const reviewType = document.getElementById('reviewType');
+  const reviewDepartment = document.getElementById('reviewDepartment');
+  const reviewProgram = document.getElementById('reviewProgram');
+  const reviewYear = document.getElementById('reviewYear');
+  const reviewDate = document.getElementById('reviewDate');
+  const reviewPhotoBox = document.getElementById('reviewPhotoBox');
+  const reviewPhoto = document.getElementById('reviewPhoto');
+  const reviewPhotoName = document.getElementById('reviewPhotoName');
+  const reviewButton = document.getElementById('reviewButton');
+  const submitButton = document.getElementById('submitButton');
+  const editButton = document.getElementById('editButton');
+  const cancelButton = document.getElementById('cancelButton');
+  const reviewStage = document.getElementById('stageReview');
+  const confirmStage = document.getElementById('stageConfirm');
+  const stageForm = document.getElementById('stageForm');
+  const confirmationStudentId = document.getElementById('confirmationStudentId');
+  const confirmationDepartment = document.getElementById('confirmationDepartment');
+  const confirmationProgram = document.getElementById('confirmationProgram');
+  const confirmationYear = document.getElementById('confirmationYear');
+
+  function applyTheme() {
+    const useDark = localStorage.getItem('pref-darkMode') === '1';
+    document.body.classList.toggle('dark-mode', useDark);
+  }
+
+  function formatDate(date) {
+    return date.toLocaleDateString(undefined, {
+      month: 'long', day: 'numeric', year: 'numeric'
+    });
+  }
+
+  function showStage(stage) {
+    stageForm.classList.toggle('active', stage === 'form');
+    reviewStage.classList.toggle('active', stage === 'review');
+    confirmStage.classList.toggle('active', stage === 'confirm');
+
+    windowStep1.classList.toggle('active', stage === 'form');
+    windowStep1.classList.toggle('step-out', stage !== 'form');
+    windowStep2.classList.toggle('active', stage === 'review');
+    windowStep2.classList.toggle('step-out', stage !== 'review');
+    windowStep3.classList.toggle('active', stage === 'confirm');
+    windowStep3.classList.toggle('step-out', stage !== 'confirm');
+
+    // Update top progress bar (3-step flow)
+    const progressFill = document.getElementById('progressFill');
+    const progressBar = document.getElementById('progressBar');
+    if (stage === 'form') {
+      progressFill.style.width = '0%';
+      progressBar.setAttribute('aria-valuenow', '1');
+      // Announce and move focus to the form heading for screen reader / keyboard users
+      const announce = document.getElementById('stageAnnounce');
+      announce.textContent = 'Step 1 of 3. Fill Details.';
+      const h = document.getElementById('requestFormHeading');
+      if (h) h.focus({ preventScroll: true });
+    } else if (stage === 'review') {
+      progressFill.style.width = '50%';
+      progressBar.setAttribute('aria-valuenow', '2');
+      const announce = document.getElementById('stageAnnounce');
+      announce.textContent = 'Step 2 of 3. Review your request.';
+      const h = document.getElementById('reviewHeading');
+      if (h) h.focus({ preventScroll: true });
+    } else if (stage === 'confirm') {
+      progressFill.style.width = '100%';
+      progressBar.setAttribute('aria-valuenow', '3');
+      const announce = document.getElementById('stageAnnounce');
+      announce.textContent = 'Step 3 of 3. Request submitted.';
+      const h = document.getElementById('confirmationHeading');
+      if (h) h.focus({ preventScroll: true });
+    }
+  }
+
+  function validateField(input, errorId) {
+    const value = input.value.trim();
+    const error = document.getElementById(errorId);
+    if (!value) {
+      error.classList.add('visible');
+      input.setAttribute('aria-invalid', 'true');
+      return false;
+    }
+    error.classList.remove('visible');
+    input.removeAttribute('aria-invalid');
+    return true;
+  }
+
+  function validateForm() {
+    const validName = validateField(fullNameInput, 'errorFullName');
+    const validId = validateField(studentIdInput, 'errorStudentId');
+    const validType = validateField(requestTypeInput, 'errorRequestType');
+    const validDept = validateField(departmentInput, 'errorDepartment');
+    const validProg = validateField(programInput, 'errorProgram');
+    const validYear = validateField(yearLevelInput, 'errorYearLevel');
+    return validName && validId && validType && validDept && validProg && validYear;
+  }
+
+  function updatePhotoPreview(file) {
+    if (!file) {
+      photoPreviewBox.classList.add('hidden');
+      return;
+    }
+    photoPreviewBox.classList.remove('hidden');
+    photoName.textContent = file.name;
+    photoSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoPreview.innerHTML = `<img src="${reader.result}" alt="Photo preview">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function updateReviewPanel() {
+    reviewFullName.textContent = fullNameInput.value.trim() || '—';
+    reviewStudentId.textContent = studentIdInput.value.trim() || '—';
+    reviewType.textContent = requestTypeInput.value || '—';
+    reviewDepartment.textContent = departmentInput.value || '—';
+    reviewProgram.textContent = programInput.value || '—';
+    reviewYear.textContent = yearLevelInput.value || '—';
+    const date = new Date();
+    reviewDate.textContent = formatDate(date);
+
+    const file = photoInput.files[0];
+    if (file) {
+      reviewPhotoBox.classList.remove('hidden');
+      reviewPhotoName.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = () => {
+        reviewPhoto.innerHTML = `<img src="${reader.result}" alt="Uploaded photo preview">`;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      reviewPhotoBox.classList.add('hidden');
+    }
+  }
+
+  function buildRequestData() {
+    const now = new Date();
+    const file = photoInput.files[0];
+    return {
+      id: `REQ-${now.getTime()}`,
+      fullName: fullNameInput.value.trim(),
+      studentId: studentIdInput.value.trim(),
+      type: requestTypeInput.value,
+      department: departmentInput.value,
+      yearLevel: yearLevelInput.value,
+      program: programInput.value,
+      status: 'Submitted',
+      submittedAt: now.toISOString(),
+      dateLabel: formatDate(now),
+      photoName: file ? file.name : 'No photo uploaded',
+      photoSize: file ? `${(file.size / 1024).toFixed(1)} KB` : null,
+      photoData: file ? null : null
+    };
+  }
+
+  function saveRequest(request) {
+    const requests = JSON.parse(localStorage.getItem('requests') || '[]');
+    requests.unshift(request);
+    localStorage.setItem('requests', JSON.stringify(requests));
+  }
+
+  function showConfirmation(request) {
+    document.getElementById('confirmationRequestId').textContent = request.id;
+    document.getElementById('confirmationFullName').textContent = request.fullName;
+    confirmationStudentId.textContent = request.studentId || '—';
+    document.getElementById('confirmationType').textContent = request.type;
+    confirmationDepartment.textContent = request.department || '—';
+    confirmationProgram.textContent = request.program || '—';
+    confirmationYear.textContent = request.yearLevel || '—';
+    document.getElementById('confirmationDate').textContent = request.dateLabel;
+    showStage('confirm');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    form.reset();
+    photoPreviewBox.classList.add('hidden');
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
+    showStage('form');
+  }
+
+  function handleReview(event) {
+    event.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    updateReviewPanel();
+    showStage('review');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function handleSubmit() {
+    if (!validateForm()) {
+      showStage('form');
+      return;
+    }
+
+    // Ensure review shows current values
+    updateReviewPanel();
+
+    // Prevent double submissions
+    submitButton.disabled = true;
+    editButton.disabled = true;
+
+    // Animate the review window fading out, then persist and show confirmation
+    let handled = false;
+    function finalize() {
+      if (handled) return;
+      handled = true;
+      const request = buildRequestData();
+      saveRequest(request);
+      windowStep2.classList.remove('fade-out');
+      submitButton.disabled = false;
+      editButton.disabled = false;
+      showConfirmation(request);
+    }
+
+    windowStep2.classList.add('fade-out');
+    windowStep2.addEventListener('animationend', finalize, { once: true });
+    // Fallback in case animationend doesn't fire
+    setTimeout(finalize, 600);
+  }
+
+  function populateUserDefaults() {
+    if (currentUser && currentUser.studentId) {
+      studentIdInput.value = currentUser.studentId;
+    }
+    if (currentUser && currentUser.firstName && currentUser.lastName) {
+      fullNameInput.value = `${currentUser.firstName} ${currentUser.lastName}`;
+    }
+  }
+
+  fullNameInput.addEventListener('input', () => validateField(fullNameInput, 'errorFullName'));
+  studentIdInput.addEventListener('input', () => validateField(studentIdInput, 'errorStudentId'));
+  requestTypeInput.addEventListener('change', () => validateField(requestTypeInput, 'errorRequestType'));
+  departmentInput.addEventListener('change', () => validateField(departmentInput, 'errorDepartment'));
+  programInput.addEventListener('change', () => validateField(programInput, 'errorProgram'));
+  yearLevelInput.addEventListener('change', () => validateField(yearLevelInput, 'errorYearLevel'));
+  photoInput.addEventListener('change', () => updatePhotoPreview(photoInput.files[0]));
+
+  reviewButton.addEventListener('click', handleReview);
+  submitButton.addEventListener('click', handleSubmit);
+  editButton.addEventListener('click', () => showStage('form'));
+  cancelButton.addEventListener('click', resetForm);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    applyTheme();
+    populateUserDefaults();
+    showStage('form');
+  });
+
+  window.addEventListener('storage', event => {
+    if (event.key === 'pref-darkMode') {
+      applyTheme();
+    }
+  });
+</script>
 </body>
 </html>

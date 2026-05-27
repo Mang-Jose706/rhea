@@ -1,322 +1,1021 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Request Processing</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help & Support — IDEease Portal</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="style.css">
 
-<style>
+  <!-- FONT AWESOME ICONS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", Arial, sans-serif;
-}
+  <style>
+    /* Additional styles for help center */
+    .support-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
 
-body {
-  background: #f5f7fb;
-  color: #111827;
-}
+    .support-card {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(11,18,35,0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
+    .support-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(11,18,35,0.12);
+    }
 
-/* HEADER */
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-}
+    .support-card .badge {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
 
-.hero-img {
-  width: 160px;
-  margin-bottom: 20px;
-}
+    .support-card h4 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+      color: #0f2340;
+    }
 
-.header h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+    .support-card .desc {
+      display: block;
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
 
-.header p {
-  color: #6b7280;
-}
+    .support-card .contact-info {
+      font-weight: 600;
+      color: #1e56d6;
+      font-size: 14px;
+      margin: 12px 0;
+    }
 
-/* CARD */
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 25px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-}
+    .support-card .hours {
+      font-size: 12px;
+      color: #9aa4b2;
+      margin-top: 6px;
+    }
 
-.card-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
+    .faq-section {
+      margin-top: 40px;
+    }
 
-/* STEPS */
-.steps {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    .faq-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
 
-.step {
-  text-align: center;
-  width: 140px;
-}
+    .faq-subtitle {
+      color: #6b7280;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
 
-.circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #e5e7eb;
-  margin-bottom: 8px;
-}
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.step.done .circle {
-  background: #22c55e;
-  color: #fff;
-}
+    .acc-item {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e6eefc;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(11,18,35,0.04);
+    }
 
-.step.active .circle {
-  background: #fbbf24;
-  color: #fff;
-}
+    .acc-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
 
-.step p {
-  font-weight: 500;
-}
+    .acc-head:hover {
+      background: #f5f7fb;
+    }
 
-.step small {
-  color: #6b7280;
-}
+    .acc-head h5 {
+      margin: 0;
+      font-size: 14px;
+      color: #0f2340;
+      font-weight: 600;
+    }
 
-.line {
-  flex: 1;
-  height: 3px;
-  background: #e5e7eb;
-}
+    .acc-icon {
+      font-size: 18px;
+      color: #6b7280;
+      transition: transform 0.2s ease;
+    }
 
-.line.active {
-  background: #fbbf24;
-}
+    .acc-head.active .acc-icon {
+      transform: rotate(180deg);
+    }
 
-.line.done {
-  background: #2fbf47;
-}
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 16px;
+    }
 
-/* DETAILS */
-.details {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
+    .acc-body.show {
+      max-height: 200px;
+      padding: 0 16px 16px 16px;
+    }
 
-.details label {
-  color: #6b7280;
-  font-size: 14px;
-}
+    .acc-body p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.6;
+    }
 
-.badge {
-  display: inline-block;
-  background: #e0e7ff;
-  color: #4338ca;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-}
+    /* Live Chat Modal */
+    .chat-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s ease;
+    }
 
-/* INFO */
-.info-box {
-  background: #eef4ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-  color: #1e3a8a;
-}
+    .chat-modal.show {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 20px;
+    }
 
-/* LOADING */
-.loading {
-  text-align: center;
-  margin-bottom: 30px;
-}
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-.loading span {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin: 0 4px;
-  background: #1e3a8a;
-  border-radius: 50%;
-  animation: bounce 1.4s infinite both;
-}
+    .chat-container {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      height: 600px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
 
-.loading span:nth-child(2) { animation-delay: .2s }
-.loading span:nth-child(3) { animation-delay: .4s }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
 
-@keyframes bounce {
-  0%,80%,100% { transform: scale(0); }
-  40% { transform: scale(1); }
-}
+    .chat-header {
+      background: linear-gradient(135deg, #ff6b9a, #ff4f86);
+      color: white;
+      padding: 16px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* BUTTONS */
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
+    .chat-header h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
 
-/* Updated Buttons to match success page style */
-.return-btn, .history-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 22px;
-    border-radius: 10px;
-    border: 1px solid #d0d0d0;
-    background: white;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
+    .chat-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.return-btn i, .history-btn i {
-    margin-right: 8px;
-    font-size: 16px;
-}
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f5f7fb;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.return-btn:hover, .history-btn:hover {
-    background-color: #f0f0f0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
+    .chat-message {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
 
-</style>
+    .chat-message.user {
+      justify-content: flex-end;
+    }
 
+    .message-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .message-bubble.agent {
+      background: white;
+      color: #0f2340;
+      border: 1px solid #e6eefc;
+    }
+
+    .message-bubble.user {
+      background: #1e56d6;
+      color: white;
+    }
+
+    .chat-input-area {
+      padding: 12px;
+      border-top: 1px solid #e6eefc;
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e6eefc;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: #1e56d6;
+      box-shadow: 0 0 0 3px rgba(30, 86, 214, 0.1);
+    }
+
+    .chat-send {
+      background: #1e56d6;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: background 0.2s ease;
+    }
+
+    .chat-send:hover {
+      background: #1544b8;
+    }
+
+    /* Phone Support Modal */
+    .phone-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .phone-modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .phone-modal-content {
+      background: white;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      text-align: center;
+      position: relative;
+    }
+
+    .phone-icon-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a6cff, #5b8cff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+      margin: 0 auto 20px;
+    }
+
+    .phone-number-display {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f2340;
+      margin: 16px 0;
+      letter-spacing: 1px;
+    }
+
+    .phone-hours {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .phone-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .phone-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      flex: 1;
+    }
+
+    .phone-btn.call {
+      background: linear-gradient(135deg, #3a6cff, #5b8cff);
+      color: white;
+    }
+
+    .phone-btn.call:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(58, 108, 255, 0.3);
+    }
+
+    .phone-btn.copy {
+      background: #f5f7fb;
+      color: #0f2340;
+      border: 1px solid #e6eefc;
+    }
+
+    .phone-btn.copy:hover {
+      background: #e6eefc;
+      border-color: #1e56d6;
+    }
+
+    .phone-close {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 20px;
+      cursor: pointer;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .phone-close:hover {
+      color: #0f2340;
+    }
+
+    .copy-feedback {
+      font-size: 12px;
+      color: #28a745;
+      margin-top: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .copy-feedback.show {
+      opacity: 1;
+    }
+
+    .email-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .email-modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .email-modal-content {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    .email-icon-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6b46ff, #9050ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+      margin: 0 auto 20px;
+    }
+
+    .email-address {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f2340;
+      margin: 0 0 20px 0;
+    }
+
+    .email-info {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      background: #f5f7fb;
+      border-radius: 6px;
+      border-left: 3px solid #6b46ff;
+    }
+
+    .email-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .email-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      flex: 1;
+    }
+
+    .email-btn.send {
+      background: linear-gradient(135deg, #6b46ff, #9050ff);
+      color: white;
+    }
+
+    .email-btn.send:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(107, 70, 255, 0.3);
+    }
+
+    .email-btn.cancel {
+      background: #f5f7fb;
+      color: #0f2340;
+      border: 1px solid #e6eefc;
+    }
+
+    .email-btn.cancel:hover {
+      background: #e6eefc;
+      border-color: #6b46ff;
+    }
+
+    .email-close {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 20px;
+      cursor: pointer;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .email-close:hover {
+      color: #0f2340;
+    }
+
+    .email-feedback {
+      font-size: 12px;
+      color: #28a745;
+      margin-top: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      text-align: center;
+    }
+
+    .email-feedback.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .support-cards {
+        grid-template-columns: 1fr;
+      }
+      .chat-container {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        border-radius: 0;
+      }
+      .phone-modal-content {
+        width: calc(100% - 40px);
+        max-width: 100%;
+        margin: 20px;
+      }
+      .email-modal-content {
+        width: calc(100% - 40px);
+        max-width: 100%;
+        margin: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<main class="container">
-
-  <!-- HEADER -->
-  <section class="header">
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="hero-img">
-    <h1>Your Request Is Now Being Processed</h1>
-    <p>We're currently verifying your information and preparing your ID details.</p>
-  </section>
-
-  <!-- STATUS CARD -->
-  <section class="card">
-    <h3 class="card-title">Processing Status</h3>
-
-    <div class="steps">
-      <div class="step done">
-        <span class="circle">✓</span>
-        <p>Request Received</p>
-        <small>Completed</small>
-      </div>
-
-      <div class="line done"></div>
-
-      <div class="step done">
-        <span class="circle">⏳</span>
-        <p>Under Verification</p>
-        <small>Completed</small>
-      </div>
-
-      <div class="line active"></div>
-
-      <div class="step active">
-        <span class="circle">⚙️</span>
-        <p>In Production</p>
-        <small>In Progress</small>
-      </div>
-
-      <div class="line"></div>
-
-      <div class="step">
-        <span class="circle">🏁</span>
-        <p>Ready for Release</p>
-        <small>Pending</small>
-      </div>
+  <div class="sidebar">
+    <!-- LOGO -->
+    <div class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <h2>IDEease Portal</h2>
+      <p>Student Services</p>
     </div>
-  </section>
 
-  <!-- DETAILS CARD -->
-  <section class="card">
-    <h3 class="card-title">Request Details</h3>
-
-    <div class="details">
-      <div>
-        <label>Full Name</label>
-        <strong>Jose Rizal</strong>
-      </div>
-
-      <div>
-        <label>Submitted On</label>
-        <strong>December 12, 2025</strong>
-      </div>
-
-      <div>
-        <label>Student ID Number</label>
-        <strong>123456</strong>
-      </div>
-
-      <div>
-        <label>Current Status</label>
-        <span class="badge">Processing</span>
-      </div>
-
-      <div>
-        <label>Request Type</label>
-        <strong>New School ID</strong>
-      </div>
+    <!-- MENU -->
+    <div class="menu">
+      <a href="dashboard.html" class="menu-item">
+        <i class="fa-solid fa-house"></i> Dashboard
+      </a>
+      <a href="history.html" class="menu-item" id="historyLink" style="display: none;">
+        <i class="fa-solid fa-clock-rotate-left"></i> History
+      </a>
+      <a href="help center.html" class="menu-item active">
+        <i class="fa-solid fa-headset"></i> Help & Support
+      </a>
+      <a href="profile.html" class="menu-item">
+        <i class="fa-solid fa-user"></i> Profile
+      </a>
+      <a href="setting.html" class="menu-item">
+        <i class="fa-solid fa-gear"></i> Settings
+      </a>
     </div>
-  </section>
-
-  <!-- INFO BOX -->
-  <section class="info-box">
-    <strong>Processing Timeline</strong>
-    <p>
-      Verification usually takes. We will notify you once your ID moves to the production phase.
-      <b>1–3 working days</b>
-    </p>
-  </section>
-
-  <!-- LOADING -->
-  <div class="loading">
-    <span></span><span></span><span></span>
-    <p>Processing your request...</p>
   </div>
 
-  <!-- BUTTONS -->
-  <div class="actions">
-    <a href="history.html" class="history-btn">
-      <i class="fa-solid fa-clock-rotate-left"></i> View Request History
-    </a>
-    <a href="dashboard.html" class="return-btn">
-      <i class="fa-solid fa-house"></i> Return to Dashboard
-    </a>
+  <main class="main">
+    <div class="header">
+      <div>
+        <h1>Help & Support</h1>
+        <span>We're here to help! Find answers and reach out to our support team</span>
+      </div>
+      <a href="notif.html"><i class="fa-regular fa-bell"></i></a>
+    </div>
+
+    <div class="container">
+
+      <!-- Support Contact Cards -->
+      <div class="support-cards">
+        <div class="support-card" onclick="openPhoneSupport()" style="cursor: pointer;">
+          <div class="badge" style="background: linear-gradient(135deg, #3a6cff, #5b8cff); color: white; width: auto; padding: 8px 16px;">
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <h4>Phone Support</h4>
+          <p class="desc">Speak directly with our support team</p>
+          <div class="contact-info" style="cursor: pointer;">
+            <i class="fa-solid fa-phone"></i> 0912-345-6789
+          </div>
+          <p class="hours">Mon–Fri: 8AM – 8PM</p>
+        </div>
+
+        <div class="support-card" onclick="openEmailSupport()" style="cursor: pointer;">
+          <div class="badge" style="background: linear-gradient(135deg, #6b46ff, #9050ff); color: white; width: auto; padding: 8px 16px;">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <h4>Email Support</h4>
+          <p class="desc">Send us a detailed message</p>
+          <div class="contact-info">
+            <i class="fa-solid fa-envelope"></i> support@studentportal.edu
+          </div>
+          <p class="hours">Response within 24 hours</p>
+        </div>
+
+        <div class="support-card">
+          <div class="badge" style="background: linear-gradient(135deg, #ff6b9a, #ff4f86); color: white; width: auto; padding: 8px 16px;">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h4>Live Chat</h4>
+          <p class="desc">Get instant help from our team</p>
+          <button onclick="openLiveChat()" style="background: #1e56d6; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin: 8px 0; transition: background 0.2s ease;">
+            <i class="fa-solid fa-comments"></i> Start Chat
+          </button>
+          <p class="hours">Average wait: 2 minutes</p>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <p class="faq-subtitle">Quick answers to common questions about your student ID</p>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>How do I activate my student ID card?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>To activate your student ID, visit the student services desk or follow the activation link sent to your university email. Activation typically takes a few minutes.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>What should I do if I lost my student ID?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>Report the loss immediately via the Submit Request form. A replacement fee may apply. Check the Replacement ID policy for details.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>Can I use my student ID for campus dining?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>Yes — once activated, your student ID may be used for dining services and on-campus purchases where accepted by the merchant.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>How do I update my photo on the student ID?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>Use the Submit Request form, choose 'Photo Update', and upload a recent passport-style photo. Follow the imaging guidelines for best results.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>What access does my student ID provide?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>Student IDs grant access to campus buildings, library services, and student discounts. Specific access rights are assigned by departments.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-head" onclick="toggleAccordion(this)">
+              <h5>How do I check my student ID balance?</h5>
+              <i class="fa-solid fa-chevron-down acc-icon"></i>
+            </div>
+            <div class="acc-body">
+              <p>Check your balance through the student portal's account page or visit the campus card office for assistance.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height: 40px;"></div>
+    </div>
+  </main>
+
+  <!-- Live Chat Modal -->
+  <div id="chatModal" class="chat-modal">
+    <div class="chat-container">
+      <div class="chat-header">
+        <h4><i class="fa-solid fa-comments"></i> Support Chat</h4>
+        <button class="chat-close" onclick="closeLiveChat()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-message">
+          <div class="message-bubble agent">
+            <strong>Support Agent:</strong> Hi there! 👋 How can we help you today?
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Type your message..." />
+        <button class="chat-send" onclick="sendChatMessage()">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
-</main>
+  <!-- Phone Support Modal -->
+  <div id="phoneModal" class="phone-modal">
+    <div class="phone-modal-content">
+      <button class="phone-close" onclick="closePhoneSupport()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="phone-icon-large">
+        <i class="fa-solid fa-phone"></i>
+      </div>
+      <h3 style="margin: 0 0 8px 0; color: #0f2340;">Call Our Support Team</h3>
+      <div class="phone-number-display">0912-345-6789</div>
+      <p class="phone-hours">
+        <i class="fa-solid fa-clock" style="margin-right: 6px;"></i>
+        Mon–Fri: 8AM – 8PM
+      </p>
+      <div class="phone-actions">
+        <button class="phone-btn call" onclick="initiateCall()">
+          <i class="fa-solid fa-phone"></i> Call Now
+        </button>
+        <button class="phone-btn copy" onclick="copyPhoneNumber()">
+          <i class="fa-solid fa-copy"></i> Copy Number
+        </button>
+      </div>
+      <div class="copy-feedback" id="copyFeedback">
+        <i class="fa-solid fa-check-circle"></i> Copied to clipboard!
+      </div>
+    </div>
+  </div>
 
+  <!-- Email Support Modal -->
+  <div id="emailModal" class="email-modal">
+    <div class="email-modal-content">
+      <button class="email-close" onclick="closeEmailSupport()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="email-icon-large">
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+      <h3 style="margin: 0 0 8px 0; color: #0f2340;">Send us an Email</h3>
+      <p class="email-address">support@studentportal.edu</p>
+      <form id="emailForm" onsubmit="submitEmailForm(event)" style="width: 100%;">
+        <div style="margin-bottom: 16px; text-align: left;">
+          <label style="font-size: 13px; font-weight: 600; color: #0f2340; display: block; margin-bottom: 6px;">Subject</label>
+          <input type="text" id="emailSubject" placeholder="Support Request" required style="width: 100%; padding: 10px 12px; border: 1px solid #e6eefc; border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; box-sizing: border-box;">
+        </div>
+        <div style="margin-bottom: 16px; text-align: left;">
+          <label style="font-size: 13px; font-weight: 600; color: #0f2340; display: block; margin-bottom: 6px;">Message</label>
+          <textarea id="emailMessage" placeholder="Please describe your issue..." required style="width: 100%; padding: 10px 12px; border: 1px solid #e6eefc; border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; resize: vertical; min-height: 100px; box-sizing: border-box;"></textarea>
+        </div>
+        <p class="email-info">
+          <i class="fa-solid fa-info-circle" style="margin-right: 6px;"></i>
+          Response within 24 hours
+        </p>
+        <div class="email-actions">
+          <button type="submit" class="email-btn send">
+            <i class="fa-solid fa-paper-plane"></i> Send Email
+          </button>
+          <button type="button" class="email-btn cancel" onclick="closeEmailSupport()">
+            <i class="fa-solid fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
+      <div class="email-feedback" id="emailFeedback">
+        <i class="fa-solid fa-check-circle"></i> Email sent successfully!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openPhoneSupport() {
+      document.getElementById('phoneModal').classList.add('show');
+    }
+
+    function closePhoneSupport() {
+      document.getElementById('phoneModal').classList.remove('show');
+    }
+
+    function initiateCall() {
+      window.location.href = 'tel:+639123456789';
+    }
+
+    function copyPhoneNumber() {
+      const phoneNumber = '0912-345-6789';
+      navigator.clipboard.writeText(phoneNumber).then(() => {
+        const feedback = document.getElementById('copyFeedback');
+        feedback.classList.add('show');
+        setTimeout(() => {
+          feedback.classList.remove('show');
+        }, 2000);
+      }).catch(() => {
+        alert('Failed to copy number. Please try again.');
+      });
+    }
+
+    // Close phone modal when clicking outside
+    document.getElementById('phoneModal').addEventListener('click', (e) => {
+      if (e.target.id === 'phoneModal') {
+        closePhoneSupport();
+      }
+    });
+
+    // Email Support Functions
+    function openEmailSupport() {
+      document.getElementById('emailModal').classList.add('show');
+      document.getElementById('emailSubject').focus();
+    }
+
+    function closeEmailSupport() {
+      document.getElementById('emailModal').classList.remove('show');
+      document.getElementById('emailForm').reset();
+    }
+
+    function submitEmailForm(event) {
+      event.preventDefault();
+      const subject = document.getElementById('emailSubject').value;
+      const message = document.getElementById('emailMessage').value;
+      const email = 'support@studentportal.edu';
+
+      // Compose mailto link with form data
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+
+      // Show feedback message
+      const feedback = document.getElementById('emailFeedback');
+      feedback.classList.add('show');
+      
+      // Close modal after a brief delay
+      setTimeout(() => {
+        closeEmailSupport();
+        feedback.classList.remove('show');
+      }, 1500);
+    }
+
+    // Close email modal when clicking outside
+    document.getElementById('emailModal').addEventListener('click', (e) => {
+      if (e.target.id === 'emailModal') {
+        closeEmailSupport();
+      }
+    });
+
+    function openLiveChat() {
+      document.getElementById('chatModal').classList.add('show');
+      document.getElementById('chatInput').focus();
+    }
+
+    function closeLiveChat() {
+      document.getElementById('chatModal').classList.remove('show');
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+
+      const messagesContainer = document.getElementById('chatMessages');
+      
+      // Add user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-message user';
+      userMsg.innerHTML = `<div class="message-bubble user">${escapeHtml(message)}</div>`;
+      messagesContainer.appendChild(userMsg);
+      
+      input.value = '';
+
+      // Auto-scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      // Simulate agent response after 1 second
+      setTimeout(() => {
+        const responses = [
+          "Thank you for reaching out! Let me help you with that.",
+          "I understand. Can you provide more details about your issue?",
+          "Great question! Here's what you need to do...",
+          "I've found some helpful information for you.",
+          "Is there anything else I can help you with?",
+          "Our team will look into this and get back to you shortly."
+        ];
+        
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const agentMsg = document.createElement('div');
+        agentMsg.className = 'chat-message';
+        agentMsg.innerHTML = `<div class="message-bubble agent"><strong>Support Agent:</strong> ${randomResponse}</div>`;
+        messagesContainer.appendChild(agentMsg);
+        
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, 1000);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Allow sending message with Enter key
+    document.addEventListener('DOMContentLoaded', () => {
+      const chatInput = document.getElementById('chatInput');
+      if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            sendChatMessage();
+          }
+        });
+      }
+    });
+
+    // Close chat modal when clicking outside
+    document.getElementById('chatModal').addEventListener('click', (e) => {
+      if (e.target.id === 'chatModal') {
+        closeLiveChat();
+      }
+    });
+
+    function toggleAccordion(element) {
+      const head = element;
+      const body = element.nextElementSibling;
+      const isActive = head.classList.contains('active');
+
+      // Close all other accordion items
+      document.querySelectorAll('.acc-head').forEach(h => {
+        h.classList.remove('active');
+        h.nextElementSibling.classList.remove('show');
+      });
+
+      // Toggle current item
+      if (!isActive) {
+        head.classList.add('active');
+        body.classList.add('show');
+      }
+    }
+
+    // Initialize dark mode if enabled in localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+        if (darkModeEnabled) {
+          document.body.classList.add('dark-mode');
+        }
+        
+        // Check if user is admin - if not, hide history link
+        const userStr = localStorage.getItem('user');
+        if(userStr) {
+          const user = JSON.parse(userStr);
+          // History link is hidden by default for students, no need to change
+          // (already set to display: none)
+        }
+      } catch(e) {}
+    });
+  </script>
 </body>
 </html>

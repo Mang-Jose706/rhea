@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IDEease Portal - My Requests</title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- FONT AWESOME ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        .cta-hero {
+            background: var(--accent);
+            color: white;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 24px rgba(93, 111, 210, 0.15);
+        }
+
+        .cta-hero h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .cta-hero p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 14px;
+        }
+
+        .cta-button {
+            background: white;
+            color: var(--accent);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid var(--input-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-content h4 {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-content .number {
+            margin: 4px 0 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .requests-section {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--input-border);
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .requests-section h3 {
+            margin: 0 0 18px;
+            font-size: 18px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table thead {
+            background: var(--input-bg);
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .requests-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .requests-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--input-border);
+            color: var(--text-primary);
+        }
+
+        .requests-table tbody tr:hover {
+            background: var(--input-bg);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .view-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-btn:hover {
+            opacity: 0.9;
+        }
+
+        .no-requests {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-requests i {
+            font-size: 48px;
+            color: var(--input-border);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .cta-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .requests-table {
+                font-size: 13px;
+            }
+
+            .requests-table th,
+            .requests-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>IDEease Portal</h2>
+            <p>Student Services</p>
+        </div>
+        <div class="menu">
+            <div class="menu-item active">
+                <i class="fa-solid fa-house"></i>
+                My Requests
+            </div>
+
+            <a href="history.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    History
+                </div>
+            </a>
+
+            <a href="help center.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-headset"></i>
+                    Help & Support
+                </div>
+            </a>
+
+            <a href="profile.html">
+            <div class="menu-item">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </div>
+            </a>
+
+            <a href="setting.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <div>
+                <h1 id="welcomeTitle">My Requests</h1>
+                <p id="welcomeMessage">Welcome! View and track your student ID requests below.</p>
+            </div>
+
+            <div class="header-right">
+                <a href="notif.html"><i class="fa-regular fa-bell"></i></a>
+                <a href="submit a req .html">
+                    <button class="new-request-btn">
+                        <i class="fa-solid fa-plus"></i> New Request
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <div class="cta-hero">
+            <div>
+                <h2>Need a Student ID?</h2>
+                <p>Submit a new request to get your student ID or manage existing ones.</p>
+            </div>
+            <a href="submit a req .html">
+                <button class="cta-button">Submit New Request</button>
+            </a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Pending</h4>
+                    <div class="number" id="statPending">0</div>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Processing</h4>
+                    <div class="number" id="statProcessing">0</div>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Completed</h4>
+                    <div class="number" id="statCompleted">0</div>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Rejected</h4>
+                    <div class="number" id="statRejected">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="requests-section">
+            <h3>
+                <i class="fa-solid fa-list"></i>
+                Your Requests
+            </h3>
+
+      <div id="requestsContainer">
+            <div class="no-requests">
+                <i class="fa-solid fa-inbox"></i>
+                <p>No requests yet. <a href="submit a req .html" style="color: var(--accent); text-decoration: underline;">Submit your first request</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dark mode preference on page load
+        if (localStorage.getItem('pref-darkMode') === '1') {
+            document.body.classList.add('dark-mode');
+        }
+
+
+        // Load student's own requests
+        function loadStudentRequests() {
+            const user = verifyStudentAccess();
+            if (!user) return;
+
+            // Load user profile info
+            const userSurname = user.surname || user.lastName || user.firstName || 'Student';
+            document.getElementById('welcomeTitle').textContent = `My Requests`;
+            document.getElementById('welcomeMessage').textContent =
+                `Welcome back, ${userSurname}! View and track your student ID requests below.`;
+
+            // Sample requests data (in a real app, this would come from a server)
+            const studentRequests = [
+                {
+                    id: '#ID-001',
+                    type: 'New ID',
+                    date: 'Jan 20, 2025',
+                    status: 'completed',
+                    details: 'Initial ID issuance'
+                },
+                {
+                    id: '#ID-002',
+                    type: 'ID Replacement',
+                    date: 'Jan 15, 2025',
+                    status: 'processing',
+                    details: 'Damaged ID replacement'
+                },
+                {
+                    id: '#ID-003',
+                    type: 'Photo Update',
+                    date: 'Jan 10, 2025',
+                    status: 'pending',
+                    details: 'Profile photo update'
+                }
+            ];
+
+            // Count statuses
+            let counts = {
+                pending: 0,
+                processing: 0,
+                completed: 0,
+                rejected: 0
+            };
+
+            studentRequests.forEach(req => {
+                if (counts.hasOwnProperty(req.status)) {
+                    counts[req.status]++;
+                }
+            });
+
+            // Update stat boxes
+            document.getElementById('statPending').textContent = counts.pending;
+            document.getElementById('statProcessing').textContent = counts.processing;
+            document.getElementById('statCompleted').textContent = counts.completed;
+            document.getElementById('statRejected').textContent = counts.rejected;
+
+            // Render requests table
+            if (studentRequests.length === 0) {
+                document.getElementById('requestsContainer').innerHTML = `
+                    <div class="no-requests">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p>No requests yet. <a href="submit a req .html" style="color: var(--accent); text-decoration: underline;">Submit your first request</a></p>
+                    </div>
+                `;
+            } else {
+                let tableHTML = `
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                studentRequests.forEach(req => {
+                    const statusClass = `status-${req.status}`;
+                    const statusIcon = {
+                        pending: 'fa-clock',
+                        processing: 'fa-spinner',
+                        completed: 'fa-check-circle',
+                        rejected: 'fa-ban'
+                    }[req.status] || 'fa-circle';
+
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${req.id}</strong></td>
+                            <td>${req.type}</td>
+                            <td>${req.date}</td>
+                            <td>
+                                <span class="status-badge ${statusClass}">
+                                    <i class="fa-solid ${statusIcon}"></i>
+                                    ${req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="view-btn" onclick="viewRequestDetails('${req.id}')">
+                                    <i class="fa-solid fa-eye"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+
+                document.getElementById('requestsContainer').innerHTML = tableHTML;
+            }
+        }
+
+        function viewRequestDetails(requestId) {
+            alert(`Viewing details for ${requestId}\n\nFull request details would be displayed here.`);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStudentRequests();
+        });
+    </script>
+</body>
+</html>

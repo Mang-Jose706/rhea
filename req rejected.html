@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Rejected</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="assets/common.css">
     <style>
         :root {
             --color-background: #f0f3f6;
@@ -21,6 +22,18 @@
             --spacing-md: 20px;
             --spacing-lg: 30px;
             --border-radius: 12px;
+        }
+
+        body.dark-mode {
+            --color-background: #1a1a1a;
+            --color-white: #1a1a1a;
+            --color-text-dark: #f8fafc;
+            --color-text-medium: #cbd5e1;
+            --color-red: #dc3545;
+            --color-red-light: #7f1d1d;
+            --color-blue: #3b82f6;
+            --color-blue-dark: #1e40af;
+            --color-border-light: #374151;
             --shadow-light: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
         }
 
@@ -87,25 +100,7 @@
         .btn-secondary:hover { background-color: var(--color-border-light); }
         .btn .fas { font-size:1rem; }
 
-        /* Return to Dashboard button at bottom */
-        .return-btn {
-            display:inline-flex;
-            align-items:center;
-            gap:10px;
-            padding:12px 22px;
-            border-radius:10px;
-            border:1px solid #d0d0d0;
-            background:white;
-            font-size:16px;
-            cursor:pointer;
-            box-shadow:0 3px 8px rgba(0,0,0,0.08);
-            text-decoration:none;
-            color:#333;
-            font-weight:500;
-            margin: 20px auto 0 auto;
-        }
-        .return-btn i { margin-right:8px; font-size:16px; }
-        .return-btn:hover { background-color:#f0f0f0; box-shadow:0 4px 10px rgba(0,0,0,0.12);}
+        
     </style>
 </head>
 <body>
@@ -209,10 +204,27 @@
         </div>
 
         <!-- RETURN TO DASHBOARD -->
-        <a href="dashboard.html" class="return-btn">
-            <i class="fas fa-house"></i> Return to Dashboard
-        </a>
+        <a href="dashboard.html" class="return-dashboard"><i class="fas fa-house"></i> Return to Dashboard</a>
 
     </div>
+
+    <script>
+let requests = JSON.parse(localStorage.getItem("requests")) || [];
+let last = requests[requests.length - 1];
+
+if (last) {
+    document.querySelector(".status-value").innerText = last.status;
+}
+
+// Initialize dark mode from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+    if (darkModeEnabled) {
+      document.body.classList.add('dark-mode');
+    }
+  } catch(e) {}
+});
+</script>
 </body>
 </html>

@@ -746,6 +746,15 @@ function closeModal() {
     window.location.href = 'history.html';
 }
 
+// Initialize dark mode from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
+    if (darkModeEnabled) {
+      document.body.classList.add('dark-mode');
+    }
+  } catch(e) {}
+});
 </script>
 
 
