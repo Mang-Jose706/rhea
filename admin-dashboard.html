@@ -1440,7 +1440,7 @@
           return false;
         }
         const payload = await response.json();
-        return Boolean(payload && payload.ok && payload.user && payload.user.role === 'admin');
+        return Boolean(payload && payload.ok && payload.user && (payload.user.role === 'admin' || payload.user.role === 'superadmin'));
       } catch (error) {
         console.warn('[Auth] Admin token validation failed:', error);
         return false;
@@ -1690,8 +1690,8 @@
     }
 
     function isAdmin() {
-        const user = getCurrentUser();
-        return user.role === 'admin' || user.accountType === 'admin';
+      const user = getCurrentUser();
+      return user.role === 'admin' || user.role === 'superadmin' || user.accountType === 'admin';
     }
 
     function getCurrentStudentId() {

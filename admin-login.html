@@ -322,7 +322,7 @@
                 <label for="adminPassword">Password</label>
                 <div class="password-toggle">
                     <input type="password" id="adminPassword" placeholder="Enter password" required>
-                    <button type="button" class="toggle-btn" onclick="togglePasswordVisibility()">
+                    <button type="button" class="toggle-btn" onclick="togglePasswordVisibility(event)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
                 </div>
@@ -359,10 +359,19 @@
             localStorage.setItem('pref-darkMode', isDarkMode ? '1' : '0');
         }
 
-        function togglePasswordVisibility() {
+        function togglePasswordVisibility(e) {
+            e = e || window.event;
             const input = document.getElementById('adminPassword');
-            const icon = event.target.closest('i');
-            
+            let btn = null;
+            if (e.currentTarget && e.currentTarget.tagName) {
+                btn = e.currentTarget;
+            } else if (e.target) {
+                btn = e.target.closest && e.target.closest('button');
+            }
+            const icon = (btn && btn.querySelector('i')) || document.querySelector('.toggle-btn i');
+
+            if (!input || !icon) return;
+
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -401,8 +410,25 @@
                 const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
                     headers: getAuthHeaders()
                 });
-                if (response.ok) {
+
+                if (!response.ok) {
+                    // remove invalid token
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminSession');
+                        localStorage.removeItem('user');
+                    }
+                    return;
+                }
+
+                const payload = await response.json().catch(() => null);
+                if (payload && payload.ok && payload.user && (payload.user.role === 'admin' || payload.user.role === 'superadmin')) {
                     window.location.href = '/admin-dashboard.html';
+                } else {
+                    // unexpected payload, clear token
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminSession');
+                    localStorage.removeItem('user');
                 }
             } catch (error) {
                 console.warn('[Admin Login] Token check failed:', error);
