@@ -151,13 +151,6 @@ body {
             </select>
         </div>
         <div class="input-box">
-            <select id="role" style="width: 80%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 14px;">
-                <option value="student" selected>Student</option>
-                <option value="alumni">Alumni</option>
-                <option value="researcher">Researcher</option>
-            </select>
-        </div>
-        <div class="input-box">
             <input type="email" id="email" placeholder="Enter your email address">
         </div>
         <div class="input-box">
@@ -181,7 +174,7 @@ body {
             const studentId = document.getElementById("studentId").value;
             const dept = document.getElementById("dept").value;
             const program = document.getElementById("program").value;
-            const role = document.getElementById("role").value;
+            const role = "student";
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;

@@ -155,6 +155,110 @@
             font-weight: 600;
         }
 
+        .progress-card {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .progress-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .progress-card-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .progress-card-header .progress-status {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-line {
+            background: var(--input-bg);
+            border-radius: 999px;
+            height: 12px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #4ac0f6);
+            width: 0%;
+            transition: width 0.35s ease;
+        }
+
+        .progress-step-labels {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .progress-step-labels span {
+            display: block;
+        }
+
+        /* Grouped new-request banner + button layout */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .new-request-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+            max-width: 220px;
+            min-width: 160px;
+        }
+
+        #newRequestBanner {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .new-request-btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 140px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .new-request-btn.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
         .status-pending {
             background: #fff3cd;
             color: #856404;
@@ -229,10 +333,12 @@
             <p>Student Services</p>
         </div>
         <div class="menu">
-            <div class="menu-item active">
-                <i class="fa-solid fa-house"></i>
-                My Requests
-            </div>
+            <a href="student-dashboard.html">
+                <div class="menu-item active">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </div>
+            </a>
 
             <a href="history.html">
                 <div class="menu-item">
@@ -249,10 +355,10 @@
             </a>
 
             <a href="profile.html">
-            <div class="menu-item">
-                <i class="fa-solid fa-user"></i>
-                Profile
-            </div>
+                <div class="menu-item">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </div>
             </a>
 
             <a href="setting.html">
@@ -273,11 +379,12 @@
 
             <div class="header-right">
                 <a href="notif.html"><i class="fa-regular fa-bell"></i></a>
-                <a href="submit a req .html">
-                    <button class="new-request-btn">
+                <div class="new-request-group">
+                    <div id="newRequestBanner" style="display:none;background:#fff4e5;border:1px solid #ffd8a8;color:#92400e;font-weight:700;">You have already submitted a request. Please wait for the result before sending another.</div>
+                    <button id="newRequestBtn" class="new-request-btn">
                         <i class="fa-solid fa-plus"></i> New Request
                     </button>
-                </a>
+                </div>
             </div>
         </div>
 
@@ -286,12 +393,6 @@
                 <h2>Need a Student ID?</h2>
                 <p>Submit a new request to get your student ID or manage existing ones.</p>
             </div>
-            <a href="submit a req .html">
-                <button class="cta-button">Submit New Request</button>
-            </a>
-        </div>
-
-        <div class="stats-grid">
             <div class="stat-box">
                 <div class="stat-icon">
                     <i class="fa-solid fa-clock"></i>
@@ -333,6 +434,22 @@
             </div>
         </div>
 
+        <div class="progress-card" id="progressCard">
+            <div class="progress-card-header">
+                <h3>Latest Request Progress</h3>
+                <div class="progress-status" id="progressCurrentStatus">No active request</div>
+            </div>
+            <div class="progress-line" aria-hidden="true">
+                <div class="progress-fill" id="progressFillTracker"></div>
+            </div>
+            <div class="progress-step-labels">
+                <span>Submitted</span>
+                <span>Verification</span>
+                <span>Processing</span>
+                <span>Completed</span>
+            </div>
+        </div>
+
         <div class="requests-section">
             <h3>
                 <i class="fa-solid fa-list"></i>
@@ -349,126 +466,270 @@
     </div>
 
     <script>
+        const BACKEND_BASE_URL = 'http://localhost:3000';
+        let studentWs = null;
+
         // Load dark mode preference on page load
         if (localStorage.getItem('pref-darkMode') === '1') {
             document.body.classList.add('dark-mode');
         }
 
+        function getCurrentUser() {
+            try {
+                return JSON.parse(localStorage.getItem('user')) || {};
+            } catch (e) {
+                return {};
+            }
+        }
 
-        // Load student's own requests
-        function loadStudentRequests() {
+        function verifyStudentAccess() {
+            const user = getCurrentUser();
+            if (!user || !user.studentId) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return user;
+        }
+
+        function getStatusCategory(status) {
+            const normalized = (status || '').toString().toLowerCase();
+            if (normalized === 'submitted') return 'pending';
+            if (normalized === 'pending' || normalized === 'verification') return 'pending';
+            if (normalized === 'processing') return 'processing';
+            if (normalized === 'ready' || normalized === 'completed') return 'completed';
+            if (normalized === 'rejected') return 'rejected';
+            return 'pending';
+        }
+
+        function getStatusBadgeClass(status) {
+            const category = getStatusCategory(status);
+            return `status-${category}`;
+        }
+
+        function getStatusLabel(status) {
+            const normalized = (status || '').toString().toLowerCase();
+            if (normalized === 'submitted') return 'Submitted';
+            if (normalized === 'pending' || normalized === 'verification') return 'Pending';
+            if (normalized === 'processing') return 'Processing';
+            if (normalized === 'ready' || normalized === 'completed') return 'Completed';
+            if (normalized === 'rejected') return 'Rejected';
+            return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown';
+        }
+
+        function getStatusIcon(status) {
+            const category = getStatusCategory(status);
+            return {
+                submitted: 'fa-circle-dot',
+                pending: 'fa-clock',
+                processing: 'fa-spinner',
+                completed: 'fa-check-circle',
+                rejected: 'fa-ban'
+            }[category] || 'fa-circle';
+        }
+
+        function getLocalStudentRequests(studentId) {
+            try {
+                const stored = localStorage.getItem('requests');
+                const requests = stored ? JSON.parse(stored) : [];
+                return requests.filter(req => req.studentId === studentId.toString());
+            } catch (e) {
+                return [];
+            }
+        }
+
+        const HIDDEN_REQUEST_IDS = new Set(['REQ-1780024153165']);
+
+        function dedupeRequests(requests) {
+            const map = new Map();
+            (Array.isArray(requests) ? requests : []).forEach(req => {
+                if (HIDDEN_REQUEST_IDS.has(req.id)) {
+                    return;
+                }
+                const key = req.id || `${req.studentId || ''}|${(req.fullName || req.studentName || req.type || '').toString().trim()}|${req.createdAt || req.submittedAt || req.date || ''}`;
+                const existing = map.get(key);
+                const currentTime = new Date(req.updatedAt || req.createdAt || req.submittedAt || req.date || 0).getTime();
+                const existingTime = existing ? new Date(existing.updatedAt || existing.createdAt || existing.submittedAt || existing.date || 0).getTime() : 0;
+                if (!existing || currentTime >= existingTime) {
+                    map.set(key, req);
+                }
+            });
+            return Array.from(map.values());
+        }
+
+async function fetchStudentRequests(studentId) {
+    try {
+        const response = await fetch(`/api/student/requests?userId=${encodeURIComponent(studentId)}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch student requests from backend');
+        }
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+            throw new Error('Unexpected response format for student requests');
+        }
+        return dedupeRequests(data);
+    } catch (error) {
+        console.warn('Backend fetch failed, falling back to local request store:', error);
+        return dedupeRequests(getLocalStudentRequests(studentId));
+    }
+}
+
+        async function loadStudentRequests() {
             const user = verifyStudentAccess();
             if (!user) return;
 
-            // Load user profile info
             const userSurname = user.surname || user.lastName || user.firstName || 'Student';
             document.getElementById('welcomeTitle').textContent = `My Requests`;
             document.getElementById('welcomeMessage').textContent =
                 `Welcome back, ${userSurname}! View and track your student ID requests below.`;
 
-            // Sample requests data (in a real app, this would come from a server)
-            const studentRequests = [
-                {
-                    id: '#ID-001',
-                    type: 'New ID',
-                    date: 'Jan 20, 2025',
-                    status: 'completed',
-                    details: 'Initial ID issuance'
-                },
-                {
-                    id: '#ID-002',
-                    type: 'ID Replacement',
-                    date: 'Jan 15, 2025',
-                    status: 'processing',
-                    details: 'Damaged ID replacement'
-                },
-                {
-                    id: '#ID-003',
-                    type: 'Photo Update',
-                    date: 'Jan 10, 2025',
-                    status: 'pending',
-                    details: 'Profile photo update'
+            const studentRequests = await fetchStudentRequests(user.studentId);
+            renderStudentRequests(studentRequests);
+            // Enforce frontend single-active-request rule: disable New Request if any active request exists
+            try {
+                const hasActive = Array.isArray(studentRequests) && studentRequests.some(r => {
+                    const s = (r.status || '').toString().toLowerCase();
+                    return ['submitted', 'verification', 'processing', 'ready'].includes(s);
+                });
+                const newBtn = document.getElementById('newRequestBtn');
+                const banner = document.getElementById('newRequestBanner');
+                if (hasActive) {
+                    if (newBtn) {
+                        newBtn.disabled = true;
+                        newBtn.classList.add('disabled');
+                    }
+                    if (banner) banner.style.display = 'block';
+                } else {
+                    if (newBtn) {
+                        newBtn.disabled = false;
+                        newBtn.classList.remove('disabled');
+                    }
+                    if (banner) banner.style.display = 'none';
                 }
-            ];
+            } catch (e) {
+                console.warn('Could not evaluate active request state', e);
+            }
+        }
 
-            // Count statuses
-            let counts = {
+        function renderStudentRequests(studentRequests) {
+            const counts = {
                 pending: 0,
                 processing: 0,
                 completed: 0,
                 rejected: 0
             };
 
-            studentRequests.forEach(req => {
-                if (counts.hasOwnProperty(req.status)) {
-                    counts[req.status]++;
+            const now = new Date();
+            const requests = dedupeRequests(Array.isArray(studentRequests) ? studentRequests : []);
+
+            requests.forEach(req => {
+                const category = getStatusCategory(req.status);
+                if (counts.hasOwnProperty(category)) {
+                    counts[category]++;
                 }
             });
 
-            // Update stat boxes
             document.getElementById('statPending').textContent = counts.pending;
             document.getElementById('statProcessing').textContent = counts.processing;
             document.getElementById('statCompleted').textContent = counts.completed;
             document.getElementById('statRejected').textContent = counts.rejected;
 
-            // Render requests table
-            if (studentRequests.length === 0) {
+            if (requests.length === 0) {
                 document.getElementById('requestsContainer').innerHTML = `
                     <div class="no-requests">
                         <i class="fa-solid fa-inbox"></i>
                         <p>No requests yet. <a href="submit a req .html" style="color: var(--accent); text-decoration: underline;">Submit your first request</a></p>
                     </div>
                 `;
-            } else {
-                let tableHTML = `
-                    <table class="requests-table">
-                        <thead>
-                            <tr>
-                                <th>Request ID</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                updateProgressTracker(null);
+                return;
+            }
 
-                studentRequests.forEach(req => {
-                    const statusClass = `status-${req.status}`;
-                    const statusIcon = {
-                        pending: 'fa-clock',
-                        processing: 'fa-spinner',
-                        completed: 'fa-check-circle',
-                        rejected: 'fa-ban'
-                    }[req.status] || 'fa-circle';
-
-                    tableHTML += `
+            let tableHTML = `
+                <table class="requests-table">
+                    <thead>
                         <tr>
-                            <td><strong>${req.id}</strong></td>
-                            <td>${req.type}</td>
-                            <td>${req.date}</td>
-                            <td>
-                                <span class="status-badge ${statusClass}">
-                                    <i class="fa-solid ${statusIcon}"></i>
-                                    ${req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="view-btn" onclick="viewRequestDetails('${req.id}')">
-                                    <i class="fa-solid fa-eye"></i> View
-                                </button>
-                            </td>
+                            <th>Request ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
                         </tr>
-                    `;
-                });
+                    </thead>
+                    <tbody>
+            `;
+
+            requests.forEach(req => {
+                const dateValue = req.date || req.createdAt || req.submittedAt || now.toISOString();
+                const displayDate = new Date(dateValue).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                const statusClass = getStatusBadgeClass(req.status);
+                const statusIcon = getStatusIcon(req.status);
+                const statusLabel = getStatusLabel(req.status);
 
                 tableHTML += `
-                        </tbody>
-                    </table>
+                    <tr>
+                        <td><strong>${req.id || 'N/A'}</strong></td>
+                        <td>${req.type || 'Student ID Request'}</td>
+                        <td>${displayDate}</td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                <i class="fa-solid ${statusIcon}"></i>
+                                ${statusLabel}
+                            </span>
+                        </td>
+                        
+                    </tr>
                 `;
+            });
 
-                document.getElementById('requestsContainer').innerHTML = tableHTML;
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('requestsContainer').innerHTML = tableHTML;
+            const latestRequest = getLatestRequest(requests);
+            updateProgressTracker(latestRequest);
+        }
+
+        function getLatestRequest(requests) {
+            if (!Array.isArray(requests) || requests.length === 0) {
+                return null;
+            }
+            return requests.slice().sort((a, b) => {
+                const aTime = new Date(a.updatedAt || a.createdAt || a.submittedAt || a.date).getTime();
+                const bTime = new Date(b.updatedAt || b.createdAt || b.submittedAt || b.date).getTime();
+                return bTime - aTime;
+            })[0] || null;
+        }
+
+        function getProgressValue(status) {
+            const normalized = (status || '').toString().toLowerCase();
+            if (normalized === 'submitted') return 25;
+            if (normalized === 'verification' || normalized === 'pending') return 50;
+            if (normalized === 'processing') return 75;
+            if (normalized === 'ready' || normalized === 'completed') return 100;
+            if (normalized === 'rejected') return 100;
+            return 0;
+        }
+
+        function updateProgressTracker(request) {
+            const statusText = document.getElementById('progressCurrentStatus');
+            const progressFill = document.getElementById('progressFillTracker');
+            if (!request) {
+                statusText.textContent = 'No active request';
+                progressFill.style.width = '0%';
+                return;
+            }
+
+            const statusLabel = getStatusLabel(request.status || request.status);
+            const progressValue = getProgressValue(request.status);
+            statusText.textContent = `${request.id || 'Request'} — ${statusLabel}`;
+            progressFill.style.width = `${progressValue}%`;
+
+            if ((request.status || '').toString().toLowerCase() === 'rejected') {
+                statusText.textContent = `${request.id || 'Request'} — Rejected`;
+                progressFill.style.background = '#f8d7da';
+            } else {
+                progressFill.style.background = 'linear-gradient(90deg, var(--accent), #4ac0f6)';
             }
         }
 
@@ -476,10 +737,64 @@
             alert(`Viewing details for ${requestId}\n\nFull request details would be displayed here.`);
         }
 
+        function connectStudentWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const wsHost = window.location.hostname || 'localhost';
+            const wsPort = 3000;
+            const wsUrl = `${wsProtocol}://${wsHost}:${wsPort}/ws`;
+
+            studentWs = new WebSocket(wsUrl);
+
+            studentWs.onopen = () => {
+                console.log('[Student WS] Connected to real-time updates');
+                const user = getCurrentUser();
+                if (user && user.studentId) {
+                    studentWs.send(JSON.stringify({ type: 'identify', role: 'student', userId: user.studentId }));
+                }
+            }; 
+
+            studentWs.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (!data) return;
+                    const user = getCurrentUser();
+                    if (!user || !user.studentId) return;
+                    if (data.userId && data.userId.toString() !== user.studentId.toString()) return;
+
+                    const isStatusEvent = (data.type && data.type.startsWith('request.')) || data.type === 'requestStatusUpdate' || data.event === 'requestStatusUpdate';
+                    if (isStatusEvent) {
+                        console.log('[Student WS] Request update received:', data);
+                        loadStudentRequests();
+                    }
+                } catch (error) {
+                    console.warn('[Student WS] Invalid message', error);
+                }
+            };
+
+            studentWs.onclose = () => {
+                console.log('[Student WS] Disconnected, reconnecting in 3s');
+                setTimeout(connectStudentWebSocket, 3000);
+            };
+
+            studentWs.onerror = (error) => {
+                console.warn('[Student WS] Error:', error);
+            };
+        }
+
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadStudentRequests();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadStudentRequests();
+            connectStudentWebSocket();
+            const newBtn = document.getElementById('newRequestBtn');
+            if (newBtn) {
+                newBtn.addEventListener('click', (e) => {
+                    if (newBtn.disabled) return;
+                    // Navigate to the submission form
+                    window.location.href = 'submit a req .html';
+                });
+            }
         });
+
     </script>
 </body>
 </html>

@@ -118,6 +118,7 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    transition: background 240ms ease, border-color 240ms ease, color 240ms ease, transform 240ms ease;
   }
 
   .stage-pill.active {
@@ -136,7 +137,6 @@
   .step-window {
     position: absolute;
     inset: 0;
-    padding: 26px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -145,12 +145,196 @@
     transform: translateX(40px);
     transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
     visibility: hidden;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr;
+    min-height: 620px;
+    pointer-events: none;
+    gap: 0;
+  }
+
+  .step-window > :not(.step-footer) {
+    overflow-y: auto;
+    padding: 26px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-height: 620px;
-    padding-bottom: 28px; /* give room for anchored actions */
-    pointer-events: none;
+  }
+
+  .step-footer {
+    padding: 12px 26px 26px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    height: auto;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .step-footer .action-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .confirmation-card .step-footer {
+    justify-content: center;
+  }
+
+  .confirmation-card .step-footer .return-dashboard {
+    margin: 0;
+  }
+
+  /* Rejection Card Styling */
+  .rejection-card {
+    text-align: center;
+  }
+
+  .rejection-card > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rejection-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .rejection-title {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 800;
+    color: var(--danger);
+  }
+
+  .rejection-copy {
+    margin: 12px auto 0;
+    max-width: 630px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .rejection-reason-panel {
+    margin-top: 18px;
+    padding: 16px;
+    border: 2px solid var(--danger);
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.06);
+    text-align: left;
+  }
+
+  .rejection-reason-title {
+    margin: 0 0 12px;
+    color: var(--danger);
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rejection-reason-panel p {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .corrections-checklist {
+    margin-top: 18px;
+    padding: 16px;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .corrections-title {
+    margin: 0 0 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .corrections-list {
+    margin: 0;
+    padding-left: 24px;
+    list-style: decimal;
+  }
+
+  .corrections-list li {
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+  }
+
+  .correction-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(239, 68, 68, 0.12);
+    border-radius: 50%;
+    color: var(--danger);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-left: -30px;
+  }
+
+  .rejection-card .step-footer {
+    justify-content: space-between;
+  }
+
+  .rejection-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 26px 26px;
+  }
+
+  .rejection-footer .action-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .return-dashboard-rejection {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    width: 200px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.18);
+    flex-shrink: 0;
+  }
+
+  .return-dashboard-rejection:hover {
+    background: var(--accent-strong);
   }
 
   .step-window.active {
@@ -345,10 +529,9 @@
   .action-group {
     display: flex;
     gap: 14px;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    margin-top: auto; /* keep actions anchored at bottom */
-    padding-top: 12px;
+    width: 100%;
   }
 
   /* Buttons: fixed size to avoid layout shifts on click/focus */
@@ -358,7 +541,7 @@
     border: none;
     border-radius: 14px;
     box-sizing: border-box;
-    min-width: 140px;
+    width: 140px;
     height: 48px;
     padding: 0 20px;
     font-size: 1rem;
@@ -369,6 +552,7 @@
     justify-content: center;
     transition: background 0.15s ease, box-shadow 0.15s ease;
     outline: none;
+    flex-shrink: 0;
   }
 
   .btn-secondary {
@@ -474,6 +658,11 @@
     color: var(--success);
   }
 
+  .badge.rejected {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--danger);
+  }
+
   /* Screen-reader only utility */
   .sr-only {
     position: absolute !important;
@@ -489,6 +678,9 @@
 
   .confirmation-card {
     text-align: center;
+  }
+
+  .confirmation-card > div:first-child {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -525,8 +717,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin: 18px auto 0;
-    min-width: 200px;
+    margin: 0;
+    width: 200px;
     height: 48px;
     padding: 0 22px;
     border-radius: 14px;
@@ -535,6 +727,7 @@
     text-decoration: none;
     font-weight: 700;
     box-shadow: 0 12px 30px rgba(59, 130, 246, 0.18);
+    flex-shrink: 0;
   }
 
   .return-dashboard:hover {
@@ -589,7 +782,7 @@
       </div>
     </div>
 
-    <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="progressBar">
+    <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="progressBar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
@@ -600,13 +793,15 @@
       <span class="stage-pill active" id="stageForm">1. Fill Details</span>
       <span class="stage-pill" id="stageReview">2. Review</span>
       <span class="stage-pill" id="stageConfirm">3. Confirmed</span>
+      <span class="stage-pill hidden" id="stageReject">4. Corrections</span>
     </div>
 
     <div class="window-carousel" aria-live="polite">
       <section class="step-window active" id="windowStep1" aria-labelledby="requestFormHeading">
-        <h2 class="panel-heading sr-only" id="requestFormHeading" tabindex="-1">Fill Details</h2>
-        <form id="requestForm" novalidate>
-          <div class="form-grid">
+        <div>
+          <h2 class="panel-heading sr-only" id="requestFormHeading" tabindex="-1">Fill Details</h2>
+          <form id="requestForm" novalidate>
+            <div class="form-grid">
             <div>
               <div class="form-group">
                 <label for="fullName">Full Name</label>
@@ -619,11 +814,15 @@
                 <label for="department">Department / College</label>
                 <select id="department" name="department" required>
                   <option value="" disabled selected hidden>Choose your department or college</option>
-                  <option value="College of Science">College of Science</option>
-                  <option value="College of Arts">College of Arts</option>
+                  <option value="College of Agriculture, Fisheries and Natural Resources">College of Agriculture, Fisheries and Natural Resources</option>
+                  <option value="College of Arts and Communication">College of Arts and Communication</option>
+                  <option value="College of Business Administration">College of Business Administration</option>
                   <option value="College of Engineering">College of Engineering</option>
-                  <option value="School of Business">School of Business</option>
-                  <option value="Other">Other</option>
+                  <option value="College of Law">College of Law</option>
+                  <option value="College of Education">College of Education</option>
+                  <option value="College of Nursing and Allied Health Sciences">College of Nursing and Allied Health Sciences</option>
+                  <option value="College of Science">College of Science</option>
+                  <option value="College of Veterinary Medicine">College of Veterinary Medicine</option>
                 </select>
                 <div class="field-error" id="errorDepartment">Please select your department or college.</div>
               </div>
@@ -636,7 +835,6 @@
                   <option value="2">2nd Year</option>
                   <option value="3">3rd Year</option>
                   <option value="4">4th Year</option>
-                  <option value="Graduate">Graduate</option>
                 </select>
                 <div class="field-error" id="errorYearLevel">Please select your year level.</div>
               </div>
@@ -654,11 +852,6 @@
                 <label for="program">Program / Degree</label>
                 <select id="program" name="program" required>
                   <option value="" disabled selected hidden>Choose your program or degree</option>
-                  <option value="BSc Computer Science">BSc Computer Science</option>
-                  <option value="BA Psychology">BA Psychology</option>
-                  <option value="BEng Mechanical">BEng Mechanical</option>
-                  <option value="MBA">MBA</option>
-                  <option value="Other">Other</option>
                 </select>
                 <div class="field-error" id="errorProgram">Please select your program or degree.</div>
               </div>
@@ -668,7 +861,6 @@
                 <select id="requestType" name="requestType" required>
                   <option value="" disabled selected hidden>Choose a request type</option>
                   <option value="New ID">New ID</option>
-                  <option value="Replacement">Replacement</option>
                   <option value="Photo Update">Photo Update</option>
                 </select>
                 <div class="field-error" id="errorRequestType">Please select a request type.</div>
@@ -677,8 +869,8 @@
           </div>
 
           <div class="form-group file-upload">
-            <label for="photoUpload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo (optional)</label>
-            <input type="file" id="photoUpload" name="photoUpload" accept="image/*">
+            <label for="photoUpload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo</label>
+            <input type="file" id="photoUpload" name="photoUpload" accept="image/jpeg,image/png" required>
             <div class="form-hint">Supported formats: JPG, PNG. Preview appears below once selected.</div>
             <div class="preview-box hidden" id="photoPreviewBox">
               <div class="preview-image" id="photoPreview"></div>
@@ -693,18 +885,22 @@
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="action-group">
-            <button type="button" class="btn-secondary" id="cancelButton">Cancel</button>
-            <button type="submit" class="btn-primary" id="reviewButton">Next</button>
+            <div class="field-error" id="errorPhotoUpload">Photo upload is required to proceed.</div>
           </div>
         </form>
+        </div>
+        <div class="step-footer">
+          <div class="action-group">
+            <button type="button" class="btn-secondary" id="cancelButton">Cancel</button>
+            <button type="button" class="btn-primary" id="reviewButton">Next</button>
+          </div>
+        </div>
       </section>
 
       <section class="step-window" id="windowStep2" aria-labelledby="reviewHeading">
-        <h2 class="panel-heading" id="reviewHeading" tabindex="-1">Review Your Request</h2>
-        <div class="summary-card" id="reviewSummary">
+        <div>
+          <h2 class="panel-heading" id="reviewHeading" tabindex="-1">Review Your Request</h2>
+          <div class="summary-card" id="reviewSummary">
           <div class="summary-row"><span>Full Name</span><strong id="reviewFullName">—</strong></div>
           <div class="summary-row"><span>Student ID</span><strong id="reviewStudentId">—</strong></div>
           <div class="summary-row"><span>Request Type</span><strong id="reviewType">—</strong></div>
@@ -723,17 +919,20 @@
             </div>
           </div>
         </div>
-        <div class="action-group" style="margin-top: 20px;">
-          <button type="button" class="btn-secondary" id="editButton">Edit Details</button>
-          <button type="button" class="btn-primary" id="submitButton">Confirm and Submit</button>
+        <div class="step-footer">
+          <div class="action-group">
+            <button type="button" class="btn-secondary" id="editButton">Edit Details</button>
+            <button type="button" class="btn-primary" id="submitButton">Confirm and Submit</button>
+          </div>
         </div>
       </section>
 
       <section class="step-window confirmation-card" id="windowStep3" aria-labelledby="confirmationHeading">
-        <div class="confirmation-icon"><i class="fa-solid fa-check"></i></div>
-        <h2 class="confirmation-title" id="confirmationHeading" tabindex="-1">Request Submitted</h2>
-        <p class="confirmation-copy">Your request is now recorded. You will receive an update when the status changes.</p>
-        <div class="summary-card" id="confirmationSummary">
+        <div>
+          <div class="confirmation-icon"><i class="fa-solid fa-check"></i></div>
+          <h2 class="confirmation-title" id="confirmationHeading" tabindex="-1">Request Submitted</h2>
+          <p class="confirmation-copy">Your request has been successfully submitted and completed. Use the dashboard to view your request history and next steps.</p>
+          <div class="summary-card" id="confirmationSummary">
           <div class="summary-row"><span>Request ID</span><strong id="confirmationRequestId">—</strong></div>
           <div class="summary-row"><span>Full Name</span><strong id="confirmationFullName">—</strong></div>
           <div class="summary-row"><span>Student ID</span><strong id="confirmationStudentId">—</strong></div>
@@ -742,9 +941,54 @@
           <div class="summary-row"><span>Year Level</span><strong id="confirmationYear">—</strong></div>
           <div class="summary-row"><span>Request Type</span><strong id="confirmationType">—</strong></div>
           <div class="summary-row"><span>Submitted</span><strong id="confirmationDate">—</strong></div>
-          <div class="summary-row"><span>Status</span><span class="badge submitted">Submitted</span></div>
+          <div class="summary-row"><span>Status</span><span class="badge success">Completed</span></div>
         </div>
-          <a href="dashboard.html" class="return-dashboard">Return to Dashboard</a>
+        </div>
+        <div class="step-footer">
+          <a href="student-dashboard.html" class="return-dashboard">Return to Dashboard</a>
+        </div>
+      </section>
+
+      <section class="step-window rejection-card" id="windowStep4" aria-labelledby="rejectionHeading">
+        <div>
+          <div class="rejection-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+          <h2 class="rejection-title" id="rejectionHeading" tabindex="-1">Your Request Has Been Rejected</h2>
+          <p class="rejection-copy">Please review the reasons below and make the necessary corrections before resubmitting.</p>
+
+          <div class="summary-card" id="rejectionSummary" style="margin-top: 20px;">
+            <div class="summary-row"><span>Request ID</span><strong id="rejectionRequestId">—</strong></div>
+            <div class="summary-row"><span>Full Name</span><strong id="rejectionFullName">—</strong></div>
+            <div class="summary-row"><span>Student ID</span><strong id="rejectionStudentId">—</strong></div>
+            <div class="summary-row"><span>Department / College</span><strong id="rejectionDepartment">—</strong></div>
+            <div class="summary-row"><span>Program / Degree</span><strong id="rejectionProgram">—</strong></div>
+            <div class="summary-row"><span>Year Level</span><strong id="rejectionYear">—</strong></div>
+            <div class="summary-row"><span>Request Type</span><strong id="rejectionType">—</strong></div>
+            <div class="summary-row"><span>Submitted</span><strong id="rejectionDate">—</strong></div>
+            <div class="summary-row"><span>Status</span><span class="badge rejected">Rejected</span></div>
+          </div>
+
+          <div class="rejection-reason-panel">
+            <h3 class="rejection-reason-title"><i class="fa-solid fa-exclamation-triangle"></i> Reason for Rejection</h3>
+            <p id="rejectionReason">No specific reason provided.</p>
+          </div>
+
+          <div class="corrections-checklist">
+            <h3 class="corrections-title"><i class="fa-solid fa-clipboard-list"></i> Required Corrections</h3>
+            <ol class="corrections-list" id="correctionsList">
+              <li><span class="correction-icon"><i class="fa-solid fa-image"></i></span> Re‑upload photo (min 600×600 pixels)</li>
+              <li><span class="correction-icon"><i class="fa-solid fa-id-card"></i></span> Provide clearer valid ID document</li>
+              <li><span class="correction-icon"><i class="fa-solid fa-pencil"></i></span> Fix incomplete personal information</li>
+              <li><span class="correction-icon"><i class="fa-solid fa-pen-fancy"></i></span> Re‑upload digital signature</li>
+            </ol>
+          </div>
+        </div>
+        <div class="step-footer rejection-footer">
+          <div class="action-group">
+            <button type="button" class="btn-secondary" id="contactSupportButton">Contact Support</button>
+            <button type="button" class="btn-primary" id="fixResubmitButton">Fix & Resubmit Request</button>
+          </div>
+          <a href="student-dashboard.html" class="return-dashboard-rejection">Return to Dashboard</a>
+        </div>
       </section>
     </div>
   </div>
@@ -766,6 +1010,7 @@
   const windowStep1 = document.getElementById('windowStep1');
   const windowStep2 = document.getElementById('windowStep2');
   const windowStep3 = document.getElementById('windowStep3');
+  const windowStep4 = document.getElementById('windowStep4');
   const reviewFullName = document.getElementById('reviewFullName');
   const reviewStudentId = document.getElementById('reviewStudentId');
   const reviewType = document.getElementById('reviewType');
@@ -776,12 +1021,19 @@
   const reviewPhotoBox = document.getElementById('reviewPhotoBox');
   const reviewPhoto = document.getElementById('reviewPhoto');
   const reviewPhotoName = document.getElementById('reviewPhotoName');
+  const rejectionDepartment = document.getElementById('rejectionDepartment');
+  const rejectionProgram = document.getElementById('rejectionProgram');
+  const rejectionYear = document.getElementById('rejectionYear');
+  const rejectionDate = document.getElementById('rejectionDate');
   const reviewButton = document.getElementById('reviewButton');
   const submitButton = document.getElementById('submitButton');
   const editButton = document.getElementById('editButton');
   const cancelButton = document.getElementById('cancelButton');
+  const fixResubmitButton = document.getElementById('fixResubmitButton');
+  const contactSupportButton = document.getElementById('contactSupportButton');
   const reviewStage = document.getElementById('stageReview');
   const confirmStage = document.getElementById('stageConfirm');
+  const rejectStage = document.getElementById('stageReject');
   const stageForm = document.getElementById('stageForm');
   const confirmationStudentId = document.getElementById('confirmationStudentId');
   const confirmationDepartment = document.getElementById('confirmationDepartment');
@@ -803,6 +1055,8 @@
     stageForm.classList.toggle('active', stage === 'form');
     reviewStage.classList.toggle('active', stage === 'review');
     confirmStage.classList.toggle('active', stage === 'confirm');
+    rejectStage.classList.toggle('active', stage === 'reject');
+    rejectStage.classList.toggle('hidden', stage !== 'reject');
 
     windowStep1.classList.toggle('active', stage === 'form');
     windowStep1.classList.toggle('step-out', stage !== 'form');
@@ -810,33 +1064,50 @@
     windowStep2.classList.toggle('step-out', stage !== 'review');
     windowStep3.classList.toggle('active', stage === 'confirm');
     windowStep3.classList.toggle('step-out', stage !== 'confirm');
+    windowStep4.classList.toggle('active', stage === 'reject');
+    windowStep4.classList.toggle('step-out', stage !== 'reject');
 
-    // Update top progress bar (3-step flow)
+    // Update top progress bar
     const progressFill = document.getElementById('progressFill');
     const progressBar = document.getElementById('progressBar');
     if (stage === 'form') {
-      progressFill.style.width = '0%';
+      progressFill.style.width = '25%';
       progressBar.setAttribute('aria-valuenow', '1');
-      // Announce and move focus to the form heading for screen reader / keyboard users
       const announce = document.getElementById('stageAnnounce');
-      announce.textContent = 'Step 1 of 3. Fill Details.';
+      announce.textContent = 'Step 1 of 4. Fill Details.';
       const h = document.getElementById('requestFormHeading');
       if (h) h.focus({ preventScroll: true });
     } else if (stage === 'review') {
       progressFill.style.width = '50%';
       progressBar.setAttribute('aria-valuenow', '2');
       const announce = document.getElementById('stageAnnounce');
-      announce.textContent = 'Step 2 of 3. Review your request.';
+      announce.textContent = 'Step 2 of 4. Review your request.';
       const h = document.getElementById('reviewHeading');
       if (h) h.focus({ preventScroll: true });
     } else if (stage === 'confirm') {
-      progressFill.style.width = '100%';
+      progressFill.style.width = '75%';
       progressBar.setAttribute('aria-valuenow', '3');
       const announce = document.getElementById('stageAnnounce');
-      announce.textContent = 'Step 3 of 3. Request submitted.';
+      announce.textContent = 'Step 3 of 4. Request submitted.';
       const h = document.getElementById('confirmationHeading');
       if (h) h.focus({ preventScroll: true });
+    } else if (stage === 'reject') {
+      progressFill.style.width = '100%';
+      progressBar.setAttribute('aria-valuenow', '4');
+      const announce = document.getElementById('stageAnnounce');
+      announce.textContent = 'Step 4 of 4. Request rejected. Please review corrections.';
+      const h = document.getElementById('rejectionHeading');
+      if (h) h.focus({ preventScroll: true });
     }
+  }
+
+  function announceToScreenReader(message) {
+    const announce = document.getElementById('stageAnnounce');
+    if (!announce) return;
+    announce.textContent = '';
+    window.requestAnimationFrame(() => {
+      announce.textContent = message;
+    });
   }
 
   function validateField(input, errorId) {
@@ -852,6 +1123,19 @@
     return true;
   }
 
+  function validatePhotoUpload() {
+    const file = photoInput.files[0];
+    const error = document.getElementById('errorPhotoUpload');
+    if (!file) {
+      error.classList.add('visible');
+      photoInput.setAttribute('aria-invalid', 'true');
+      return false;
+    }
+    error.classList.remove('visible');
+    photoInput.removeAttribute('aria-invalid');
+    return true;
+  }
+
   function validateForm() {
     const validName = validateField(fullNameInput, 'errorFullName');
     const validId = validateField(studentIdInput, 'errorStudentId');
@@ -859,7 +1143,8 @@
     const validDept = validateField(departmentInput, 'errorDepartment');
     const validProg = validateField(programInput, 'errorProgram');
     const validYear = validateField(yearLevelInput, 'errorYearLevel');
-    return validName && validId && validType && validDept && validProg && validYear;
+    const validPhoto = validatePhotoUpload();
+    return validName && validId && validType && validDept && validProg && validYear && validPhoto;
   }
 
   function updatePhotoPreview(file) {
@@ -867,6 +1152,16 @@
       photoPreviewBox.classList.add('hidden');
       return;
     }
+
+    // Validate file format (JPG/PNG only)
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      photoPreviewBox.classList.add('hidden');
+      alert('Please select a JPG or PNG image file.');
+      photoInput.value = '';
+      return;
+    }
+
     photoPreviewBox.classList.remove('hidden');
     photoName.textContent = file.name;
     photoSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
@@ -917,14 +1212,152 @@
       dateLabel: formatDate(now),
       photoName: file ? file.name : 'No photo uploaded',
       photoSize: file ? `${(file.size / 1024).toFixed(1)} KB` : null,
-      photoData: file ? null : null
+      photoData: file ? null : null,
+      // Status tracking fields
+      rejectionReason: null,
+      corrections: [],
+      rejectionDate: null,
+      completionDate: null,
+      lastUpdated: now.toISOString()
     };
   }
+
+  // Update request status in localStorage
+  function updateRequestStatus(requestId, newStatus, additionalData = {}) {
+    const requests = JSON.parse(localStorage.getItem('requests')) || [];
+    const index = requests.findIndex(req => req.id === requestId);
+    if (index !== -1) {
+      requests[index].status = newStatus;
+      requests[index].lastUpdated = new Date().toISOString();
+      Object.assign(requests[index], additionalData);
+      localStorage.setItem('requests', JSON.stringify(requests));
+      return requests[index];
+    }
+    return null;
+  }
+
+  // Mark request as rejected with reason and corrections
+  async function markRequestAsRejected(requestId, rejectionReason, corrections = []) {
+    const updated = updateRequestStatus(requestId, 'Rejected', {
+      rejectionReason: rejectionReason,
+      corrections: corrections || [
+        'Re‑upload photo (min 600×600 pixels)',
+        'Provide clearer valid ID document',
+        'Fix incomplete personal information',
+        'Re‑upload digital signature'
+      ],
+      rejectionDate: new Date().toISOString()
+    });
+
+    if (updated) {
+      await sendRequestNotification(updated, 'request.rejected', {
+        details: `Reason: ${rejectionReason || 'Please check the request details.'}`
+      });
+    }
+    return updated;
+  }
+
+  // Mark request as completed
+  async function markRequestAsCompleted(requestId) {
+    const updated = updateRequestStatus(requestId, 'Completed', {
+      completionDate: new Date().toISOString()
+    });
+    if (updated) {
+      await sendRequestNotification(updated, 'request.completed');
+    }
+    return updated;
+  }
+
+  // Mark request as processing
+  async function markRequestAsProcessing(requestId) {
+    const updated = updateRequestStatus(requestId, 'Processing', {});
+    if (updated) {
+      await sendRequestNotification(updated, 'request.processing');
+    }
+    return updated;
+  }
+
+  // Get request details by ID
+  function getRequestById(requestId) {
+    const requests = JSON.parse(localStorage.getItem('requests')) || [];
+    return requests.find(req => req.id === requestId) || null;
+  }
+
+  // Get all requests with a specific status
+  function getRequestsByStatus(status) {
+    const requests = JSON.parse(localStorage.getItem('requests')) || [];
+    return requests.filter(req => req.status === status);
+  }
+
+  const BACKEND_BASE_URL = 'http://localhost:3000';
 
   function saveRequest(request) {
     const requests = JSON.parse(localStorage.getItem('requests') || '[]');
     requests.unshift(request);
     localStorage.setItem('requests', JSON.stringify(requests));
+  }
+
+  function buildRequestNotification(request, type, extra = {}) {
+    const titles = {
+      'request.new': 'New ID Request Submitted',
+      'request.processing': 'Request Processing',
+      'request.completed': 'Request Completed',
+      'request.rejected': 'Request Rejected'
+    };
+
+    const messages = {
+      'request.new': 'Your ID request has been received and is now under review.',
+      'request.processing': 'Your ID request is now being processed.',
+      'request.completed': 'Your ID request has been completed.',
+      'request.rejected': 'Your ID request has been rejected.'
+    };
+
+    const tones = {
+      'request.new': 'orange',
+      'request.processing': 'blue',
+      'request.completed': 'green',
+      'request.rejected': 'red'
+    };
+
+    const icons = {
+      'request.new': 'fa-file-circle-plus',
+      'request.processing': 'fa-spinner',
+      'request.completed': 'fa-circle-check',
+      'request.rejected': 'fa-circle-xmark'
+    };
+
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = currentUser.userId || currentUser.studentId || request.studentId || 'student-unknown';
+
+    return {
+      userId,
+      type,
+      category: 'Request Updates',
+      title: titles[type] || titles['request.new'],
+      message: extra.message || messages[type] || messages['request.new'],
+      details: extra.details || `Student ${request.fullName || request.studentName} (${request.studentId}) submitted a ${request.type || 'request'}.`,
+      tone: tones[type] || 'orange',
+      icon: icons[type] || 'fa-bell',
+      sourceId: request.id,
+      status: 'unread'
+    };
+  }
+
+  async function sendRequestNotification(request, type, extra = {}) {
+    const payload = buildRequestNotification(request, type, extra);
+    try {
+      await fetch(`${BACKEND_BASE_URL}/notifications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (error) {
+      console.warn('Failed to send backend notification', error);
+    }
+  }
+
+  async function createRequestNotification(request) {
+    await sendRequestNotification(request, 'request.new');
   }
 
   function showConfirmation(request) {
@@ -945,6 +1378,55 @@
     photoPreviewBox.classList.add('hidden');
     document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
     showStage('form');
+  }
+
+  function showRejection(rejectedRequest) {
+    // Display rejection details
+    document.getElementById('rejectionRequestId').textContent = rejectedRequest.id || '—';
+    document.getElementById('rejectionFullName').textContent = rejectedRequest.fullName || '—';
+    document.getElementById('rejectionStudentId').textContent = rejectedRequest.studentId || '—';
+    document.getElementById('rejectionDepartment').textContent = rejectedRequest.department || '—';
+    document.getElementById('rejectionProgram').textContent = rejectedRequest.program || '—';
+    document.getElementById('rejectionYear').textContent = rejectedRequest.yearLevel || '—';
+    document.getElementById('rejectionType').textContent = rejectedRequest.type || '—';
+    document.getElementById('rejectionDate').textContent = rejectedRequest.dateLabel || formatDate(new Date(rejectedRequest.submittedAt || Date.now()));
+    
+    // Display rejection reason
+    const reasonText = rejectedRequest.rejectionReason || 'No specific reason provided.';
+    document.getElementById('rejectionReason').textContent = reasonText;
+    
+    // Display required corrections
+    const correctionsList = document.getElementById('correctionsList');
+    if (correctionsList) {
+      const corrections = rejectedRequest.corrections || [
+        'Re‑upload photo (min 600×600 pixels)',
+        'Provide clearer valid ID document',
+        'Fix incomplete personal information',
+        'Re‑upload digital signature'
+      ];
+      const icons = ['fa-image', 'fa-id-card', 'fa-pencil', 'fa-pen-fancy'];
+      
+      correctionsList.innerHTML = '';
+      corrections.forEach((correction, index) => {
+        const li = document.createElement('li');
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'correction-icon';
+        iconSpan.innerHTML = `<i class="fa-solid ${icons[index] || 'fa-check'}"></i>`;
+        li.appendChild(iconSpan);
+        li.appendChild(document.createTextNode(' ' + correction));
+        correctionsList.appendChild(li);
+      });
+    }
+    
+    // Show rejection stage
+    rejectStage.classList.remove('hidden');
+    rejectStage.classList.add('active');
+    showStage('reject');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Announce to screen readers
+    const announcement = `Request ${rejectedRequest.id} has been rejected. Please review the required corrections and resubmit.`;
+    announceToScreenReader(announcement);
   }
 
   function handleReview(event) {
@@ -977,6 +1459,7 @@
       handled = true;
       const request = buildRequestData();
       saveRequest(request);
+      createRequestNotification(request);
       windowStep2.classList.remove('fade-out');
       submitButton.disabled = false;
       editButton.disabled = false;
@@ -1001,15 +1484,106 @@
   fullNameInput.addEventListener('input', () => validateField(fullNameInput, 'errorFullName'));
   studentIdInput.addEventListener('input', () => validateField(studentIdInput, 'errorStudentId'));
   requestTypeInput.addEventListener('change', () => validateField(requestTypeInput, 'errorRequestType'));
-  departmentInput.addEventListener('change', () => validateField(departmentInput, 'errorDepartment'));
+
+  // Department to Program mapping (official list from profile)
+  const departmentPrograms = {
+    'College of Agriculture, Fisheries and Natural Resources': [
+      'Bachelor of Science in Agribusiness',
+      'Bachelor of Science in Agriculture',
+      'Bachelor of Science in Fisheries',
+      'Bachelor of Science in Forestry'
+    ],
+    'College of Arts and Communication': [
+      'Bachelor of Arts in English Language Studies',
+      'Bachelor of Arts in Literature and Cultural Studies',
+      'Bachelor of Arts major in Political Science',
+      'Bachelor of Arts major in Public Administration',
+      'Bachelor of Arts major in Sociology',
+      'Bachelor of Science in Community Development',
+      'Bachelor of Science in Criminology',
+      'Bachelor of Science in Development Communication'
+    ],
+    'College of Business Administration': [
+      'Bachelor of Science in Accountancy',
+      'Bachelor of Science in Business Administration',
+      'Bachelor of Science in Business Economics',
+      'Bachelor of Science in Entrepreneurship',
+      'Bachelor of Science in Hospitality Management'
+    ],
+    'College of Engineering': [
+      'Bachelor of Engineering Technology',
+      'Bachelor of Science in Agricultural and Biosystems Engineering',
+      'Bachelor of Science in Civil Engineering',
+      'Bachelor of Science in Electrical Engineering',
+      'Bachelor of Science in Mechanical Engineering'
+    ],
+    'College of Law': [
+      'Bachelor of Laws'
+    ],
+    'College of Education': [
+      'Bachelor of Elementary Education',
+      'Bachelor of Elementary Technology and Livelihood Education',
+      'Bachelor of Secondary Education'
+    ],
+    'College of Nursing and Allied Health Sciences': [
+      'Bachelor of Science in Nursing',
+      'Bachelor of Science in Radiologic Technology'
+    ],
+    'College of Science': [
+      'Bachelor of Science in Biology',
+      'Bachelor of Science in Chemistry',
+      'Bachelor of Science in Environmental Science',
+      'Bachelor of Science in Information Technology',
+      'Bachelor of Science in Marine Biology',
+      'Bachelor of Science in Mathematics'
+    ],
+    'College of Veterinary Medicine': [
+      'Bachelor of Science in Meat Technology',
+      'Doctor of Veterinary Medicine'
+    ]
+  };
+
+  function updateProgramOptions() {
+    const selectedDept = departmentInput.value;
+    const programs = departmentPrograms[selectedDept] || [];
+    
+    // Clear existing options (keep placeholder)
+    programInput.innerHTML = '<option value="" disabled selected hidden>Choose your program or degree</option>';
+    
+    // Add programs for selected department
+    programs.forEach(program => {
+      const option = document.createElement('option');
+      option.value = program;
+      option.textContent = program;
+      programInput.appendChild(option);
+    });
+    
+    // Reset validation state
+    programInput.value = '';
+    validateField(programInput, 'errorProgram');
+  }
+
+  departmentInput.addEventListener('change', () => {
+    validateField(departmentInput, 'errorDepartment');
+    updateProgramOptions();
+  });
   programInput.addEventListener('change', () => validateField(programInput, 'errorProgram'));
   yearLevelInput.addEventListener('change', () => validateField(yearLevelInput, 'errorYearLevel'));
-  photoInput.addEventListener('change', () => updatePhotoPreview(photoInput.files[0]));
+  photoInput.addEventListener('change', () => {
+    updatePhotoPreview(photoInput.files[0]);
+    validatePhotoUpload();
+  });
 
   reviewButton.addEventListener('click', handleReview);
   submitButton.addEventListener('click', handleSubmit);
   editButton.addEventListener('click', () => showStage('form'));
   cancelButton.addEventListener('click', resetForm);
+  fixResubmitButton.addEventListener('click', () => showStage('form'));
+  contactSupportButton.addEventListener('click', () => {
+    // Open support contact modal or navigate to support page
+    alert('Redirecting to support. Please contact: support@uep.edu.ph');
+    // window.location.href = 'support.html'; // Optional: navigate to support page
+  });
 
   window.addEventListener('DOMContentLoaded', () => {
     applyTheme();
@@ -1022,6 +1596,57 @@
       applyTheme();
     }
   });
+
+  // Demo function to test status tracking (available in browser console)
+  window.demoStatusTracking = function() {
+    console.log('=== Status Tracking Demo ===');
+    
+    // Get existing requests
+    const requests = JSON.parse(localStorage.getItem('requests')) || [];
+    if (requests.length === 0) {
+      console.log('No requests found. Please submit a request first.');
+      return;
+    }
+    
+    const firstRequest = requests[0];
+    console.log('Current Request:', firstRequest);
+    
+    // Demo: Mark as Processing
+    console.log('\n1. Marking as Processing...');
+    markRequestAsProcessing(firstRequest.id);
+    console.log('Request status updated to: Processing');
+    
+    // Demo: Retrieve by ID
+    console.log('\n2. Retrieving request by ID...');
+    const retrieved = getRequestById(firstRequest.id);
+    console.log('Retrieved:', retrieved);
+    
+    // Demo: Simulate rejection
+    console.log('\n3. Simulating rejection...');
+    markRequestAsRejected(firstRequest.id, 'Photo quality is too low', [
+      'Re‑upload photo (min 600×600 pixels)',
+      'Ensure photo is well-lit and clear',
+      'Remove shadows from face',
+      'Verify document is readable'
+    ]);
+    console.log('Request marked as Rejected');
+    
+    // Demo: Get all rejected requests
+    console.log('\n4. Getting all rejected requests...');
+    const rejected = getRequestsByStatus('Rejected');
+    console.log('Rejected requests:', rejected);
+    
+    // Demo: Display rejection UI
+    console.log('\n5. Displaying rejection stage...');
+    const rejectedRequest = getRequestById(firstRequest.id);
+    if (rejectedRequest) {
+      showRejection(rejectedRequest);
+      console.log('Rejection stage displayed!');
+    }
+  };
+
+  console.log('💡 Tip: Run demoStatusTracking() in the browser console to test the status tracking system.');
 </script>
 </body>
 </html>
+

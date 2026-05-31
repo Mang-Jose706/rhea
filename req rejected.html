@@ -4,103 +4,337 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Rejected</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="assets/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-background: #f0f3f6;
-            --color-white: #ffffff;
-            --color-text-dark: #333333;
-            --color-text-medium: #6c757d;
-            --color-red: #dc3545;
-            --color-red-light: #f8d7da;
-            --color-blue: #007bff;
-            --color-blue-dark: #0056b3;
-            --color-border-light: #e9ecef;
-            --spacing-xs: 8px;
-            --spacing-sm: 12px;
-            --spacing-md: 20px;
-            --spacing-lg: 30px;
-            --border-radius: 12px;
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #475569;
+            --border: #d8dee7;
+            --muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-strong: #1d4ed8;
+            --danger: #ef4444;
+            --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+            --radius: 22px;
+            --font: "Inter", "Poppins", "Roboto", Arial, sans-serif;
         }
 
         body.dark-mode {
-            --color-background: #1a1a1a;
-            --color-white: #1a1a1a;
-            --color-text-dark: #f8fafc;
-            --color-text-medium: #cbd5e1;
-            --color-red: #dc3545;
-            --color-red-light: #7f1d1d;
-            --color-blue: #3b82f6;
-            --color-blue-dark: #1e40af;
-            --color-border-light: #374151;
-            --shadow-light: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --bg: #0f172a;
+            --surface: #111827;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: #27303f;
+            --muted: #94a3b8;
+            --accent: #60a5fa;
+            --accent-strong: #3b82f6;
+            --danger: #f87171;
+            --shadow: 0 20px 60px rgba(15, 23, 42, 0.45);
         }
 
-        * { box-sizing: border-box; margin:0; padding:0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--color-background);
-            color: var(--color-text-dark);
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 24px;
             display: flex;
             justify-content: center;
-            padding: 20px;
-            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
         .container {
             width: 100%;
-            max-width: 900px; /* widened main content */
+            max-width: 980px;
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-md);
+            gap: 24px;
         }
 
-        .card { background-color: var(--color-white); border-radius: var(--border-radius); padding: var(--spacing-lg); box-shadow: var(--shadow-light); border:1px solid var(--color-border-light); }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+        }
 
-        .header { text-align: center; padding-bottom: var(--spacing-md); }
-        .header-icon { width: 50px; height: 50px; background-color: var(--color-white); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin:0 auto var(--spacing-sm); box-shadow:0 0 0 6px var(--color-red-light);}
-        .header-icon .fas { color: var(--color-red); font-size: 24px; }
-        .header h1 { font-size:1.5rem; font-weight:600; margin-bottom: var(--spacing-xs); }
-        .header p { color: var(--color-text-medium); font-size:0.95rem; }
+        .header {
+            text-align: center;
+            padding-bottom: 18px;
+        }
 
-        .request-details .detail-item { display:flex; justify-content:space-between; padding: var(--spacing-sm) 0; border-bottom:1px dashed var(--color-border-light); font-size:0.9rem; }
-        .request-details .detail-item:last-of-type { border-bottom:none; }
-        .detail-label { color: var(--color-text-medium); }
-        .detail-value { color: var(--color-text-dark); font-weight:500; }
-        .status-rejected { color: var(--color-red); font-weight:600; display:flex; align-items:center; }
-        .status-dot { font-size:0.5rem; margin-right:6px; color: var(--color-red); }
-        .alert-icon { color: var(--color-red); font-size:1.1rem; margin-left:auto; }
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 999px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+            font-size: 1.8rem;
+        }
 
-        .reason-card { background-color: var(--color-red-light); border:1px solid var(--color-red); padding: var(--spacing-md);}
-        .card-title-row { display:flex; align-items:center; margin-bottom: var(--spacing-sm);}
-        .title-icon { color: var(--color-red); font-size:1.2rem; margin-right: var(--spacing-sm);}
-        .reason-card h2 { font-size:1rem; font-weight:600; color: var(--color-red);}
-        .rejection-text { font-size:0.95rem; color: var(--color-red); padding-left:28px; line-height:1.4;}
+        .header-icon .fas {
+            color: var(--danger);
+        }
 
-        .corrections-card { padding: var(--spacing-md);}
-        .title-icon-blue { color: var(--color-blue); font-size:1.2rem; margin-right: var(--spacing-sm);}
-        .correction-item { display:flex; align-items:flex-start; padding: var(--spacing-sm) 0; border-bottom:1px solid var(--color-border-light);}
-        .last-correction { border-bottom:none; }
-        .item-icon { color: var(--color-red); font-size:1.1rem; margin-top:2px; margin-right: var(--spacing-sm);}
-        .item-content { flex-grow:1; }
-        .correction-title { font-weight:600; font-size:0.95rem; margin-bottom:2px;}
-        .correction-description { font-size:0.85rem; color: var(--color-text-medium); }
+        .header h1 {
+            font-size: clamp(1.9rem, 2.4vw, 2.4rem);
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.05;
+        }
 
-        .actions-card { text-align:center; padding-top: var(--spacing-md);}
-        .resubmit-prompt .prompt-icon { font-size:1.2rem; color: var(--color-text-medium); margin-bottom:5px; }
-        .resubmit-prompt h2 { font-size:1.2rem; font-weight:600; margin-bottom: var(--spacing-xs);}
-        .resubmit-prompt p { color: var(--color-text-medium); font-size:0.9rem; margin-bottom: var(--spacing-md); }
-        .action-buttons { display:flex; gap: var(--spacing-md); justify-content:center; padding-top: var(--spacing-md); border-top:1px solid var(--color-border-light); margin-top: var(--spacing-md); }
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
 
-        .btn { padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--border-radius); font-size:0.9rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap: var(--spacing-xs); border:none; transition:0.2s;}
-        .btn-primary { background-color: var(--color-blue); color: var(--color-white); box-shadow:0 4px 6px rgba(0,123,255,0.3);}
-        .btn-primary:hover { background-color: var(--color-blue-dark);}
-        .btn-secondary { background-color: var(--color-white); color: var(--color-text-dark); border:1px solid var(--color-border-light); box-shadow:0 2px 4px rgba(0,0,0,0.05);}
-        .btn-secondary:hover { background-color: var(--color-border-light); }
-        .btn .fas { font-size:1rem; }
+        .request-details .detail-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
 
-        
+        .request-details .detail-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            min-width: 160px;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .status-row .detail-value {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--danger);
+            display: inline-block;
+        }
+
+        .alert-icon {
+            color: var(--danger);
+            font-size: 1.1rem;
+        }
+
+        .reason-card {
+            background: rgba(254, 226, 226, 0.85);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: var(--radius);
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .title-icon,
+        .title-icon-blue {
+            font-size: 1.2rem;
+        }
+
+        .title-icon {
+            color: var(--danger);
+        }
+
+        .title-icon-blue {
+            color: var(--accent);
+        }
+
+        .reason-card h2,
+        .corrections-card h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .rejection-text {
+            color: var(--text-primary);
+            line-height: 1.75;
+            font-size: 0.98rem;
+        }
+
+        .corrections-card {
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .correction-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .correction-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-icon {
+            color: var(--danger);
+            font-size: 1.1rem;
+            margin-top: 4px;
+            min-width: 22px;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .correction-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .correction-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .actions-card {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .resubmit-prompt .prompt-icon {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .resubmit-prompt h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .resubmit-prompt p {
+            color: var(--text-secondary);
+            font-size: 0.96rem;
+            margin: 0 auto;
+            max-width: 640px;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            min-width: 180px;
+            height: 52px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 16px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .btn .fas {
+            font-size: 1rem;
+        }
+
+        .return-dashboard {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            padding: 0 24px;
+            margin: 0 auto;
+            width: fit-content;
+            border-radius: 16px;
+            background: var(--accent);
+            color: #ffffff;
+            font-weight: 700;
+            transition: background-color 200ms ease, transform 200ms ease;
+        }
+
+        .return-dashboard:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 780px) {
+            body { padding: 16px; }
+            .action-buttons { flex-direction: column; }
+            .card { padding: 22px; }
+        }
+
     </style>
 </head>
 <body>
@@ -129,7 +363,7 @@
 <div class="detail-item status-row">
     <span class="detail-label">Status:</span>
     <span class="detail-value status-rejected">
-        <i class="fa-solid fa-circle-xmark" style="margin-left: 600px;"></i>
+        <span class="status-dot"></span>
         Rejected
     </span>
 </div>
@@ -192,7 +426,7 @@
                 <p>Once you correct the issues above, you may resubmit your request for verification.</p>
             </div>
             <div class="action-buttons">
-                <a href="submit a req .html" style="text-decoration: none;">
+                <a href="req submitted.html" style="text-decoration: none;">
                     <button class="btn btn-primary">
                         <i class="fas fa-wrench"></i> Fix & Resubmit Request
                     </button>
@@ -204,7 +438,7 @@
         </div>
 
         <!-- RETURN TO DASHBOARD -->
-        <a href="dashboard.html" class="return-dashboard"><i class="fas fa-house"></i> Return to Dashboard</a>
+        <a href="student-dashboard.html" class="return-dashboard"><i class="fas fa-house"></i> Return to Dashboard</a>
 
     </div>
 

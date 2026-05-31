@@ -190,17 +190,33 @@
             transform: translateY(0);
         }
 
+        .success-message,
         .error-message {
-            background: #fee2e2;
-            border: 1px solid #fecaca;
             border-radius: 10px;
             padding: 12px;
             margin-bottom: 16px;
-            color: #991b1b;
             font-size: 13px;
             display: none;
             align-items: center;
             gap: 8px;
+        }
+
+        .success-message {
+            background: #e6ffed;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+        }
+
+        body.dark-mode .success-message {
+            background: #064e3b;
+            border-color: #10b981;
+            color: #d1fae5;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
         }
 
         body.dark-mode .error-message {
@@ -209,6 +225,7 @@
             color: #fca5a5;
         }
 
+        .success-message.show,
         .error-message.show {
             display: flex;
         }
@@ -272,11 +289,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
-        <i class="fa-solid fa-moon"></i>
-    </button>
-
-    <div class="admin-container">
+       <div class="admin-container">
         <div class="admin-header">
             <div class="admin-badge">
                 <i class="fa-solid fa-shield"></i> Admin Portal
@@ -290,15 +303,19 @@
             <span>This is a restricted admin area. Unauthorized access is monitored.</span>
         </div>
 
+        <div class="success-message" id="successMessage">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="successText"></span>
+        </div>
         <div class="error-message" id="errorMessage">
             <i class="fa-solid fa-exclamation-circle"></i>
             <span id="errorText"></span>
         </div>
 
-        <form onsubmit="adminLogin(event)">
+        <form id="adminLoginForm" onsubmit="adminLogin(event)">
             <div class="input-group">
-                <label for="adminId">Student ID (Admin)</label>
-                <input type="text" id="adminId" placeholder="Enter admin student ID" required>
+                <label for="adminId">Admin Username</label>
+                <input type="text" id="adminId" placeholder="Enter admin username" required>
             </div>
 
             <div class="input-group">
@@ -321,14 +338,10 @@
             <button type="submit" class="login-btn">
                 <i class="fa-solid fa-sign-in-alt"></i> Access Admin Dashboard
             </button>
+            <div class="footer-links">
+                <p>New admin? <a href="admin-signup.html">Register here</a></p>
+            </div>
         </form>
-
-        <div class="footer-links">
-            <a href="login.html">Student Login</a>
-            <span class="divider">•</span>
-            <a href="dashboard.html">Back to Home</a>
-        </div>
-    </div>
 
     <script>
         const ADMIN_SECRET_CODE = "ADMIN2026";
@@ -361,7 +374,59 @@
             }
         }
 
+        const BACKEND_BASE_URL = (() => {
+            if (window.location.protocol === 'file:') return 'http://localhost:3000';
+            if (window.location.hostname === 'localhost' && window.location.port === '3000') return window.location.origin;
+            if (window.location.hostname === '127.0.0.1' && window.location.port === '3000') return window.location.origin;
+            return 'http://localhost:3000';
+        })();
+
+        function getAdminToken() {
+            return localStorage.getItem('adminToken');
+        }
+
+        function getAuthHeaders() {
+            const token = getAdminToken();
+            return {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {})
+            };
+        }
+
+        async function redirectIfAuthenticated() {
+            const token = getAdminToken();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
+                    headers: getAuthHeaders()
+                });
+                if (response.ok) {
+                    window.location.href = '/admin-dashboard.html';
+                }
+            } catch (error) {
+                console.warn('[Admin Login] Token check failed:', error);
+            }
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            successText.textContent = message;
+            successDiv.classList.add('show');
+
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
         function showError(message) {
+            clearMessages();
             const errorDiv = document.getElementById('errorMessage');
             const errorText = document.getElementById('errorText');
             errorText.textContent = message;
@@ -372,60 +437,123 @@
             }, 5000);
         }
 
-        function adminLogin(event) {
+        async function adminLogin(event) {
             event.preventDefault();
 
             const adminId = document.getElementById('adminId').value.trim();
             const adminPassword = document.getElementById('adminPassword').value;
             const adminKey = document.getElementById('adminKey').value;
 
-            // Validate secret code first
+            if (!adminKey) {
+                showError('Admin secret code is required.');
+                return;
+            }
             if (adminKey !== ADMIN_SECRET_CODE) {
                 showError('Invalid admin secret code. Access denied.');
                 console.warn('Failed admin login attempt: Invalid secret code');
                 return;
             }
 
-            // Check if user exists and is admin
-            const user = JSON.parse(localStorage.getItem('user'));
-            
-            if (!user) {
-                showError('User not found. Please sign up first.');
-                return;
-            }
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: adminId, password: adminPassword, secretCode: adminKey })
+                });
 
-            if (user.studentId !== adminId) {
-                showError('Student ID does not match registered account.');
-                return;
-            }
+                const result = await response.json();
+                if (!response.ok) {
+                    showError(result.message || 'Login failed. Please check your credentials.');
+                    return;
+                }
 
-            if (user.password !== adminPassword) {
-                showError('Invalid password.');
-                return;
-            }
+                const user = result.user || {
+                    id: adminId,
+                    username: adminId,
+                    role: 'admin',
+                    accountType: 'admin'
+                };
 
-            if (user.accountType !== 'admin' || user.role !== 'admin') {
-                // Grant admin access when the correct admin secret code is provided.
-                user.accountType = 'admin';
-                user.role = 'admin';
                 localStorage.setItem('user', JSON.stringify(user));
-                console.info('User account upgraded to admin after successful admin login.');
-            }
+                localStorage.setItem('adminToken', result.token);
+                localStorage.setItem('adminSession', JSON.stringify({
+                    userId: user.id || user.username,
+                    token: result.token,
+                    loginTime: new Date().toISOString(),
+                    verified: true
+                }));
 
-            // All verifications passed
-            alert('Admin verification successful! Accessing admin dashboard...');
-            localStorage.setItem('adminSession', JSON.stringify({
-                userId: user.studentId,
-                loginTime: new Date().toISOString(),
-                verified: true
-            }));
-            window.location.href = 'dashboard.html';
+                const validateResponse = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${result.token}`
+                    }
+                });
+
+                if (!validateResponse.ok) {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminSession');
+                    localStorage.removeItem('user');
+                    showError('Unable to validate session token. Please try again.');
+                    return;
+                }
+
+                const validated = await validateResponse.json();
+                if (!validated.ok || !validated.user) {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminSession');
+                    localStorage.removeItem('user');
+                    showError('Session validation failed. Please log in again.');
+                    return;
+                }
+
+                window.location.href = '/admin-dashboard.html';
+            } catch (error) {
+                console.error('Admin login error:', error);
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminSession');
+                localStorage.removeItem('user');
+                showError('Unable to reach the server. Please try again later.');
+            }
         }
 
         // Initialize on page load
+        function parseQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                registered: params.get('registered') === 'true',
+                username: params.get('username') || ''
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initDarkMode();
+            redirectIfAuthenticated();
+
+            const params = parseQueryParams();
+            if (params.registered) {
+                showSuccess('Registration successful. Please log in with your new account.');
+            }
+            if (params.username) {
+                const userField = document.getElementById('adminId');
+                if (userField) {
+                    userField.value = params.username;
+                    const passwordField = document.getElementById('adminPassword');
+                    if (passwordField) {
+                        passwordField.focus();
+                    }
+                }
+            }
+
+            const adminForm = document.getElementById('adminLoginForm');
+            if (adminForm) {
+                adminForm.addEventListener('submit', adminLogin);
+            }
         });
     </script>
 </body>
 </html>
+
+

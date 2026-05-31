@@ -17,7 +17,7 @@
     </div>
 
     <div class="menu">
-        <a href="dashboard.html">
+        <a href="student-dashboard.html">
             <div class="menu-item">
                 <i class="fa-solid fa-house"></i>
                 Dashboard
@@ -142,6 +142,8 @@
 </form>
 <script>
 // Role-based access control
+const BACKEND_BASE_URL = 'http://localhost:3000';
+
 function getCurrentUser() {
     try {
         const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -390,9 +392,10 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
     // =========================
     const user = getCurrentUser();
     const requestId = "REQ-" + Date.now();
+    const nameInput = this.querySelector('input[placeholder="Enter your full name"]');
+    const fullName = nameInput?.value.trim() || [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student';
     const requestType = this.querySelector('textarea')?.value || 'ID Request';
     
-    // Store request with student association
     const requests = getAllRequests();
     const newRequest = {
         id: requestId,
@@ -400,22 +403,53 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
         date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
         status: 'submitted',
         studentId: user.studentId,
-        studentName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+        studentName: fullName,
+        fullName,
         submittedAt: new Date().toISOString()
     };
-    requests.push(newRequest);
-    localStorage.setItem('requests', JSON.stringify(requests));
 
     // Keep legacy single-request storage for compatibility
-    localStorage.setItem("request_id", requestId);
-    localStorage.setItem("request_status", "submitted");
-    const nameInput = this.querySelector("input[type='text']");
-    if (nameInput) {
-        localStorage.setItem("request_name", nameInput.value);
-    }
+    const legacyNameInput = this.querySelector("input[type='text']");
+    
+    // Send request data to backend for realtime dashboard updates and active-request enforcement
+    const backendPayload = {
+        id: requestId,
+        studentId: user.studentId,
+        studentName: fullName,
+        fullName,
+        type: requestType,
+        status: 'submitted',
+        photoName: photo.files[0]?.name || '',
+        createdBy: 'student'
+    };
 
-    // 3️⃣ SUCCESS → REDIRECT
-    window.location.href = "req submitted.html";
+    fetch(`${BACKEND_BASE_URL}/api/requests`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(backendPayload)
+    }).then(async response => {
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            const message = payload.message || 'Unable to submit request at this time.';
+            alert(message);
+            return;
+        }
+
+        requests.push(newRequest);
+        localStorage.setItem('requests', JSON.stringify(requests));
+        localStorage.setItem("request_id", requestId);
+        localStorage.setItem("request_status", "submitted");
+        if (legacyNameInput) {
+            localStorage.setItem("request_name", legacyNameInput.value);
+        }
+
+        window.location.href = "req submitted.html";
+    }).catch(error => {
+        console.warn('Unable to reach backend for request submission:', error);
+        alert('Unable to reach the request server. Please try again later.');
+    });
 });
 
 function getAllRequests() {
