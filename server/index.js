@@ -11,6 +11,62 @@ app.options('*', cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 
 const sessions = new Map();
+// SQLite persistence (optional)
+let db = null;
+let sqliteAvailable = false;
+try {
+  const sqlite3 = require('sqlite3').verbose();
+  db = new sqlite3.Database('./data.sqlite');
+  sqliteAvailable = true;
+
+  // Initialize database tables
+  db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS requests (
+      request_id TEXT PRIMARY KEY,
+      student_id TEXT,
+      type TEXT,
+      status TEXT,
+      last_updated TEXT,
+      raw JSON
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS admin_logs (
+      id TEXT PRIMARY KEY,
+      action TEXT,
+      details JSON,
+      timestamp TEXT
+    )`);
+  });
+} catch (err) {
+  console.warn('SQLite not available, running without persistent storage.');
+}
+
+function persistRequest(record) {
+  if (!sqliteAvailable || !db) return;
+  const stmt = db.prepare(`INSERT OR REPLACE INTO requests (request_id, student_id, type, status, last_updated, raw) VALUES (?,?,?,?,?,?)`);
+  stmt.run(record.request_id, record.student_id, record.type, record.status, record.last_updated, JSON.stringify(record));
+  stmt.finalize();
+}
+
+function persistAdminLog(entry) {
+  if (!sqliteAvailable || !db) return;
+  const stmt = db.prepare(`INSERT INTO admin_logs (id, action, details, timestamp) VALUES (?,?,?,?)`);
+  stmt.run(entry.id, entry.action, JSON.stringify(entry.details || {}), entry.timestamp);
+  stmt.finalize();
+}
+
+function loadRequestsFromDb(callback) {
+  if (!sqliteAvailable || !db) return callback(null, []);
+  db.all(`SELECT raw FROM requests`, (err, rows) => {
+    if (err) return callback(err);
+    try {
+      const out = rows.map(r => JSON.parse(r.raw));
+      return callback(null, out);
+    } catch (e) {
+      return callback(e);
+    }
+  });
+}
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 function hashPassword(password, salt = null) {
@@ -112,6 +168,16 @@ app.get('/presence', (req, res) => {
 
 // In-memory notification store for IDEAS activity events.
 const notifications = [];
+// SSE clients set
+const sseClients = new Set();
+
+function sendSseEvent(client, event) {
+  try {
+    client.write(`data: ${JSON.stringify(event)}\n\n`);
+  } catch (e) {
+    // ignore
+  }
+}
 
 // In-memory admin user store for basic authentication.
 const admins = [
@@ -139,20 +205,26 @@ function createRequestRecord(data) {
   const now = new Date().toISOString();
   const fullName = data.fullName || data.studentName || 'Student';
   const record = {
+    // canonical request shape for real-time sync
     id: data.id || `REQ-${Date.now()}`,
-    studentId: (data.studentId || data.studentId || data.userId || 'unknown').toString(),
+    request_id: data.id || `REQ-${Date.now()}`,
+    studentId: (data.studentId || data.userId || 'unknown').toString(),
+    student_id: (data.studentId || data.userId || 'unknown').toString(),
     studentName: data.studentName || fullName,
     fullName,
     type: data.type || 'Student ID',
     status: data.status || 'Submitted',
     createdAt: data.createdAt || now,
     updatedAt: now,
+    last_updated: now,
     photoFilename: data.photoFilename || data.photoName || '',
     createdBy: data.createdBy || data.userId || 'student',
     rejectionReason: data.rejectionReason || null,
     details: data.details || ''
   };
   requests.unshift(record);
+  // persist
+  persistRequest(record);
   return record;
 }
 
@@ -161,7 +233,11 @@ function updateRequestStatusRecord(requestId, newStatus, additionalData = {}) {
   if (!request) return null;
   request.status = newStatus;
   request.updatedAt = new Date().toISOString();
+  request.last_updated = request.updatedAt;
   Object.assign(request, additionalData);
+
+  // persist update
+  persistRequest(request);
 
   if (newStatus === 'Processing') {
     request.processingStartedAt = request.processingStartedAt || new Date().toISOString();
@@ -185,12 +261,14 @@ function logAdminAction(action, details = {}) {
   };
   auditLogs.unshift(entry);
   console.log('[AUDIT]', entry);
+  try { persistAdminLog(entry); } catch(e) { /* ignore persistence errors */ }
   return entry;
 }
 
 function isActiveRequest(status) {
   const lower = (status || '').toLowerCase();
-  return ['submitted', 'verification', 'processing', 'ready'].includes(lower);
+  // Active statuses: Submitted, Pending/Verification, Processing
+  return ['submitted', 'pending', 'verification', 'processing'].includes(lower);
 }
 
 function hasActiveRequest(studentId) {
@@ -285,16 +363,27 @@ function createRequestNotificationEvent(request, type, extra = {}) {
     sourceId: request.id,
     timestamp: new Date().toISOString(),
     status: 'unread',
+    // include canonical request payload for clients
     request: {
-      id: request.id,
-      studentId: request.studentId,
+      request_id: request.request_id || request.id,
+      student_id: request.student_id || request.studentId,
+      type: request.type,
       status: request.status,
-      updatedAt: request.updatedAt
+      last_updated: request.last_updated || request.updatedAt
     }
   };
 
   createNotification(event);
+  // broadcast to websocket clients
   broadcast(event);
+  // broadcast to SSE clients
+  for (const client of sseClients) {
+    try {
+      sendSseEvent(client, event);
+    } catch (e) {
+      // ignore
+    }
+  }
 
   const statusPayload = {
     type: 'requestStatusUpdate',
@@ -402,6 +491,7 @@ app.post('/api/admin/signup', (req, res) => {
     passwordHash,
     displayName: displayName || username,
     role: role,
+    secretCode: ADMIN_SECRET_CODE,
     createdAt: new Date().toISOString(),
     createdBy: 'self_signup'
   };
@@ -596,13 +686,6 @@ app.post('/api/requests', enforceSingleActiveRequest, (req, res) => {
     return res.status(400).json({ error: 'missing required request data' });
   }
 
-  if (!payload.photoName || payload.photoName === 'No photo uploaded') {
-    return res.status(400).json({
-      error: 'photo_upload_required',
-      message: 'Photo upload is required to proceed.'
-    });
-  }
-
   const record = createRequestRecord(payload);
   createRequestNotificationEvent(record, 'request.new');
   return res.status(201).json({ ok: true, request: record });
@@ -748,7 +831,7 @@ function broadcast(event) {
       }
 
       // For student clients, only forward events that target their studentId
-      const targetId = event.userId || event.user_id || event.studentId || event.student_id || (event.request && event.request.studentId);
+      const targetId = event.userId || event.user_id || event.studentId || event.student_id || (event.request && (event.request.studentId || event.request.student_id));
       if (targetId && ws.userId && targetId.toString() === ws.userId.toString()) {
         ws.send(payload);
       }
@@ -757,6 +840,27 @@ function broadcast(event) {
     }
   }
 }
+
+// Server-Sent Events endpoint for request streams
+app.get('/api/requests/stream', (req, res) => {
+  // Set headers for SSE
+  res.writeHead(200, {
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'text/event-stream'
+  });
+
+  // Immediately send a comment to keep connection alive
+  res.write(': connected\n\n');
+
+  // Add to clients
+  sseClients.add(res);
+
+  // Optionally filter by ?userId= or ?role=admin
+  req.on('close', () => {
+    sseClients.delete(res);
+  });
+});
 
 wss.on('connection', (ws) => {
   clients.add(ws);

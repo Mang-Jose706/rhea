@@ -308,6 +308,53 @@
             display: block;
         }
 
+        /* Mobile card view for requests */
+        .request-card {
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: none;
+        }
+
+        .request-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .request-card-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .request-card-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .request-card-value {
+            color: var(--text-primary);
+            text-align: right;
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .request-card-status {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--input-border);
+            margin-top: 12px;
+        }
+
         @media (max-width: 768px) {
             .cta-hero {
                 flex-direction: column;
@@ -315,12 +362,34 @@
             }
 
             .requests-table {
-                font-size: 13px;
+                display: none;
             }
 
-            .requests-table th,
-            .requests-table td {
-                padding: 10px 8px;
+            .request-card {
+                display: block;
+            }
+
+            .requests-section {
+                padding: 16px;
+            }
+
+            .progress-step-labels {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .header-right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .new-request-group {
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .new-request-btn {
+                width: 100%;
             }
         }
     </style>
@@ -459,7 +528,7 @@
       <div id="requestsContainer">
             <div class="no-requests">
                 <i class="fa-solid fa-inbox"></i>
-                <p>No requests yet. <a href="submit a req .html" style="color: var(--accent); text-decoration: underline;">Submit your first request</a></p>
+                <p>No requests yet.</p>
                 </div>
             </div>
         </div>
@@ -473,6 +542,23 @@
         if (localStorage.getItem('pref-darkMode') === '1') {
             document.body.classList.add('dark-mode');
         }
+
+        const requestUpdateChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('request-updates') : null;
+        if (requestUpdateChannel) {
+            requestUpdateChannel.onmessage = (event) => {
+                if (event && event.data && event.data.type && event.data.type.startsWith('request.')) {
+                    console.log('[BroadcastChannel] Request update received:', event.data);
+                    loadStudentRequests();
+                }
+            };
+        }
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'requests') {
+                console.log('[Storage] Requests updated in another tab. Refreshing dashboard.');
+                loadStudentRequests();
+            }
+        });
 
         function getCurrentUser() {
             try {
@@ -588,7 +674,7 @@ async function fetchStudentRequests(studentId) {
             try {
                 const hasActive = Array.isArray(studentRequests) && studentRequests.some(r => {
                     const s = (r.status || '').toString().toLowerCase();
-                    return ['submitted', 'verification', 'processing', 'ready'].includes(s);
+                    return ['submitted', 'pending', 'verification', 'processing'].includes(s);
                 });
                 const newBtn = document.getElementById('newRequestBtn');
                 const banner = document.getElementById('newRequestBanner');
@@ -637,7 +723,7 @@ async function fetchStudentRequests(studentId) {
                 document.getElementById('requestsContainer').innerHTML = `
                     <div class="no-requests">
                         <i class="fa-solid fa-inbox"></i>
-                        <p>No requests yet. <a href="submit a req .html" style="color: var(--accent); text-decoration: underline;">Submit your first request</a></p>
+                        <p>No requests yet.</p>
                     </div>
                 `;
                 updateProgressTracker(null);
@@ -685,7 +771,40 @@ async function fetchStudentRequests(studentId) {
                 </table>
             `;
 
-            document.getElementById('requestsContainer').innerHTML = tableHTML;
+            // Mobile card view
+            let cardsHTML = '';
+            requests.forEach((req, index) => {
+                const dateValue = req.date || req.createdAt || req.submittedAt || now.toISOString();
+                const displayDate = new Date(dateValue).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                const statusClass = getStatusBadgeClass(req.status);
+                const statusIcon = getStatusIcon(req.status);
+                const statusLabel = getStatusLabel(req.status);
+
+                cardsHTML += `
+                    <div class="request-card" data-request-id="${req.id}">
+                        <div class="request-card-row">
+                            <span class="request-card-label">ID</span>
+                            <span class="request-card-value"><strong>${req.id || 'N/A'}</strong></span>
+                        </div>
+                        <div class="request-card-row">
+                            <span class="request-card-label">Type</span>
+                            <span class="request-card-value">${req.type || 'Student ID Request'}</span>
+                        </div>
+                        <div class="request-card-row">
+                            <span class="request-card-label">Date</span>
+                            <span class="request-card-value">${displayDate}</span>
+                        </div>
+                        <div class="request-card-status">
+                            <span class="status-badge ${statusClass}">
+                                <i class="fa-solid ${statusIcon}"></i>
+                                ${statusLabel}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('requestsContainer').innerHTML = tableHTML + cardsHTML;
             const latestRequest = getLatestRequest(requests);
             updateProgressTracker(latestRequest);
         }
@@ -763,8 +882,17 @@ async function fetchStudentRequests(studentId) {
 
                     const isStatusEvent = (data.type && data.type.startsWith('request.')) || data.type === 'requestStatusUpdate' || data.event === 'requestStatusUpdate';
                     if (isStatusEvent) {
-                        console.log('[Student WS] Request update received:', data);
+                        console.log('[Student WS] Request update received - refreshing dashboard:', data);
+                        // Refresh requests immediately for real-time updates
                         loadStudentRequests();
+                        // Show visual feedback
+                        if (document.readyState === 'complete') {
+                            const indicator = document.createElement('div');
+                            indicator.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); z-index: 10000;';
+                            indicator.textContent = '✓ Dashboard updated';
+                            document.body.appendChild(indicator);
+                            setTimeout(() => indicator.remove(), 2000);
+                        }
                     }
                 } catch (error) {
                     console.warn('[Student WS] Invalid message', error);
@@ -790,9 +918,16 @@ async function fetchStudentRequests(studentId) {
                 newBtn.addEventListener('click', (e) => {
                     if (newBtn.disabled) return;
                     // Navigate to the submission form
-                    window.location.href = 'submit a req .html';
+                    window.location.href = 'submit request.html';
                 });
             }
+
+            // Auto-refresh every 30 seconds for better sync when WebSocket is unavailable
+            setInterval(() => {
+                if (document.hasFocus()) {
+                    loadStudentRequests();
+                }
+            }, 30000);
         });
 
     </script>

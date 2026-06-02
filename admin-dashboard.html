@@ -153,6 +153,8 @@
         color: inherit;
       }
 
+
+
       /* Main content area */
       .main {
         flex: 1;
@@ -452,6 +454,10 @@
         border-left: 4px solid var(--accent-orange);
       }
 
+      .stat-card.verification {
+        border-left: 4px solid var(--accent-blue);
+      }
+
       .stat-card.completed {
         border-left: 4px solid var(--accent-green);
       }
@@ -473,6 +479,10 @@
 
       .stat-card.processing .stat-value {
         color: var(--accent-orange);
+      }
+
+      .stat-card.verification .stat-value {
+        color: var(--accent-blue);
       }
 
       .stat-card.completed .stat-value {
@@ -975,6 +985,280 @@
         color: #fff !important;
       }
 
+      /* ================= FILTERS & SEARCH ================= */
+      .filter-section {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .filter-group input,
+      .filter-group select {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--input-bg);
+        color: var(--primary-text);
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .filter-group input:focus,
+      .filter-group select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .filter-btn {
+        padding: 10px 16px;
+        border: 1px solid var(--border-color);
+        background: var(--accent-blue);
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .filter-btn:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+      }
+
+      .filter-btn.reset {
+        background: var(--input-bg);
+        color: var(--primary-text);
+        border-color: var(--border-color);
+      }
+
+      .filter-btn.reset:hover {
+        background: var(--border-color);
+      }
+
+      /* ================= EXPANDABLE ROWS ================= */
+      .expandable-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .expandable-row:hover {
+        background: var(--input-bg);
+      }
+
+      .row-expander {
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-blue);
+        font-weight: 700;
+        transition: transform 0.3s ease;
+      }
+
+      .expandable-row.expanded .row-expander {
+        transform: rotate(180deg);
+      }
+
+      .expanded-content {
+        display: none;
+      }
+
+      .expandable-row.expanded + .expanded-content {
+        display: table-row;
+      }
+
+      .expanded-content td {
+        padding: 20px;
+        background: var(--input-bg);
+        border-top: 1px solid var(--border-color);
+      }
+
+      .expanded-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 16px;
+      }
+
+      .expanded-detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .expanded-detail-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+      }
+
+      .expanded-detail-value {
+        font-size: 14px;
+        color: var(--primary-text);
+        font-weight: 500;
+      }
+
+      .expanded-photo {
+        margin: 12px 0;
+      }
+
+      .expanded-photo img {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+
+      .expanded-timeline {
+        margin-top: 16px;
+        border-left: 2px solid var(--accent-blue);
+        padding-left: 12px;
+      }
+
+      .timeline-item {
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+
+      .timeline-item strong {
+        color: var(--primary-text);
+      }
+
+      .timeline-item .timestamp {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      /* ================= RESPONSIVE TABLE ================= */
+      @media (max-width: 1200px) {
+        .filter-section {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .filter-section .filter-actions {
+          grid-column: 1 / -1;
+        }
+
+        .expanded-detail-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .filter-section {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .filter-section .filter-actions {
+          grid-column: 1;
+          justify-content: flex-start;
+        }
+
+        .expanded-detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        /* Mobile card view */
+        .table-wrapper {
+          overflow-x: visible;
+        }
+
+        table {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tbody {
+          display: block;
+        }
+
+        tbody tr {
+          display: block;
+          margin-bottom: 16px;
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+          overflow: hidden;
+        }
+
+        tbody td {
+          display: block;
+          padding: 12px;
+          border: none;
+          border-top: 1px solid var(--border-color);
+          text-align: left;
+        }
+
+        tbody td:first-child {
+          border-top: none;
+          background: var(--input-bg);
+          font-weight: 600;
+        }
+
+        tbody td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--muted);
+          display: inline-block;
+          width: 120px;
+          margin-right: 8px;
+        }
+
+        .expanded-content {
+          display: none !important;
+        }
+
+        .expandable-row.expanded + .expanded-content {
+          display: block !important;
+          margin-bottom: 16px;
+          background: var(--input-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+          padding: 16px;
+        }
+
+        .expanded-content td {
+          display: block;
+          padding: 0;
+          background: transparent;
+          border: none;
+        }
+      }
+
       @media (max-width: 768px) {
         .sidebar {
           width: 180px;
@@ -1032,10 +1316,6 @@
                 <i class="fa-solid fa-chart-pie"></i>
                 Dashboard
             </div>
-            <div class="menu-item" id="adminRequestsTab" onclick="switchAdminTab('adminRequests'); return false;">
-                <i class="fa-solid fa-inbox"></i>
-                Admin Requests
-            </div>
             <a href="admin-history.html" id="historyLink" class="menu-item">
                 <i class="fa-solid fa-history"></i>
                 History 
@@ -1059,7 +1339,7 @@
             </div>
             <div class="header-controls">
                 
-                <a href="notif.html" id="notifBell" class="icon-btn" title="Notifications">
+                <a href="admin-notif.html" id="notifBell" class="icon-btn" title="Notifications">
                     <i class="fa-regular fa-bell"></i>
                 </a>
             </div>
@@ -1115,47 +1395,30 @@
             <div class="card">
                 <h2>Request Status Overview</h2>
                 <div class="stats-grid">
-                    <div class="stat-card submitted">
-                        <div class="stat-value" id="countSubmitted">0</div>
-                        <div class="stat-label">Submitted</div>
-                        <div class="stat-sublabel">New requests</div>
-                    </div>
                     <div class="stat-card pending">
                         <div class="stat-value" id="countPending">0</div>
                         <div class="stat-label">Pending</div>
-                        <div class="stat-sublabel">Awaiting review</div>
+                        <div class="stat-sublabel">New submissions</div>
+                    </div>
+                    <div class="stat-card verification">
+                        <div class="stat-value" id="countVerification">0</div>
+                        <div class="stat-label">Verification</div>
+                        <div class="stat-sublabel">Under review</div>
+                    </div>
+                    <div class="stat-card processing">
+                        <div class="stat-value" id="countProcessing">0</div>
+                        <div class="stat-label">Processing</div>
+                        <div class="stat-sublabel">In progress</div>
                     </div>
                     <div class="stat-card completed">
                         <div class="stat-value" id="countCompleted">0</div>
                         <div class="stat-label">Completed</div>
-                        <div class="stat-sublabel">Approved</div>
+                        <div class="stat-sublabel">Ready for pickup</div>
                     </div>
                     <div class="stat-card rejected">
                         <div class="stat-value" id="countRejected">0</div>
                         <div class="stat-label">Rejected</div>
                         <div class="stat-sublabel">Declined</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ANALYTICS STRIP -->
-            <div class="card">
-                <h2>Key Metrics</h2>
-                <div class="analytics-strip">
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="analyticsValue1">–</div>
-                        <div class="analytics-label" id="analyticsLabel1">Total Requests</div>
-                        <div class="analytics-detail" id="analyticsDetail1">All submissions</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="analyticsValue2">2–3</div>
-                        <div class="analytics-label" id="analyticsLabel2">Avg Processing Time</div>
-                        <div class="analytics-detail" id="analyticsDetail2">Working days</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value">✓</div>
-                        <div class="analytics-label">System Status</div>
-                        <div class="analytics-detail">All systems operational</div>
                     </div>
                 </div>
             </div>
@@ -1183,56 +1446,6 @@
                 </div>
             </section>
 
-            <section class="card">
-                <h2>Reports & Analytics</h2>
-                <div class="analytics-strip">
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="reportTotalRequests">0</div>
-                        <div class="analytics-label">Total Requests</div>
-                        <div class="analytics-detail">All student submissions</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="reportAvgProcessingTime">0 days</div>
-                        <div class="analytics-label">Average Processing Time</div>
-                        <div class="analytics-detail">Processed requests only</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="reportRejectionRate">0%</div>
-                        <div class="analytics-label">Rejection Rate</div>
-                        <div class="analytics-detail">Declined requests</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="reportSecurityStatus">Secure</div>
-                        <div class="analytics-label">System Security</div>
-                        <div class="analytics-detail">Monitoring active</div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ADMIN REQUESTS TAB -->
-        <div id="adminRequestsSection" class="tab-section">
-            <div class="card">
-                <h2>Admin Requests (for Superadmin Approval)</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Admin Username</th>
-                                <th>Display Name</th>
-                                <th>Status</th>
-                                <th>Requested At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminRequestsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-                <div id="noAdminRequestsMessage" class="no-data" style="display: none;">
-                    <p>No pending admin requests.</p>
-                </div>
-            </div>
         </div>
 
         <!-- HISTORY LOGS TAB -->
@@ -1293,39 +1506,71 @@
             </div>
         </div>
 
-        <!-- ANALYTICS STRIP -->
-        <div class="card">
-            <h2>Key Metrics</h2>
-            <div class="analytics-strip">
-                <div class="analytics-item">
-                    <div class="analytics-value" id="analyticsValue1">–</div>
-                    <div class="analytics-label" id="analyticsLabel1">My Active Requests</div>
-                    <div class="analytics-detail" id="analyticsDetail1">Current submissions</div>
-                </div>
-                <div class="analytics-item">
-                    <div class="analytics-value" id="analyticsValue2">2–3</div>
-                    <div class="analytics-label" id="analyticsLabel2">Average Processing Time</div>
-                    <div class="analytics-detail" id="analyticsDetail2">Working days</div>
-                </div>
-                <div class="analytics-item">
-                    <div class="analytics-value">✓</div>
-                    <div class="analytics-label">Process Verification</div>
-                    <div class="analytics-detail">Your data is secure</div>
-                </div>
-            </div>
-        </div>
-
         <!-- REQUESTS MANAGEMENT TAB CONTENT -->
         <div class="card">
             <h2>Request Details - Full Management</h2>
+            
+            <!-- SEARCH & FILTERS -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>Search by Request ID or Student Name</label>
+                    <input type="text" id="searchInput" placeholder="Enter Request ID or Student Name..." />
+                </div>
+                <div class="filter-group">
+                    <label>Request Type</label>
+                    <select id="filterType">
+                        <option value="">All Types</option>
+                        <option value="New ID">New ID</option>
+                        <option value="Replacement">Replacement</option>
+                        <option value="Photo Update">Photo Update</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Department</label>
+                    <select id="filterDept">
+                        <option value="">All Departments</option>
+                        <option value="College of Agriculture">College of Agriculture</option>
+                        <option value="College of Arts">College of Arts</option>
+                        <option value="College of Business">College of Business</option>
+                        <option value="College of Engineering">College of Engineering</option>
+                        <option value="College of Law">College of Law</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Verification">Verification</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <input type="date" id="filterDateFrom" />
+                </div>
+                <div class="filter-group">
+                    <label>To</label>
+                    <input type="date" id="filterDateTo" />
+                </div>
+                <div class="filter-actions">
+                    <button class="filter-btn" id="applyFiltersBtn">Apply</button>
+                    <button class="filter-btn reset" id="resetFiltersBtn">Reset</button>
+                </div>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
+                            <th></th>
                             <th>ID Number</th>
                             <th>Student Name</th>
                             <th>Type</th>
                             <th>Status</th>
+                            <th>Date Submitted</th>
                             <th>Last Updated</th>
                             <th>Actions</th>
                         </tr>
@@ -1351,15 +1596,13 @@
         const sections = {
             dashboard: 'dashboardOverview',
             history: 'historyLogs',
-            requests: 'requestsManagement',
-            adminRequests: 'adminRequestsSection'
+            requests: 'requestsManagement'
         };
 
         const tabs = {
             dashboard: 'dashboardTab',
             history: 'historyTab',
-            requests: 'requestsTab',
-            adminRequests: 'adminRequestsTab'
+            requests: 'requestsTab'
         };
 
         Object.values(sections).forEach(sectionId => {
@@ -1385,18 +1628,15 @@
             else if (tabName === 'users') pageTitle.textContent = 'User Management';
             else if (tabName === 'reports') pageTitle.textContent = 'Reports / Analytics';
             else if (tabName === 'requests') pageTitle.textContent = 'Requests Management';
-            else if (tabName === 'adminRequests') pageTitle.textContent = 'Admin Requests';
         }
 
         if (tabName === 'dashboard') {
+            updateStatusCounts();
             populateUserManagementTable();
-            renderReportsAnalytics();
         } else if (tabName === 'requests') {
             populateRequestsTable(true); // Show all requests for admin
         } else if (tabName === 'history') {
             populateHistoryTable();
-        } else if (tabName === 'adminRequests') {
-            populateAdminRequestsTable();
         }
 
         logActivity('SWITCH_TAB', { tab: tabName });
@@ -1430,6 +1670,10 @@
       const token = getAdminToken();
       if (!token || !isAdmin()) {
         return false;
+      }
+
+      if (token.startsWith('local-admin-')) {
+        return true;
       }
 
       try {
@@ -1624,11 +1868,7 @@
             }
             const summary = await response.json();
             if (summary && typeof summary === 'object') {
-                document.getElementById('countSubmitted').textContent = summary.submitted || 0;
-                document.getElementById('countPending').textContent = summary.pending || 0;
-                document.getElementById('countCompleted').textContent = summary.completed || 0;
-                document.getElementById('countRejected').textContent = summary.rejected || 0;
-
+                updateStatusCounts(summary);
                 updateProgressTracker(summary.latestStatus || 'submitted');
                 updateNewRequestButtonState(summary);
             }
@@ -1657,8 +1897,8 @@
         }
 
         const hasActive = summary
-            ? ((summary.submitted || 0) > 0 || (summary.pending || 0) > 0)
-            : getVisibleRequests().some(req => ['submitted', 'verification', 'processing'].includes((req.status || '').toLowerCase()));
+            ? ((summary.pending || 0) > 0 || (summary.verification || 0) > 0 || (summary.processing || 0) > 0)
+            : getVisibleRequests().some(req => ['submitted', 'pending', 'verification', 'processing'].includes((req.status || '').toLowerCase()));
 
         if (hasActive) {
             button.classList.add('disabled');
@@ -1742,6 +1982,73 @@
             .sort((a, b) => new Date(b.createdAt || b.lastUpdated || Date.now()) - new Date(a.createdAt || a.lastUpdated || Date.now()))[0] || null;
     }
 
+    function initializePendingRequests() {
+        try {
+            const stored = localStorage.getItem('requests');
+            const requests = stored ? JSON.parse(stored) : [];
+            
+            // Check if we already have pending requests
+            const hasPendingRequests = requests.some(req => 
+                ['submitted', 'pending', 'verification', 'processing'].includes((req.status || '').toLowerCase())
+            );
+            
+            // Only initialize if no pending requests exist
+            if (!hasPendingRequests && requests.length === 0) {
+                const now = new Date();
+                const pendingRequests = [
+                    {
+                        id: 'REQ-001',
+                        request_id: 'REQ-001',
+                        studentId: 'STU001',
+                        studentName: 'John Gabriel',
+                        fullName: 'John Gabriel Santos',
+                        type: 'New ID',
+                        status: 'Submitted',
+                        department: 'College of Engineering',
+                        program: 'Bachelor of Science in Civil Engineering',
+                        yearLevel: '2nd Year',
+                        createdAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        photo: null
+                    },
+                    {
+                        id: 'REQ-002',
+                        request_id: 'REQ-002',
+                        studentId: 'STU002',
+                        studentName: 'Maria Reyes',
+                        fullName: 'Maria Reyes Lopez',
+                        type: 'Photo Update',
+                        status: 'Pending',
+                        department: 'College of Science',
+                        program: 'Bachelor of Science in Biology',
+                        yearLevel: '3rd Year',
+                        createdAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                        photo: null
+                    },
+                    {
+                        id: 'REQ-003',
+                        request_id: 'REQ-003',
+                        studentId: 'STU003',
+                        studentName: 'Carlos Martinez',
+                        fullName: 'Carlos Jose Martinez Cruz',
+                        type: 'Lost ID Replacement',
+                        status: 'Verification',
+                        department: 'College of Business Administration',
+                        program: 'Bachelor of Science in Business Administration',
+                        yearLevel: '4th Year',
+                        createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        updatedAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                        photo: null
+                    }
+                ];
+                localStorage.setItem('requests', JSON.stringify(pendingRequests));
+            }
+        } catch (e) {
+            console.warn('Failed to initialize pending requests', e);
+        }
+    }
+
     // ============================================
     // STATUS & DISPLAY FUNCTIONS
     // ============================================
@@ -1811,12 +2118,12 @@
         }
         if (statusLower === 'verification') {
             return baseActions +
-                ` <a href="#" class="action-btn success" onclick="processRequest('${requestId}'); return false;">Start Processing</a>` +
+            ` <a href="#" class="action-btn success" onclick="processRequest('${requestId}'); return false;">Approve for Processing</a>` +
                 rejectButton;
         }
         if (statusLower === 'processing') {
             return baseActions +
-                ` <a href="#" class="action-btn success" onclick="completeRequest('${requestId}'); return false;">Mark Ready</a>` +
+            ` <a href="#" class="action-btn success" onclick="completeRequest('${requestId}'); return false;">Mark Completed</a>` +
                 rejectButton;
         }
 
@@ -1892,18 +2199,19 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[verifyRequest] Starting verification for ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Processing');
-            if (updated) {
-                applyUpdatedRequest(updated);
-                console.log(`[Admin Action] Request ${requestId} moved to Processing`);
-                alert('✓ Request moved to Processing stage. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
-                populateRequestsTable();
-            } else {
-                alert('⚠ No response from server. Request may not have been updated.');
-            }
+        // Move request into Verification stage (admin review)
+        const updated = await updateBackendRequestStatus(requestId, 'Verification');
+        if (updated) {
+          applyUpdatedRequest(updated);
+          console.log(`[Admin Action] Request ${requestId} moved to Verification`);
+          alert('✓ Request moved to Verification stage. Review the details and either Approve for Processing or Reject.');
+          // Refresh UI
+          await syncRequestsFromBackend();
+          await fetchRequestStatusSummary();
+          populateRequestsTable();
+        } else {
+          alert('⚠ No response from server. Request may not have been updated.');
+        }
         } catch (error) {
             console.error('[verifyRequest] Error:', error);
             alert(`✗ Failed to verify request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
@@ -1918,18 +2226,22 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[processRequest] Starting processing for ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Processing');
-            if (updated) {
-                applyUpdatedRequest(updated);
-                console.log(`[Admin Action] Request ${requestId} moved to Processing`);
-                alert('✓ Request moved to Processing stage. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
-                populateRequestsTable();
-            } else {
-                alert('⚠ No response from server. Request may not have been updated.');
-            }
+        // Allow admin to assign staff and add remarks when starting processing
+        const assignee = prompt('Assign to staff (enter staff username or leave blank):', '');
+        if (assignee === null) return; // cancelled
+        const remarks = prompt('Optional remarks for processing (can be left blank):', '');
+        const updated = await updateBackendRequestStatus(requestId, 'Processing', { assignedTo: assignee || '', remarks: remarks || '' });
+        if (updated) {
+          applyUpdatedRequest(updated);
+          console.log(`[Admin Action] Request ${requestId} moved to Processing`);
+          alert('✓ Request moved to Processing stage. Student will be notified automatically.');
+          // Refresh UI
+          await syncRequestsFromBackend();
+          await fetchRequestStatusSummary();
+          populateRequestsTable();
+        } else {
+          alert('⚠ No response from server. Request may not have been updated.');
+        }
         } catch (error) {
             console.error('[processRequest] Error:', error);
             alert(`✗ Failed to process request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
@@ -1944,7 +2256,8 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[completeRequest] Completing request ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Completed');
+        const remarks = prompt('Optional completion remarks (leave blank if none):', '');
+        const updated = await updateBackendRequestStatus(requestId, 'Completed', { remarks: remarks || '' });
             if (updated) {
                 applyUpdatedRequest(updated);
                 console.log(`[Admin Action] Request ${requestId} moved to Completed`);
@@ -1972,10 +2285,17 @@ Updated: ${request.updatedAt || 'N/A'}
         if (!isAdmin()) {
             alert('Only admins can reject requests');
             return;
-        }
-        const reason = prompt('Enter rejection reason (optional):');
+      }
+      let reason = '';
+      while (true) {
+        reason = prompt('Enter rejection reason (required):');
         if (reason === null) return; // User cancelled
-        
+        if ((reason || '').trim().length === 0) {
+          alert('Rejection reason is required.');
+          continue;
+        }
+        break;
+      }
         try {
             console.log(`[rejectRequest] Rejecting request ${requestId}`);
             const updated = await updateBackendRequestStatus(requestId, 'Rejected', {
@@ -2007,31 +2327,12 @@ Updated: ${request.updatedAt || 'N/A'}
         const noDataMsg = document.getElementById('noRequestsMessage');
         const isAdminUser = isAdmin();
         
-        // For Requests Management tab, show all requests; otherwise show visible requests
-        const requests = showAllRequests && isAdminUser ? getAllRequests() : getVisibleRequests();
+        // Get all requests, then apply filters
+        let requests = showAllRequests && isAdminUser ? getAllRequests() : getVisibleRequests();
         
-        const table = tbody.closest('table');
-        const thead = table.querySelector('thead');
-        const actionsHeader = table.querySelector('thead th:last-child');
-
-        // Update table header for admin view
-        if (isAdminUser && showAllRequests) {
-            // Update headers to include Student Name for full admin view
-            const headers = thead.querySelectorAll('th');
-            if (headers.length >= 5) {
-                headers[1].textContent = 'Student Name';
-                headers[2].textContent = 'Type';
-                headers[3].textContent = 'Status';
-                headers[4].textContent = 'Last Updated';
-                headers[5].textContent = 'Actions';
-            }
-        }
-
-        // Show/hide Actions header
-        if (actionsHeader) {
-            actionsHeader.style.display = isAdminUser ? '' : 'none';
-        }
-
+        // Apply filters and search
+        requests = applyFiltersAndSearch(requests);
+        
         tbody.innerHTML = '';
 
         if (requests.length === 0) {
@@ -2042,43 +2343,172 @@ Updated: ${request.updatedAt || 'N/A'}
         noDataMsg.style.display = 'none';
 
         requests.forEach(req => {
+            // Main table row (expandable)
             const row = document.createElement('tr');
-            const idNumber = req.studentId || 'N/A';
+            row.classList.add('expandable-row');
+            row.setAttribute('data-request-id', req.id);
+            
+            const idNumber = req.request_id || req.id || 'N/A';
             const studentName = req.studentName || 'Unknown Student';
             const requestType = req.type || 'School ID';
             const status = getStatusBadge(req.status);
+            const dateSubmitted = req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'N/A';
             const lastUpdated = req.updatedAt ? new Date(req.updatedAt).toLocaleDateString() : new Date().toLocaleDateString();
             const actions = getActionButtons(req.id, req.status, isAdminUser);
 
-            // For admin in Requests Management tab, show full details with student name
-            if (isAdminUser && showAllRequests) {
-                row.innerHTML = `
-                    <td>${idNumber}</td>
-                    <td>${studentName}</td>
-                    <td>${requestType}</td>
-                    <td>${status}</td>
-                    <td>${lastUpdated}</td>
-                    <td style="white-space: nowrap;">${actions}</td>
-                `;
-            } else if (isAdminUser) {
-                // Admin in Dashboard view
-                row.innerHTML = `
-                    <td>${idNumber}</td>
-                    <td>${requestType}</td>
-                    <td>${status}</td>
-                    <td>${lastUpdated}</td>
-                    <td style="white-space: nowrap;">${actions}</td>
-                `;
-            } else {
-                // Student view (no actions)
-                row.innerHTML = `
-                    <td>${idNumber}</td>
-                    <td>${requestType}</td>
-                    <td>${status}</td>
-                    <td>${lastUpdated}</td>
-                `;
-            }
+            row.innerHTML = `
+                <td><span class="row-expander">▼</span></td>
+                <td data-label="ID">${idNumber}</td>
+                <td data-label="Student">${studentName}</td>
+                <td data-label="Type">${requestType}</td>
+                <td data-label="Status">${status}</td>
+                <td data-label="Submitted">${dateSubmitted}</td>
+                <td data-label="Updated">${lastUpdated}</td>
+                <td data-label="Actions" style="white-space: nowrap;">${actions}</td>
+            `;
+            
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('.action-btn')) {
+                    toggleRowExpansion(row);
+                }
+            });
+            
             tbody.appendChild(row);
+            
+            // Expanded content row
+            const expandedRow = document.createElement('tr');
+            expandedRow.classList.add('expanded-content');
+            expandedRow.innerHTML = `
+                <td colspan="8">
+                    <div class="expanded-detail-grid">
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Full Name</div>
+                            <div class="expanded-detail-value">${req.fullName || req.studentName || '-'}</div>
+                        </div>
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Student ID</div>
+                            <div class="expanded-detail-value">${req.studentId || '-'}</div>
+                        </div>
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Department</div>
+                            <div class="expanded-detail-value">${req.department || '-'}</div>
+                        </div>
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Program</div>
+                            <div class="expanded-detail-value">${req.program || '-'}</div>
+                        </div>
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Request Type</div>
+                            <div class="expanded-detail-value">${req.type || '-'}</div>
+                        </div>
+                        <div class="expanded-detail-item">
+                            <div class="expanded-detail-label">Current Status</div>
+                            <div class="expanded-detail-value">${req.status || '-'}</div>
+                        </div>
+                    </div>
+                    ${req.photo ? `<div class="expanded-photo">
+                        <strong>Photo:</strong><br>
+                        <img src="${req.photo}" alt="Student Photo" />
+                    </div>` : ''}
+                    ${req.remarks || req.notes ? `<div>
+                        <strong>Remarks:</strong><br>
+                        <div style="font-size: 13px; margin-top: 6px; color: var(--light-text);">${req.remarks || req.notes || '-'}</div>
+                    </div>` : ''}
+                    <div class="expanded-timeline">
+                        <strong>Timeline</strong>
+                        <div class="timeline-item">
+                            <strong>Submitted:</strong> ${req.createdAt ? new Date(req.createdAt).toLocaleString() : 'N/A'}
+                            <div class="timestamp">By ${req.studentName || 'Student'}</div>
+                        </div>
+                        ${req.updatedAt && req.updatedAt !== req.createdAt ? `
+                        <div class="timeline-item">
+                            <strong>Last Updated:</strong> ${new Date(req.updatedAt).toLocaleString()}
+                            <div class="timestamp">${req.status || 'Status changed'}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(expandedRow);
+        });
+        
+        // Attach event listeners to expanded content
+        attachExpandableRowListeners();
+    }
+
+    function toggleRowExpansion(row) {
+        const isExpanded = row.classList.contains('expanded');
+        document.querySelectorAll('tbody tr.expandable-row.expanded').forEach(r => {
+            r.classList.remove('expanded');
+        });
+        if (!isExpanded) {
+            row.classList.add('expanded');
+        }
+    }
+
+    function attachExpandableRowListeners() {
+        document.querySelectorAll('.expandable-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (!e.target.closest('.action-btn')) {
+                    toggleRowExpansion(row);
+                }
+            });
+        });
+    }
+
+    function applyFiltersAndSearch(requests) {
+        const searchValue = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        const typeFilter = document.getElementById('filterType')?.value || '';
+        const deptFilter = document.getElementById('filterDept')?.value || '';
+        const statusFilter = document.getElementById('filterStatus')?.value || '';
+        const dateFromFilter = document.getElementById('filterDateFrom')?.value || '';
+        const dateToFilter = document.getElementById('filterDateTo')?.value || '';
+
+        return requests.filter(req => {
+            // Search filter
+            if (searchValue) {
+                const requestId = (req.request_id || req.id || '').toLowerCase();
+                const studentName = (req.studentName || req.fullName || '').toLowerCase();
+                if (!requestId.includes(searchValue) && !studentName.includes(searchValue)) {
+                    return false;
+                }
+            }
+
+            // Type filter
+            if (typeFilter && (req.type || '') !== typeFilter) {
+                return false;
+            }
+
+            // Department filter
+            if (deptFilter && (req.department || '') !== deptFilter) {
+                return false;
+            }
+
+            // Status filter
+            if (statusFilter) {
+                const reqStatus = (req.status || '').toLowerCase();
+                const filterStatus = statusFilter.toLowerCase();
+                if (reqStatus !== filterStatus && !(filterStatus === 'pending' && ['submitted', 'pending', 'verification', 'processing'].includes(reqStatus))) {
+                    return false;
+                }
+            }
+
+            // Date range filter
+            if (dateFromFilter || dateToFilter) {
+                const createdDate = new Date(req.createdAt || req.updatedAt || 0);
+                if (dateFromFilter && createdDate < new Date(dateFromFilter)) {
+                    return false;
+                }
+                if (dateToFilter) {
+                    const toDate = new Date(dateToFilter);
+                    toDate.setHours(23, 59, 59, 999);
+                    if (createdDate > toDate) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         });
     }
 
@@ -2087,29 +2517,34 @@ Updated: ${request.updatedAt || 'N/A'}
     // ============================================
 
     function updateStatusCounts(summary) {
-        if (summary && typeof summary === 'object') {
-            document.getElementById('countSubmitted').textContent = summary.submitted || 0;
+        // Normalize summary from backend if provided
+        if (summary && typeof summary === 'object' && (summary.pending !== undefined || summary.verification !== undefined)) {
             document.getElementById('countPending').textContent = summary.pending || 0;
+            document.getElementById('countVerification').textContent = summary.verification || 0;
+            document.getElementById('countProcessing').textContent = summary.processing || 0;
             document.getElementById('countCompleted').textContent = summary.completed || 0;
             document.getElementById('countRejected').textContent = summary.rejected || 0;
             return;
         }
 
-        const requests = getVisibleRequests();
+        const requests = isAdmin() ? getAllRequests() : getVisibleRequests();
 
         let counts = {
-            submitted: 0,
             pending: 0,
+            verification: 0,
+            processing: 0,
             completed: 0,
             rejected: 0
         };
 
         requests.forEach(req => {
             const status = (req.status || '').toLowerCase();
-            if (status === 'submitted') {
-                counts.submitted++;
-            } else if (status === 'pending' || status === 'verification' || status === 'processing') {
+            if (status === 'submitted' || status === 'pending') {
                 counts.pending++;
+            } else if (status === 'verification') {
+                counts.verification++;
+            } else if (status === 'processing') {
+                counts.processing++;
             } else if (status === 'ready' || status === 'completed') {
                 counts.completed++;
             } else if (status === 'rejected') {
@@ -2117,37 +2552,11 @@ Updated: ${request.updatedAt || 'N/A'}
             }
         });
 
-        document.getElementById('countSubmitted').textContent = counts.submitted;
         document.getElementById('countPending').textContent = counts.pending;
+        document.getElementById('countVerification').textContent = counts.verification;
+        document.getElementById('countProcessing').textContent = counts.processing;
         document.getElementById('countCompleted').textContent = counts.completed;
         document.getElementById('countRejected').textContent = counts.rejected;
-    }
-
-    function updateAnalytics() {
-        const isAdminUser = isAdmin();
-        const requests = getVisibleRequests();
-        const latestRequest = getLatestRequest();
-
-        if (isAdminUser) {
-            // Admin metrics
-            document.getElementById('analyticsValue1').textContent = requests.length;
-            document.getElementById('analyticsLabel1').textContent = 'Total Requests';
-            document.getElementById('analyticsDetail1').textContent = 'All student submissions';
-
-            document.getElementById('analyticsValue2').textContent = '2–3';
-            document.getElementById('analyticsLabel2').textContent = 'Avg Processing Time';
-            document.getElementById('analyticsDetail2').textContent = 'Working days';
-        } else {
-            // Student metrics
-            const activeCount = requests.filter(r => {
-                const status = (r.status || '').toLowerCase();
-                return status === 'submitted' || status === 'pending' || status === 'processing';
-            }).length;
-
-            document.getElementById('analyticsValue1').textContent = activeCount;
-            document.getElementById('analyticsLabel1').textContent = 'My Active Requests';
-            document.getElementById('analyticsDetail1').textContent = 'Current submissions';
-        }
     }
 
     function getAllUsers() {
@@ -2176,102 +2585,6 @@ Updated: ${request.updatedAt || 'N/A'}
             }
             return false;
         });
-    }
-
-    async function populateAdminRequestsTable() {
-        const tbody = document.getElementById('adminRequestsTableBody');
-        const noDataMsg = document.getElementById('noAdminRequestsMessage');
-        
-        try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests`, {
-                headers: getAuthHeaders()
-            });
-            
-            if (!response.ok) {
-                console.warn('Failed to fetch admin requests:', response.status);
-                noDataMsg.style.display = 'block';
-                return;
-            }
-            
-            const adminRequests = await response.json();
-            tbody.innerHTML = '';
-            
-            if (adminRequests.length === 0) {
-                noDataMsg.style.display = 'block';
-            } else {
-                noDataMsg.style.display = 'none';
-                adminRequests.forEach(req => {
-                    const row = tbody.insertRow();
-                    const isPending = req.status === 'pending';
-                    let statusClass = 'status-pending';
-                    let statusLabel = 'Pending';
-
-                    if (req.status === 'approved') {
-                        statusClass = 'status-success';
-                        statusLabel = 'Approved';
-                    } else if (req.status === 'rejected') {
-                        statusClass = 'status-danger';
-                        statusLabel = 'Rejected';
-                    }
-
-                    row.innerHTML = `
-                        <td>${req.username}</td>
-                        <td>${req.displayName || '—'}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                        <td>${new Date(req.requestedAt).toLocaleDateString()}</td>
-                        <td>
-                            ${isPending ? `
-                                <a href="#" class="action-btn success" onclick="approveAdminRequest('${req.id}'); return false;">Approve</a>
-                                <a href="#" class="action-btn danger" onclick="rejectAdminRequest('${req.id}'); return false;">Reject</a>
-                            ` : '<span style="color: #999; font-size: 13px;">No actions available</span>'}
-                        </td>
-                    `;
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching admin requests:', error);
-            noDataMsg.style.display = 'block';
-        }
-    }
-
-    async function approveAdminRequest(requestId) {
-        if (!confirm('Approve this admin request?')) return;
-        try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests/${encodeURIComponent(requestId)}/approve`, {
-                method: 'POST',
-                headers: getAuthHeaders()
-            });
-            if (response.ok) {
-                alert('Admin request approved.');
-                populateAdminRequestsTable();
-            } else {
-                alert('Failed to approve admin request.');
-            }
-        } catch (error) {
-            console.error('Approve error:', error);
-            alert('Error approving request.');
-        }
-    }
-
-    async function rejectAdminRequest(requestId) {
-        const reason = prompt('Rejection reason (optional):');
-        if (reason === null) return;
-        try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests/${encodeURIComponent(requestId)}/reject`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ reason })
-            });
-            if (response.ok) {
-                alert('Admin request rejected.');
-                populateAdminRequestsTable();
-            } else {
-                alert('Failed to reject admin request.');
-            }
-        } catch (error) {
-            console.error('Reject error:', error);
-            alert('Error rejecting request.');
-        }
     }
 
     function populateHistoryTable() {
@@ -2330,20 +2643,6 @@ Updated: ${request.updatedAt || 'N/A'}
             `;
             tbody.appendChild(row);
         });
-    }
-
-    function renderReportsAnalytics() {
-        const requests = getAllRequests();
-        const totalRequests = requests.length;
-        const processed = requests.filter(req => ['ready', 'completed', 'rejected'].includes((req.status || '').toLowerCase()));
-        const rejected = requests.filter(req => (req.status || '').toLowerCase() === 'rejected').length;
-        const averageDays = getAverageProcessingTime(processed);
-        const rejectionRate = processed.length ? Math.round((rejected / processed.length) * 100) : 0;
-
-        document.getElementById('reportTotalRequests').textContent = totalRequests;
-        document.getElementById('reportAvgProcessingTime').textContent = `${averageDays} days`;
-        document.getElementById('reportRejectionRate').textContent = `${rejectionRate}%`;
-        document.getElementById('reportSecurityStatus').textContent = 'Secure';
     }
 
     function getAverageProcessingTime(requests) {
@@ -2416,7 +2715,6 @@ Updated: ${request.updatedAt || 'N/A'}
                             await syncRequestsFromBackend();
                             await fetchRequestStatusSummary();
                             populateRequestsTable();
-                            updateAnalytics();
 
                             logActivity('DASHBOARD_STATUS_SYNCED', {
                                 type: data.type,
@@ -2491,6 +2789,9 @@ Updated: ${request.updatedAt || 'N/A'}
         // Connect to WebSocket for live status updates
         connectDashboardWebSocket();
 
+        // Initialize 3 pending requests if they don't exist
+        initializePendingRequests();
+
         // Sync dashboard requests with the backend before rendering
         await syncRequestsFromBackend();
         await fetchRequestStatusSummary();
@@ -2504,7 +2805,52 @@ Updated: ${request.updatedAt || 'N/A'}
             // For student, show normal dashboard view
             populateRequestsTable();
         }
-        updateAnalytics();
+    });
+
+    // ============================================
+    // FILTER AND SEARCH EVENT LISTENERS
+    // ============================================
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        if (applyFiltersBtn) {
+            applyFiltersBtn.addEventListener('click', () => {
+                populateRequestsTable(true);
+            });
+        }
+
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', () => {
+                if (document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
+                if (document.getElementById('filterType')) document.getElementById('filterType').value = '';
+                if (document.getElementById('filterDept')) document.getElementById('filterDept').value = '';
+                if (document.getElementById('filterStatus')) document.getElementById('filterStatus').value = '';
+                if (document.getElementById('filterDateFrom')) document.getElementById('filterDateFrom').value = '';
+                if (document.getElementById('filterDateTo')) document.getElementById('filterDateTo').value = '';
+                populateRequestsTable(true);
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    populateRequestsTable(true);
+                }
+            });
+        }
+
+        // Real-time filter changes
+        ['filterType', 'filterDept', 'filterStatus'].forEach(id => {
+            const elem = document.getElementById(id);
+            if (elem) {
+                elem.addEventListener('change', () => {
+                    populateRequestsTable(true);
+                });
+            }
+        });
     });
 
     async function openNewRequestModal(event) {
@@ -2576,7 +2922,6 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         populateRequestsTable();
         updateStatusCounts();
-        updateAnalytics();
         updateProgressTracker('submitted');
         updateNewRequestButtonState();
         console.log('All requests cleared from local storage and backend.');
@@ -2668,7 +3013,6 @@ Updated: ${request.updatedAt || 'N/A'}
 
         await fetchRequestStatusSummary();
         populateRequestsTable();
-        updateAnalytics();
         closeNewRequestModal();
     }
 

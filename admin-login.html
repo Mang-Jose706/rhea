@@ -6,144 +6,188 @@
     <title>Admin Portal - Login</title>
     <style>
         :root {
-            --bg-gradient: linear-gradient(110deg, #0a1a33 0%, #1a2744 100%);
-            --card-bg: #ffffff;
-            --card-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            --text-primary: #000000;
-            --text-secondary: #555;
-            --input-bg: #fafafa;
-            --input-border: #ccc;
-            --input-focus: #1b234b;
-            --btn-bg: #5d6fd2;
-            --btn-hover: #4b5ecc;
-            --link-color: #4b8acb;
-            --error: #dc2626;
-        }
-
-        body.dark-mode {
-            --bg-gradient: linear-gradient(110deg, #0d0d0d 0%, #1a1a1a 100%);
-            --card-bg: #2a2a2a;
-            --card-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            --text-primary: #ffffff;
-            --text-secondary: #d0d0d0;
-            --input-bg: #333333;
-            --input-border: #444444;
-            --input-focus: #5d6fd2;
-            --btn-bg: #5d6fd2;
-            --btn-hover: #4b5ecc;
-            --link-color: #7ba3d4;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --background: #eef4ff;
+            --surface: #ffffff;
+            --surface-alt: #f5f8ff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border: #d1d5db;
+            --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
         }
 
         body {
+            margin: 0;
             font-family: "Poppins", sans-serif;
-            background: var(--bg-gradient);
+            background: linear-gradient(135deg, #eef4ff 0%, #d7e7ff 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #11121a 0%, #1f2433 100%);
+            color: #eceff4;
+            --surface: #1f2230;
+            --surface-alt: #272b39;
+            --text-primary: #eceff4;
+            --text-secondary: #a8b0c2;
+            --border: #3b3f51;
+            --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         .admin-container {
-            width: 450px;
-            background: var(--card-bg);
-            padding: 45px;
-            border-radius: 24px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
+            width: min(540px, 100%);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            border-radius: 28px;
+            padding: 36px 34px;
+            position: relative;
         }
 
         .admin-header {
-            margin-bottom: 30px;
+            margin-bottom: 24px;
+            text-align: center;
         }
 
         .admin-badge {
-            display: inline-block;
-            background: #dc2626;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--danger-color);
+            margin: 0 auto;
             color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
+            margin-bottom: 16px;
         }
 
         .admin-header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
+            font-size: 32px;
+            margin-bottom: 10px;
+            line-height: 1.1;
         }
 
         .admin-header p {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-secondary);
+            margin: 0;
         }
 
         .security-notice {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
             background: #fef2f2;
             border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 24px;
-            font-size: 13px;
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin-bottom: 26px;
             color: #7f1d1d;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 14px;
         }
 
         body.dark-mode .security-notice {
-            background: #7f1d1d;
-            border-color: #991b1b;
-            color: #fca5a5;
+            background: rgba(248, 113, 113, 0.12);
+            border-color: rgba(248, 113, 113, 0.35);
+            color: #f5c6cb;
         }
 
         .security-notice i {
-            font-size: 16px;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .offline-banner {
+            display: none;
+            gap: 12px;
+            align-items: flex-start;
+            background: #fff7dd;
+            border: 1px solid #f5c06e;
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            color: #664d03;
+            font-size: 14px;
+        }
+
+        .offline-banner i {
+            margin-top: 2px;
+            color: #d97706;
+        }
+
+        body.dark-mode .offline-banner {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: #f6d186;
+        }
+
+        .offline-banner.hidden {
+            display: none;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             text-align: left;
         }
 
         .input-group label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
             margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
         }
 
-        .input-group input, .input-group select {
+        .input-group input,
+        .input-group select {
             width: 100%;
             padding: 14px 16px;
-            border-radius: 12px;
-            border: 2px solid var(--input-border);
-            background: var(--input-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface-alt);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
-            transition: 0.3s;
-            font-family: "Poppins", sans-serif;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .input-group input:focus, .input-group select:focus {
-            border-color: var(--input-focus);
-            box-shadow: 0 0 8px rgba(93, 111, 210, 0.3);
+        body.dark-mode .input-group input,
+        body.dark-mode .input-group select {
+            background: #232635;
+            border-color: #3b3f51;
+            color: var(--text-primary);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.12);
         }
 
         .password-toggle {
             position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 52px;
         }
 
         .password-toggle .toggle-btn {
@@ -151,77 +195,72 @@
             right: 14px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
             border: none;
-            cursor: pointer;
+            background: transparent;
             color: var(--text-secondary);
-            font-size: 18px;
-            padding: 4px 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .password-toggle input {
-            padding-right: 45px;
+            cursor: pointer;
+            padding: 6px;
+            font-size: 16px;
         }
 
         .login-btn {
             width: 100%;
-            padding: 14px;
-            background: var(--btn-bg);
+            padding: 16px 18px;
+            border-radius: 16px;
             border: none;
-            border-radius: 12px;
+            background: var(--primary-color);
             color: white;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            margin-top: 8px;
         }
 
         .login-btn:hover {
-            background: var(--btn-hover);
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(93, 111, 210, 0.3);
+            background: #2c81d3;
+            box-shadow: 0 18px 36px rgba(52, 152, 219, 0.18);
         }
 
-        .login-btn:active {
-            transform: translateY(0);
+        .login-btn:disabled {
+            background: #a3c4f5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .success-message,
         .error-message {
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
             display: none;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 14px;
+            margin-bottom: 18px;
         }
 
         .success-message {
-            background: #e6ffed;
-            border: 1px solid #6ee7b7;
+            background: #d1fae5;
+            border: 1px solid #34d399;
             color: #065f46;
         }
 
         body.dark-mode .success-message {
-            background: #064e3b;
-            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.16);
+            border-color: rgba(16, 185, 129, 0.45);
             color: #d1fae5;
         }
 
         .error-message {
             background: #fee2e2;
-            border: 1px solid #fecaca;
+            border: 1px solid #fca5a5;
             color: #991b1b;
         }
 
         body.dark-mode .error-message {
-            background: #7f1d1d;
-            border-color: #991b1b;
+            background: rgba(248, 113, 113, 0.18);
+            border-color: rgba(248, 113, 113, 0.42);
             color: #fca5a5;
         }
 
@@ -232,64 +271,66 @@
 
         .footer-links {
             margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid var(--input-border);
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
+            text-align: center;
         }
 
         .footer-links a {
-            color: var(--link-color);
+            color: var(--primary-color);
+            font-weight: 700;
             text-decoration: none;
-            font-weight: 600;
-            margin: 0 4px;
         }
 
         .footer-links a:hover {
             text-decoration: underline;
         }
 
-        .divider {
-            margin: 0 6px;
-        }
-
-        .theme-toggle {
+        .dark-mode-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 2px solid var(--input-border);
+            top: 22px;
+            right: 22px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
-            width: 44px;
-            height: 44px;
+            border: none;
+            background: var(--surface);
+            color: var(--text-primary);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
             cursor: pointer;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            transition: 0.3s;
+            transition: transform 0.2s ease;
+            z-index: 20;
         }
 
-        .theme-toggle:hover {
-            transform: scale(1.1);
+        body.dark-mode .dark-mode-toggle {
+            background: #2c2f3c;
+            color: #f8fafc;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
         }
 
-        @media (max-width: 500px) {
+        .dark-mode-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 560px) {
             .admin-container {
-                width: 90%;
-                padding: 30px 20px;
-                margin: 20px;
+                padding: 28px 20px;
             }
 
             .admin-header h1 {
-                font-size: 22px;
+                font-size: 26px;
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-       <div class="admin-container">
+    <button class="dark-mode-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+    <div class="admin-container">
         <div class="admin-header">
             <div class="admin-badge">
                 <i class="fa-solid fa-shield"></i> Admin Portal
@@ -298,7 +339,12 @@
             <p>Secure access to admin dashboard</p>
         </div>
 
-        <div class="security-noticef">
+        <div class="offline-banner hidden" id="localModeBanner">
+            <i class="fa-solid fa-wifi-slash"></i>
+            <div><strong>Local sign in available:</strong> Admin credentials are stored locally and can log in if the backend is unavailable.</div>
+        </div>
+
+        <div class="security-notice">
             <i class="fa-solid fa-lock"></i>
             <span>This is a restricted admin area. Unauthorized access is monitored.</span>
         </div>
@@ -312,16 +358,16 @@
             <span id="errorText"></span>
         </div>
 
-        <form id="adminLoginForm" onsubmit="adminLogin(event)">
+        <form id="adminLoginForm" autocomplete="off" onsubmit="adminLogin(event)">
             <div class="input-group">
                 <label for="adminId">Admin Username</label>
-                <input type="text" id="adminId" placeholder="Enter admin username" required>
+                <input type="text" id="adminId" autocomplete="off" placeholder="Enter admin username" required>
             </div>
 
             <div class="input-group">
                 <label for="adminPassword">Password</label>
                 <div class="password-toggle">
-                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                    <input type="password" id="adminPassword" autocomplete="new-password" placeholder="Enter password" required>
                     <button type="button" class="toggle-btn" onclick="togglePasswordVisibility(event)">
                         <i class="fa-solid fa-eye"></i>
                     </button>
@@ -402,9 +448,65 @@
             };
         }
 
+        function getLocalAdminAccounts() {
+            try {
+                return JSON.parse(localStorage.getItem('adminAccounts') || '[]');
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function initLocalModeBanner() {
+            const banner = document.getElementById('localModeBanner');
+            if (!banner) return;
+            const accounts = getLocalAdminAccounts();
+            if (accounts.length > 0) {
+                banner.classList.remove('hidden');
+                banner.querySelector('div').innerHTML = `<strong>Local sign in available:</strong> ${accounts.length} admin account${accounts.length > 1 ? 's' : ''} are stored locally and can log in if the backend is offline.`;
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function findLocalAdminAccount(username) {
+            const normalized = username.trim().toLowerCase();
+            return getLocalAdminAccounts().find(acc => acc.username.toLowerCase() === normalized) || null;
+        }
+
+        function tryLocalAdminLogin(username, password) {
+            const admin = findLocalAdminAccount(username);
+            if (!admin) return null;
+            if (admin.password !== password) return null;
+            return {
+                id: admin.id,
+                username: admin.username,
+                displayName: admin.displayName,
+                role: admin.role || 'admin',
+                accountType: 'admin'
+            };
+        }
+
+        function isLocalAdminToken(token) {
+            return Boolean(token && token.startsWith('local-admin-'));
+        }
+
+        function isLocalAdminUser() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                return user && (user.role === 'admin' || user.role === 'superadmin' || user.accountType === 'admin');
+            } catch (error) {
+                return false;
+            }
+        }
+
         async function redirectIfAuthenticated() {
             const token = getAdminToken();
             if (!token) return;
+
+            if (isLocalAdminToken(token) && isLocalAdminUser()) {
+                window.location.href = '/admin-dashboard.html';
+                return;
+            }
 
             try {
                 const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
@@ -491,6 +593,19 @@
 
                 const result = await response.json();
                 if (!response.ok) {
+                    const localUser = tryLocalAdminLogin(adminId, adminPassword);
+                    if (localUser) {
+                        localStorage.setItem('user', JSON.stringify(localUser));
+                        localStorage.setItem('adminToken', `local-admin-${Date.now()}`);
+                        localStorage.setItem('adminSession', JSON.stringify({
+                            userId: localUser.id || localUser.username,
+                            token: localStorage.getItem('adminToken'),
+                            loginTime: new Date().toISOString(),
+                            verified: true
+                        }));
+                        window.location.href = '/admin-dashboard.html';
+                        return;
+                    }
                     showError(result.message || 'Login failed. Please check your credentials.');
                     return;
                 }
@@ -501,12 +616,13 @@
                     role: 'admin',
                     accountType: 'admin'
                 };
+                const token = result.token || `local-admin-${Date.now()}`;
 
                 localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('adminToken', result.token);
+                localStorage.setItem('adminToken', token);
                 localStorage.setItem('adminSession', JSON.stringify({
                     userId: user.id || user.username,
-                    token: result.token,
+                    token,
                     loginTime: new Date().toISOString(),
                     verified: true
                 }));
@@ -537,7 +653,20 @@
 
                 window.location.href = '/admin-dashboard.html';
             } catch (error) {
-                console.error('Admin login error:', error);
+                console.warn('Admin login backend failed, trying local admin login...', error);
+                const localUser = tryLocalAdminLogin(adminId, adminPassword);
+                if (localUser) {
+                    localStorage.setItem('user', JSON.stringify(localUser));
+                    localStorage.setItem('adminToken', `local-admin-${Date.now()}`);
+                    localStorage.setItem('adminSession', JSON.stringify({
+                        userId: localUser.id || localUser.username,
+                        token: localStorage.getItem('adminToken'),
+                        loginTime: new Date().toISOString(),
+                        verified: true
+                    }));
+                    window.location.href = '/admin-dashboard.html';
+                    return;
+                }
                 localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminSession');
                 localStorage.removeItem('user');
@@ -556,6 +685,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initDarkMode();
+            initLocalModeBanner();
             redirectIfAuthenticated();
 
             const params = parseQueryParams();

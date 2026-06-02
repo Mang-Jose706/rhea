@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Notifications - IDEease Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --sidebar-bg: #0a1a33;
+      --sidebar-width: 220px;
+      --primary-text: #1f2937;
+      --light-text: #6b7280;
+      --muted: #9ca3af;
+      --card-bg: #f9fafb;
+      --input-bg: #f3f4f6;
+      --border-color: #e5e7eb;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --dark-bg: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark-mode {
+      --primary-text: #ffffff;
+      --light-text: #e0e6f2;
+      --muted: #9ca3af;
+      --dark-bg: #0f1419;
+      --card-bg: #1f2937;
+      --input-bg: #111827;
+      --border-color: #374151;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark-bg);
+      color: var(--light-text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+      overflow-y: auto;
+    }
+
+    .logo {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .logo h2 {
+      font-size: 24px;
+      margin: 10px 0 0;
+      font-weight: 700;
+    }
+
+    .sidebar .logo i {
+      font-size: 34px;
+      color: #fff;
+    }
+
+    .logo p {
+      font-size: 12px;
+      color: #b9c6e0;
+      margin: 4px 0 0;
+    }
+
+    .menu {
+      margin-top: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border-radius: 10px;
+      color: #d9e3f5;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+    }
+
+    .menu-item i {
+      width: auto;
+      text-align: center;
+    }
+
+    /* ================= MAIN CONTENT ================= */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .header-row h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-text);
+      margin: 0;
+    }
+
+    .header-row p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 6px 0 0 0;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-text);
+      transition: all 0.2s ease;
+      font-size: 18px;
+    }
+
+    .icon-btn:hover {
+      background: var(--input-bg);
+      border-color: var(--accent-blue);
+    }
+
+    /* ================= NOTIFICATIONS LAYOUT ================= */
+    .notif-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      height: calc(100vh - 180px);
+    }
+
+    .notif-table-wrapper {
+      flex: 1;
+      overflow: auto;
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+    }
+
+    .notif-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+    }
+
+    .notif-table thead {
+      background: var(--input-bg);
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .notif-table th {
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      border-right: 1px solid var(--border-color);
+    }
+
+    .notif-table th:last-child {
+      border-right: none;
+    }
+
+    .notif-table tbody tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .notif-table tbody tr:hover {
+      background: var(--input-bg);
+    }
+
+    .notif-table tbody tr.unread {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .notif-table tbody tr.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid var(--accent-blue);
+    }
+
+    .notif-table td {
+      padding: 16px;
+      border-right: 1px solid var(--border-color);
+      color: var(--primary-text);
+      font-size: 14px;
+    }
+
+    .notif-table td:last-child {
+      border-right: none;
+    }
+
+    .notif-table-empty {
+      padding: 64px 32px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .notif-table-empty i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+      display: block;
+    }
+
+    .notif-list {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .notif-list-header {
+      padding: 18px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notif-list-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .unread-badge {
+      background: var(--accent-red);
+      color: white;
+      border-radius: 12px;
+      font-size: 12px;
+      padding: 4px 10px;
+      font-weight: 700;
+    }
+
+    .notif-filters {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--primary-text);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .filter-btn.active {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+
+    .notif-items {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      gap: 12px;
+    }
+
+    .notif-item:hover {
+      background: var(--input-bg);
+    }
+
+    .notif-item.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid var(--accent-blue);
+      padding-left: 13px;
+    }
+
+    .notif-item.unread {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .notif-item-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .notif-item-icon.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+    }
+
+    .notif-item-icon.info {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent-blue);
+    }
+
+    .notif-item-icon.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .notif-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notif-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-text);
+      margin: 0 0 4px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .notif-item-time {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .notif-item-preview {
+      font-size: 12px;
+      color: var(--light-text);
+      margin: 4px 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ================= NOTIFICATION DETAIL ================= */
+    .notif-detail {
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .notif-detail-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .notif-detail-empty i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .notif-detail-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .notif-detail-title {
+      flex: 1;
+    }
+
+    .notif-detail-title h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--primary-text);
+    }
+
+    .notif-detail-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .notif-detail-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-text);
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+
+    .notif-detail-content {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .detail-section {
+      margin-bottom: 24px;
+    }
+
+    .detail-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .detail-section-content {
+      background: var(--input-bg);
+      padding: 16px;
+      border-radius: 12px;
+      color: var(--primary-text);
+      line-height: 1.6;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .detail-value {
+      color: var(--primary-text);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-badge.completed {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-green);
+    }
+
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .status-badge.processing {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent-blue);
+    }
+
+    .status-badge.rejected {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+    }
+
+    /* ================= SEARCH & FILTER CONTROLS ================= */
+    .notif-controls {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--input-bg);
+      border-radius: 18px 18px 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .search-box,
+    .control-select,
+    .control-input {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: white;
+      color: var(--primary-text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .search-box:focus,
+    .control-select:focus,
+    .control-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-box {
+      min-width: 200px;
+    }
+
+    .control-select,
+    .control-input {
+      min-width: 150px;
+    }
+
+    .control-input {
+      max-width: 100px;
+    }
+
+    .filter-reset-btn {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: white;
+      color: var(--primary-text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .filter-reset-btn:hover {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    /* ================= SCROLLBAR ================= */
+    .main::-webkit-scrollbar,
+    .notif-items::-webkit-scrollbar,
+    .notif-detail-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .main::-webkit-scrollbar-track,
+    .notif-items::-webkit-scrollbar-track,
+    .notif-detail-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .main::-webkit-scrollbar-thumb,
+    .notif-items::-webkit-scrollbar-thumb,
+    .notif-detail-content::-webkit-scrollbar-thumb {
+      background: rgba(15, 35, 64, 0.18);
+      border-radius: 4px;
+    }
+
+    /* ================= RESPONSIVE ================= */
+    @media (max-width: 1200px) {
+      .notif-table {
+        font-size: 13px;
+      }
+      .notif-table th,
+      .notif-table td {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; border-radius: 0; flex-direction: row; overflow-x: auto; }
+      .menu { flex-direction: row; }
+      .main { padding: 20px 16px; }
+      .header-row { flex-direction: column; align-items: flex-start; }
+      .notif-table-wrapper {
+        border-radius: 12px;
+      }
+      .notif-table {
+        font-size: 12px;
+      }
+      .notif-table th,
+      .notif-table td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <h2>IDEease Portal</h2>
+      <p id="roleLabel">Admin Services</p>
+    </div>
+
+    <div class="menu">
+      <a href="admin-dashboard.html" class="menu-item">
+        <i class="fa-solid fa-chart-pie"></i>
+        Dashboard
+      </a>
+      <a href="admin-history.html" class="menu-item">
+        <i class="fa-solid fa-history"></i>
+        History
+      </a>
+      <a href="admin-settings.html" class="menu-item">
+        <i class="fa-solid fa-gear"></i>
+        Settings
+      </a>
+      <div class="menu-item" onclick="logout(); return false;" style="margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 12px;">
+        <i class="fa-solid fa-sign-out-alt"></i>
+        Logout
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="header-row">
+      <div>
+        <h1>Notifications</h1>
+        <p>Stay updated with real-time notifications about student requests, status changes, and system activities.</p>
+      </div>
+      <div class="header-controls">
+        <button class="icon-btn" id="refreshNotif" title="Refresh notifications">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+        <button class="icon-btn" id="clearAllNotif" title="Clear all notifications">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="notif-container">
+      <div class="notif-table-wrapper">
+        <div class="notif-controls">
+          <div class="control-group" style="flex: 1; min-width: 200px;">
+            <label class="control-label">Search</label>
+            <input type="text" id="searchBox" class="search-box" placeholder="Request ID or Student Name...">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Status</label>
+            <select id="statusFilter" class="control-select">
+              <option value="">All Status</option>
+              <option value="submitted">Submitted</option>
+              <option value="verification">Verification</option>
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Date From</label>
+            <input type="date" id="dateFromFilter" class="control-input">
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Date To</label>
+            <input type="date" id="dateToFilter" class="control-input">
+          </div>
+
+          <button id="resetFiltersBtn" class="filter-reset-btn">Clear Filters</button>
+        </div>
+
+        <table class="notif-table" id="notifTable">
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Student Name</th>
+              <th>Student ID</th>
+              <th>Request Type</th>
+              <th>Date Submitted</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody id="notifTableBody">
+          </tbody>
+        </table>
+        <div class="notif-table-empty" id="tableEmpty" style="display: none;">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No notifications</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const BACKEND_BASE_URL = 'http://localhost:3000';
+    let adminNotifications = [];
+    let selectedNotificationId = null;
+    let currentFilter = 'all';
+    let filterState = {
+      search: '',
+      status: '',
+      dateFrom: '',
+      dateTo: ''
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      setupWebSocket();
+      setupEventListeners();
+      fetchNotifications();
+    });
+
+    function setupEventListeners() {
+      document.getElementById('refreshNotif').addEventListener('click', fetchNotifications);
+      document.getElementById('clearAllNotif').addEventListener('click', clearAllNotifications);
+      
+      // Search and filter inputs
+      document.getElementById('searchBox').addEventListener('input', (e) => {
+        filterState.search = e.target.value.toLowerCase();
+        renderNotificationsList();
+      });
+
+      document.getElementById('statusFilter').addEventListener('change', (e) => {
+        filterState.status = e.target.value.toLowerCase();
+        renderNotificationsList();
+      });
+
+      document.getElementById('dateFromFilter').addEventListener('change', (e) => {
+        filterState.dateFrom = e.target.value;
+        renderNotificationsList();
+      });
+
+      document.getElementById('dateToFilter').addEventListener('change', (e) => {
+        filterState.dateTo = e.target.value;
+        renderNotificationsList();
+      });
+
+      document.getElementById('resetFiltersBtn').addEventListener('click', resetFilters);
+    }
+
+    function setupFilterButtons() {
+      // Legacy filter buttons if needed
+    }
+
+    function resetFilters() {
+      filterState = {
+        search: '',
+        status: '',
+        dateFrom: '',
+        dateTo: ''
+      };
+      document.getElementById('searchBox').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('dateFromFilter').value = '';
+      document.getElementById('dateToFilter').value = '';
+      renderNotificationsList();
+    }
+
+    // WebSocket Setup for Live Notifications
+    function setupWebSocket() {
+      try {
+        const ws = new WebSocket('ws://localhost:3000/ws');
+        
+        ws.onopen = () => {
+          console.log('WebSocket connected to admin notifications');
+          const token = localStorage.getItem('authToken');
+          ws.send(JSON.stringify({
+            type: 'auth',
+            token: token,
+            role: 'admin'
+          }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            handleWebSocketMessage(data);
+          } catch (e) {
+            console.error('Error parsing WebSocket message:', e);
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+
+        ws.onclose = () => {
+          console.log('WebSocket disconnected');
+          setTimeout(setupWebSocket, 5000);
+        };
+      } catch (e) {
+        console.error('WebSocket setup error:', e);
+      }
+    }
+
+    function handleWebSocketMessage(data) {
+      if (data.type === 'request_update' || data.type === 'request_created') {
+        // Add new notification
+        const req = data.request || {};
+        const notification = {
+          id: `notif-${req.id || Date.now()}`,
+          type: data.type === 'request_created' ? 'info' : 'success',
+          title: data.type === 'request_created' ? 'New Request Submitted' : 'Request Status Updated',
+          message: `Request ID: ${req.id || 'N/A'} - ${req.fullName || req.studentName || 'Student'}`,
+          timestamp: req.createdAt ? new Date(req.createdAt) : new Date(),
+          read: false,
+          icon: 'fa-bell',
+          iconType: data.type === 'request_created' ? 'info' : 'success',
+          details: req
+        };
+
+        adminNotifications.unshift(notification);
+        updateUnreadCount();
+        renderNotificationsList();
+
+        // Optional: Show toast notification
+        showToastNotification(notification.title, notification.message);
+      }
+    }
+
+    async function fetchNotifications() {
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/api/requests`, {
+          headers: getAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch notifications');
+
+        const requests = await response.json();
+        
+        // Convert requests to notifications
+        adminNotifications = requests.map(req => ({
+          id: `notif-${req.id || req.request_id || `notif-${Date.now()}`}`,
+          type: getNotificationType(req.status),
+          title: getNotificationTitle(req),
+          message: `Student: ${req.fullName || req.studentName || 'Student'}`,
+          timestamp: req.createdAt ? new Date(req.createdAt) : new Date(),
+          read: false,
+          icon: 'fa-file-alt',
+          iconType: getNotificationIconType(req.status),
+          details: req
+        }));
+
+        updateUnreadCount();
+        renderNotificationsList();
+      } catch (e) {
+        console.error('Error fetching notifications:', e);
+      }
+    }
+
+    function renderNotificationsList() {
+      const tbody = document.getElementById('notifTableBody');
+      const tableEmpty = document.getElementById('tableEmpty');
+      tbody.innerHTML = '';
+
+      let filteredNotifications = adminNotifications.filter(notif => {
+        const req = notif.details;
+
+        // Search filter - search in Request ID and Student Name
+        if (filterState.search) {
+          const requestId = (req.id || req.request_id || '').toLowerCase();
+          const studentName = (req.fullName || req.studentName || '').toLowerCase();
+          const studentId = (req.studentId || req.student_id || '').toLowerCase();
+          
+          const searchMatches = requestId.includes(filterState.search) || 
+                               studentName.includes(filterState.search) ||
+                               studentId.includes(filterState.search);
+          
+          if (!searchMatches) return false;
+        }
+
+        // Status filter
+        if (filterState.status) {
+          const notifStatus = (req.status || '').toLowerCase();
+          if (notifStatus !== filterState.status) return false;
+        }
+
+        // Date range filters
+        if (filterState.dateFrom || filterState.dateTo) {
+          const createdAt = req.createdAt ? new Date(req.createdAt) : null;
+          
+          if (filterState.dateFrom) {
+            const dateFrom = new Date(filterState.dateFrom);
+            if (!createdAt || createdAt < dateFrom) return false;
+          }
+
+          if (filterState.dateTo) {
+            const dateTo = new Date(filterState.dateTo);
+            dateTo.setHours(23, 59, 59, 999);
+            if (!createdAt || createdAt > dateTo) return false;
+          }
+        }
+
+        return true;
+      });
+
+      if (filteredNotifications.length === 0) {
+        tableEmpty.style.display = 'block';
+        return;
+      }
+
+      tableEmpty.style.display = 'none';
+
+      filteredNotifications.forEach(notif => {
+        const req = notif.details;
+        const row = document.createElement('tr');
+        row.className = `${notif.read ? '' : 'unread'} ${selectedNotificationId === notif.id ? 'active' : ''}`;
+        row.onclick = () => selectNotification(notif);
+
+        row.innerHTML = `
+          <td>${escapeHtml(req.id || req.request_id || 'N/A')}</td>
+          <td>${escapeHtml(req.fullName || req.studentName || 'N/A')}</td>
+          <td>${escapeHtml(req.studentId || req.student_id || 'N/A')}</td>
+          <td>${escapeHtml(req.type || 'N/A')}</td>
+          <td>${formatDateTable(req.createdAt)}</td>
+          <td><span class="status-badge ${req.status}">${(req.status || 'submitted').toUpperCase()}</span></td>
+          <td>${formatDateTable(req.updatedAt || req.last_updated, true)}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function selectNotification(notif) {
+      selectedNotificationId = notif.id;
+      notif.read = true;
+      updateUnreadCount();
+      renderNotificationsList();
+    }
+
+
+    function updateUnreadCount() {
+      const unreadCount = adminNotifications.filter(n => !n.read).length;
+      const badge = document.getElementById('unreadCount');
+      if (badge) {
+        badge.textContent = unreadCount;
+      }
+    }
+
+    function markAsRead(notifId) {
+      const notif = adminNotifications.find(n => n.id === notifId);
+      if (notif) notif.read = true;
+      updateUnreadCount();
+      renderNotificationsList();
+    }
+
+    function deleteNotification(notifId) {
+      adminNotifications = adminNotifications.filter(n => n.id !== notifId);
+      selectedNotificationId = null;
+      updateUnreadCount();
+      renderNotificationsList();
+    }
+
+    function clearAllNotifications() {
+      if (confirm('Clear all notifications?')) {
+        adminNotifications = [];
+        selectedNotificationId = null;
+        updateUnreadCount();
+        renderNotificationsList();
+      }
+    }
+
+    function showToastNotification(title, message) {
+      // Optional: Add toast notification to UI
+      console.log(`Notification: ${title} - ${message}`);
+    }
+
+    function getNotificationType(status) {
+      const typeMap = {
+        'completed': 'success',
+        'rejected': 'warning',
+        'processing': 'info',
+        'pending': 'warning'
+      };
+      return typeMap[status] || 'info';
+    }
+
+    function getNotificationTitle(req) {
+      const titleMap = {
+        'submitted': 'New Request Submitted',
+        'pending': 'Request Pending Review',
+        'verification': 'Request Verification Started',
+        'processing': 'Request Processing',
+        'completed': 'Request Completed',
+        'rejected': 'Request Rejected'
+      };
+      return titleMap[req.status] || 'Request Update';
+    }
+
+    function getNotificationIconType(status) {
+      const iconMap = {
+        'completed': 'success',
+        'rejected': 'warning',
+        'processing': 'info',
+        'pending': 'warning'
+      };
+      return iconMap[status] || 'info';
+    }
+
+    function formatTime(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return 'N/A';
+      
+      const now = new Date();
+      const diff = now - d;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days < 7) return `${days}d ago`;
+      return d.toLocaleDateString();
+    }
+
+    function formatDateTime(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return 'N/A';
+      
+      return d.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function formatDateTable(date, isLastUpdated = false) {
+      if (!date) {
+        return isLastUpdated ? 'Not Updated' : 'N/A';
+      }
+      const d = new Date(date);
+      if (isNaN(d.getTime())) {
+        return isLastUpdated ? 'Not Updated' : 'N/A';
+      }
+      
+      // Format as MM/DD/YYYY HH:mm
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      
+      return `${month}/${day}/${year} ${hours}:${minutes}`;
+    }
+
+    function escapeHtml(text) {
+      if (!text || text === 'undefined') return '';
+      const div = document.createElement('div');
+      div.textContent = String(text);
+      return div.innerHTML;
+    }
+
+    function getAuthHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('authToken');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      return headers;
+    }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userId');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+</body>
+</html>
