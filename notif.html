@@ -3,142 +3,496 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IDEAS Activity Center</title>
+  <title>My Notifications</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="assets/common.css">
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #eef2ff;
-      --surface: #ffffff;
-      --text: #09142d;
-      --muted: #64748b;
-      --accent: #2563eb;
-      --success: #16a34a;
-      --danger: #ef4444;
-      --orange: #f97316;
-      --border: #e2e8f0;
-      --radius: 18px;
-      --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: 'Poppins', 'Inter', 'Roboto', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 24px;
-    }
-
-    body.dark-mode {
-      --bg: #081126;
-      --surface: #0b1430;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --border: #18263d;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-    }
-
-    .container {
+    .page-container {
       width: 100%;
-      max-width: 1120px;
-      margin: 0 auto;
-      background: var(--surface);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--shadow);
     }
 
-    .topbar {
+    .notif-controls {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+      flex-direction: column;
       gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-      position: sticky;
-      top: 16px;
-      background: transparent;
-      z-index: 2;
+      margin-bottom: 24px;
     }
 
-    .page-info {
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 180ms ease;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-icon {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 180ms ease;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--accent);
+      background: var(--input-bg);
+    }
+
+    .active-requests-banner {
+      background: linear-gradient(135deg, var(--accent) 0%, #1d4ed8 100%);
+      color: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .active-requests-banner h2 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .active-requests-banner p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 13px;
+    }
+
+    .request-stats {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .request-stat-box {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    .request-stat-box i {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .request-stat-box .label {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    .request-stat-box .count {
+      font-size: 18px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 180ms ease;
+      border: 1px solid var(--input-border);
+    }
+
+    .status-pill.connected {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-pill.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .filter-dropdown {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--card-bg);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 180ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .filter-dropdown:hover {
+      border-color: var(--accent);
+      background: var(--input-bg);
+    }
+
+    .filter-dropdown-content {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 4px;
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      min-width: 220px;
+      overflow: hidden;
+      display: none;
+    }
+
+    body.dark-mode .filter-dropdown-content {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .filter-dropdown-content.active {
+      display: block;
+    }
+
+    .filter-dropdown-content label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--input-border);
+      cursor: pointer;
+      transition: background 150ms ease;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .filter-dropdown-content label:last-child {
+      border-bottom: none;
+    }
+
+    .filter-dropdown-content label:hover {
+      background: var(--input-bg);
+    }
+
+    .filter-dropdown-content input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .notif-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--input-border);
+      background: var(--card-bg);
+      transition: all 180ms ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .notif-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      border-color: var(--accent);
+    }
+
+    body.dark-mode .notif-card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .notif-card.read {
+      opacity: 0.7;
+    }
+
+    .notif-header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      flex-shrink: 0;
+      font-size: 1.1rem;
+      min-width: 48px;
+    }
+
+    .icon-wrap.green { background: #16a34a; }
+    .icon-wrap.blue { background: #2563eb; }
+    .icon-wrap.red { background: #ef4444; }
+    .icon-wrap.orange { background: #f97316; }
+    .icon-wrap.purple { background: #9333ea; }
+    .icon-wrap.gray { background: #64748b; }
+
+    .body {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .page-info h1 {
+    .body h3 {
       margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text-primary);
     }
 
-    .page-info p {
+    .body .desc {
       margin: 0;
-      color: var(--muted);
-      font-size: 0.98rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .body .details {
+      display: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
       line-height: 1.6;
-      max-width: 680px;
+      margin-top: 4px;
     }
 
-    .actions {
+    .notif-card.expanded .details {
+      display: block;
+    }
+
+    .notif-footer {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--input-border);
     }
 
-    .btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--text);
-      border-radius: 14px;
-      padding: 11px 16px;
-      font-size: 0.95rem;
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .timestamp {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .category {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+    }
+
+    .view-details-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+      gap: 4px;
+      transition: all 150ms ease;
     }
 
-    .btn:hover {
+    .view-details-btn:hover {
+      background: #1d4ed8;
       transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
     }
 
-    .btn.primary {
-      border: none;
-      background: var(--accent);
-      color: #fff;
+    .return-center {
+      display: flex;
+      justify-content: center;
+      margin-top: 24px;
     }
 
-    .filter-panel {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(37, 99, 235, 0.08);
-      border: 1px solid rgba(37, 99, 235, 0.16);
-    }
-
-    .filter-panel label {
+    .return-dashboard {
+      text-decoration: none;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--text);
-      font-size: 0.92rem;
-      user-select: none;
+      transition: all 180ms ease;
+      font-size: 0.95rem;
     }
 
-    .filter-panel input {
-      width: 16px;
-      height: 16px;
+    .return-dashboard:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+      .control-group { flex-direction: column; }
+      .active-requests-banner { flex-direction: column; align-items: flex-start; }
+      .request-stats { width: 100%; }
+      .status-row { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .notif-footer { flex-direction: column; align-items: flex-start; }
+      .active-requests-banner { padding: 16px; }
+      .notif-card { padding: 14px; }
+    }
+
+    .filter-dropdown-content.active {
+      display: block;
+    }
+
+    .filter-dropdown-content label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--input-border);
+      cursor: pointer;
+      transition: background 150ms ease;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .filter-dropdown-content label:last-child {
+      border-bottom: none;
+    }
+
+    .filter-dropdown-content label:hover {
+      background: var(--input-bg);
+    }
+
+    .filter-dropdown-content input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
       accent-color: var(--accent);
+      cursor: pointer;
+    }
+  </style>
+    }
+
+    .filter-dropdown-content.active {
+      display: block;
+    }
+
+    .filter-dropdown-content label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background 150ms ease;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .filter-dropdown-content label:last-child {
+      border-bottom: none;
+    }
+
+    .filter-dropdown-content label:hover {
+      background: var(--bg-light);
+    }
+
+    .filter-dropdown-content input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-color);
+      cursor: pointer;
     }
 
     .status-row {
@@ -156,10 +510,11 @@
       padding: 10px 14px;
       border-radius: 999px;
       background: rgba(37, 99, 235, 0.08);
-      color: var(--accent);
+      color: var(--accent-color);
       font-size: 0.9rem;
       font-weight: 600;
-      transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+      transition: all 180ms ease;
+      border: 1px solid rgba(37, 99, 235, 0.12);
     }
 
     .status-pill.disconnected {
@@ -195,96 +550,106 @@
 
     .notif-card {
       display: flex;
+      flex-direction: column;
       gap: 14px;
-      align-items: flex-start;
-      padding: 18px;
+      padding: 20px;
       border-radius: 20px;
-      border: 1px solid var(--border);
-      background: #fff;
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      transition: all 200ms ease;
       cursor: pointer;
-      min-height: 120px;
       position: relative;
     }
 
     .notif-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
-      border-color: rgba(37, 99, 235, 0.16);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+      border-color: var(--accent-color);
+    }
+
+    body.dark-mode .notif-card:hover {
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
     }
 
     .notif-card.read {
-      opacity: 0.72;
-      background: rgba(249, 250, 251, 0.88);
+      opacity: 0.7;
+    }
+
+    .notif-header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
     }
 
     .icon-wrap {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
       display: grid;
       place-items: center;
       color: #fff;
       flex-shrink: 0;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
+      min-width: 48px;
     }
 
     .icon-wrap.green { background: #16a34a; }
     .icon-wrap.blue { background: #2563eb; }
     .icon-wrap.red { background: #ef4444; }
     .icon-wrap.orange { background: #f97316; }
+    .icon-wrap.purple { background: #9333ea; }
     .icon-wrap.gray { background: #64748b; }
 
     .body {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .body h3 {
       margin: 0;
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.3;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text-primary);
     }
 
     .body .desc {
       margin: 0;
-      color: var(--muted);
+      color: var(--text-secondary);
       font-size: 0.95rem;
       line-height: 1.5;
-      max-height: 3em;
-      overflow: hidden;
-      display: -webkit-box;
-      line-clamp: 2;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
     }
 
     .body .details {
       display: none;
-      color: var(--muted);
+      color: var(--text-secondary);
       font-size: 0.94rem;
       line-height: 1.6;
+      margin-top: 4px;
     }
 
     .notif-card.expanded .details {
       display: block;
     }
 
-    .notif-card.expanded .desc {
-      max-height: none;
-      line-clamp: unset;
-      -webkit-line-clamp: unset;
-    }
-
     .view-more {
-      color: var(--accent);
+      color: var(--accent-color);
       font-size: 0.92rem;
       font-weight: 600;
       margin-top: 4px;
       opacity: 0.92;
+    }
+
+    .notif-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
     }
 
     .meta {
@@ -292,23 +657,46 @@
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
-      justify-content: space-between;
     }
 
     .timestamp {
       font-size: 0.84rem;
-      color: var(--muted);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .category {
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(15,23,42,0.05);
-      color: var(--muted);
+      background: var(--bg-light);
+      color: var(--text-secondary);
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.03em;
       font-weight: 700;
+    }
+
+    .view-details-btn {
+      background: var(--accent-color);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 180ms ease;
+    }
+
+    .view-details-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
     .return-center {
@@ -320,95 +708,206 @@
     .return-dashboard {
       text-decoration: none;
       color: #fff;
-      background: var(--accent);
+      background: var(--accent-color);
       padding: 14px 22px;
       border-radius: 14px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      transition: all 180ms ease;
+    }
+
+    .return-dashboard:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
     @media (max-width: 840px) {
       .grid { grid-template-columns: 1fr; }
-      .topbar { flex-direction: column; align-items: stretch; }
-      .actions { justify-content: flex-start; width: 100%; }
-      .filter-panel { width: 100%; justify-content: flex-start; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+      .actions { justify-content: flex-start; width: 100%; flex-direction: column; }
+      .active-requests-banner { flex-direction: column; align-items: flex-start; }
+      .request-stats { width: 100%; }
+      .filter-dropdown-content { position: fixed; right: 20px; left: 20px; }
     }
 
     @media (max-width: 560px) {
       body { padding: 16px; }
-      .container { padding: 18px; }
+      .container { padding: 20px; }
       .btn { width: 100%; justify-content: center; }
       .actions { flex-direction: column; align-items: stretch; }
+      .page-info h1 { font-size: 1.5rem; }
+      .active-requests-banner { padding: 20px; }
+      .active-requests-banner h2 { font-size: 18px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div class="page-info">
-        <h1>IDEAS Activity Center</h1>
-        <p>Live ID processing updates arrive instantly here, grouped by System Alerts, Request Updates, and Account Actions.</p>
-      </div>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h2>IDEease Portal</h2>
+            <p>Student Services</p>
+        </div>
+        <div class="menu">
+            <a href="student-dashboard.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </div>
+            </a>
 
-      <div class="actions">
-        <button class="btn icon" id="settingsBtn"><i class="fa-solid fa-gear"></i> Settings</button>
-        <button class="btn primary" id="markAllBtn"><i class="fa-solid fa-check"></i> Mark All Read</button>
-      </div>
+            <a href="history.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    History
+                </div>
+            </a>
+
+            <a href="notif.html">
+                <div class="menu-item active">
+                    <i class="fa-solid fa-bell"></i>
+                    Notifications
+                </div>
+            </a>
+
+            <a href="help center.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-headset"></i>
+                    Help & Support
+                </div>
+            </a>
+
+            <a href="profile.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </div>
+            </a>
+
+            <a href="setting.html">
+                <div class="menu-item">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </div>
+            </a>
+        </div>
     </div>
 
-    <div class="status-row">
-      <span class="status-pill" id="connectionStatus"><i class="fa-solid fa-circle-notch fa-spin"></i> Connecting to live feed...</span>
-      <span class="status-pill" id="eventCounter">0 messages received</span>
-    </div>
+    <div class="main">
+        <div class="header">
+            <div>
+                <h1>My Notifications</h1>
+                <p>Stay updated on your request status, account activity, and important announcements.</p>
+            </div>
 
-    <div class="filter-panel" id="filterPanel">
-      <label><input type="checkbox" data-type="System Alerts" checked> System Alerts</label>
-      <label><input type="checkbox" data-type="Request Updates" checked> Request Updates</label>
-      <label><input type="checkbox" data-type="Account Actions" checked> Account Actions</label>
-    </div>
+            <div class="header-right">
+                <button class="btn-icon" id="darkModeToggle" title="Toggle dark mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
 
-    <div class="grid" id="notifGrid"></div>
+        <div class="page-container">
+            <div class="active-requests-banner" id="activeRequestsBanner" style="display: none;">
+                <div>
+                    <h2>You have active requests</h2>
+                    <p>Keep track of your submissions and their current status.</p>
+                </div>
+                <div class="request-stats" id="requestStats"></div>
+            </div>
 
-    <div class="return-center">
-      <a class="return-dashboard" href="student-dashboard.html"><i class="fa-solid fa-house"></i> Return to Dashboard</a>
+            <div class="notif-controls">
+                <div class="control-group">
+                    <div style="position: relative;">
+                        <button class="filter-dropdown" id="filterBtn"><i class="fa-solid fa-filter"></i> Filter</button>
+                        <div class="filter-dropdown-content" id="filterDropdown">
+                            <label><input type="checkbox" data-type="Request Status Updates" checked> Request Status Updates</label>
+                            <label><input type="checkbox" data-type="Account Notifications" checked> Account Notifications</label>
+                            <label><input type="checkbox" data-type="General Announcements" checked> General Announcements</label>
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="markAllBtn"><i class="fa-solid fa-check"></i> Mark All Read</button>
+                </div>
+
+                <div class="status-row">
+                    <span class="status-pill" id="connectionStatus"><i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...</span>
+                    <span class="status-pill" id="eventCounter">0 new notifications</span>
+                </div>
+            </div>
+
+            <div class="grid" id="notifGrid"></div>
+
+            <div class="return-center">
+                <a class="return-dashboard" href="student-dashboard.html"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
     </div>
-  </div>
 
   <script>
     const notifGrid = document.getElementById('notifGrid');
     const connectionStatus = document.getElementById('connectionStatus');
     const eventCounter = document.getElementById('eventCounter');
-    const filterPanel = document.getElementById('filterPanel');
-    const settingsBtn = document.getElementById('settingsBtn');
+    const filterBtn = document.getElementById('filterBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const activeRequestsBanner = document.getElementById('activeRequestsBanner');
+    const requestStats = document.getElementById('requestStats');
     const markAllBtn = document.getElementById('markAllBtn');
+    const darkModeToggle = document.getElementById('darkModeToggle');
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const BACKEND_BASE_URL = 'http://localhost:3000';
     const eventCounts = { total: 0 };
     const filters = {
-      'System Alerts': true,
-      'Request Updates': true,
-      'Account Actions': true,
+      'Request Status Updates': true,
+      'Account Notifications': true,
+      'General Announcements': true,
     };
 
     const eventTypeMap = {
-      'request.new': { tone: 'orange', icon: 'fa-file-circle-plus', category: 'Request Updates' },
-      'request.review': { tone: 'blue', icon: 'fa-spinner', category: 'Request Updates' },
-      'request.approved': { tone: 'green', icon: 'fa-circle-check', category: 'Request Updates' },
-      'request.rejected': { tone: 'red', icon: 'fa-circle-xmark', category: 'Request Updates' },
-      'account.security': { tone: 'red', icon: 'fa-shield-exclamation', category: 'Account Actions' },
-      'system.maintenance': { tone: 'blue', icon: 'fa-server', category: 'System Alerts' },
-      'system.update': { tone: 'blue', icon: 'fa-arrow-trend-up', category: 'System Alerts' },
-      'account.updated': { tone: 'green', icon: 'fa-user-check', category: 'Account Actions' }
+      'request.new': { tone: 'orange', icon: 'fa-file-circle-plus', category: 'Request Status Updates' },
+      'request.review': { tone: 'blue', icon: 'fa-spinner', category: 'Request Status Updates' },
+      'request.approved': { tone: 'green', icon: 'fa-circle-check', category: 'Request Status Updates' },
+      'request.rejected': { tone: 'red', icon: 'fa-circle-xmark', category: 'Request Status Updates' },
+      'account.security': { tone: 'red', icon: 'fa-shield-exclamation', category: 'Account Notifications' },
+      'system.maintenance': { tone: 'blue', icon: 'fa-server', category: 'General Announcements' },
+      'system.update': { tone: 'blue', icon: 'fa-arrow-trend-up', category: 'General Announcements' },
+      'account.updated': { tone: 'green', icon: 'fa-user-check', category: 'Account Notifications' }
     };
+
+    // Filter dropdown functionality
+    filterBtn.addEventListener('click', () => {
+      filterDropdown.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('[id*="filter"]')) {
+        filterDropdown.classList.remove('active');
+      }
+    });
+
+    filterDropdown.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', () => setFilter(input.dataset.type, input.checked));
+    });
+
+    // Dark mode toggle
+    darkModeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('pref-darkMode', isDark ? '1' : '0');
+    });
+
+    // Initialize dark mode preference
+    if (localStorage.getItem('pref-darkMode') === '1') {
+      document.body.classList.add('dark-mode');
+    }
 
     function updateStatus(state) {
       const states = {
         connecting: { label: 'Connecting to live feed...', icon: 'fa-circle-notch fa-spin', style: 'connecting' },
         connected: { label: 'Live feed active', icon: 'fa-signal', style: 'connected' },
-        disconnected: { label: 'Disconnected — retrying...', icon: 'fa-wifi-slash', style: 'disconnected' },
+        disconnected: { label: 'Disconnected ï¿½ retrying...', icon: 'fa-wifi-slash', style: 'disconnected' },
         unsupported: { label: 'Live updates unavailable', icon: 'fa-triangle-exclamation', style: 'disconnected' },
         received: { label: 'Received a notification', icon: 'fa-bell', style: 'received' }
       };
@@ -427,7 +926,7 @@
     }
 
     function updateCounter() {
-      eventCounter.textContent = `${eventCounts.total} messages received`;
+      eventCounter.textContent = `${eventCounts.total} new notifications`;
     }
 
     async function fetchNotifications() {
@@ -459,19 +958,23 @@
 
       const tone = notification.tone || eventTypeMap[notification.type]?.tone || 'gray';
       const iconClass = notification.icon || eventTypeMap[notification.type]?.icon || 'fa-bell';
-      const category = notification.category || eventTypeMap[notification.type]?.category || 'System Alerts';
+      const category = notification.category || eventTypeMap[notification.type]?.category || 'General Announcements';
 
       card.innerHTML = `
-        <div class="icon-wrap ${tone}"><i class="fa-solid ${iconClass}"></i></div>
-        <div class="body">
-          <h3>${notification.title}</h3>
-          <p class="desc">${notification.message}</p>
-          ${notification.details ? `<p class="details">${notification.details}</p>` : ''}
+        <div class="notif-header">
+          <div class="icon-wrap ${tone}"><i class="fa-solid ${iconClass}"></i></div>
+          <div class="body">
+            <h3>${notification.title}</h3>
+            <p class="desc">${notification.message}</p>
+            ${notification.details ? `<p class="details">${notification.details}</p>` : ''}
+          </div>
+        </div>
+        <div class="notif-footer">
           <div class="meta">
-            <span class="timestamp">${formatDate(notification.timestamp)}</span>
+            <span class="timestamp"><i class="fa-solid fa-clock"></i> ${formatDate(notification.timestamp)}</span>
             <span class="category">${category}</span>
           </div>
-          ${notification.details ? '<span class="view-more">View details</span>' : ''}
+          <button class="view-details-btn"><i class="fa-solid fa-arrow-right"></i> View Details</button>
         </div>
       `;
 
@@ -502,7 +1005,7 @@
 
       const notification = {
         ...event,
-        category: event.category || eventTypeMap[event.type]?.category || 'System Alerts',
+        category: event.category || eventTypeMap[event.type]?.category || 'General Announcements',
         tone: event.tone || eventTypeMap[event.type]?.tone || 'gray',
         icon: event.icon || eventTypeMap[event.type]?.icon || 'fa-bell',
         details: event.details || ''
@@ -522,20 +1025,20 @@
       });
     }
 
-    settingsBtn.addEventListener('click', () => {
-      filterPanel.style.display = filterPanel.style.display === 'flex' ? 'none' : 'flex';
-    });
-
-    filterPanel.querySelectorAll('input[type="checkbox"]').forEach(input => {
-      input.addEventListener('change', () => setFilter(input.dataset.type, input.checked));
-    });
-
     markAllBtn.addEventListener('click', async () => {
       notifGrid.querySelectorAll('.notif-card').forEach(card => card.classList.add('read'));
-      markAllBtn.textContent = 'All Read';
+      const originalText = markAllBtn.innerHTML;
+      markAllBtn.innerHTML = '<i class="fa-solid fa-check"></i> Marked';
+      markAllBtn.disabled = true;
 
       const userId = currentUser.userId || currentUser.studentId;
-      if (!userId) return;
+      if (!userId) {
+        setTimeout(() => {
+          markAllBtn.innerHTML = originalText;
+          markAllBtn.disabled = false;
+        }, 2000);
+        return;
+      }
 
       try {
         await fetch(`${BACKEND_BASE_URL}/notifications/mark-all-read`, {
@@ -545,8 +1048,13 @@
         });
       } catch (error) {
         console.warn('Failed to mark notifications read on backend', error);
+      } finally {
+        setTimeout(() => {
+          markAllBtn.innerHTML = originalText;
+          markAllBtn.disabled = false;
+        }, 2000);
       }
-    });
+    };
 
     function connectWebSocket() {
       if (!window.WebSocket) {
@@ -578,22 +1086,115 @@
       });
     }
 
+    function loadActiveRequests() {
+      const studentId = currentUser.studentId || currentUser.userId;
+      if (!studentId) return;
+
+      try {
+        const allRequests = JSON.parse(localStorage.getItem('requests') || '[]');
+        const studentRequests = allRequests.filter(req => {
+          const reqStudentId = req.studentId || req.student_id || '';
+          return reqStudentId === studentId || reqStudentId === String(studentId);
+        });
+
+        // Filter for active requests (not completed or rejected)
+        const activeRequests = studentRequests.filter(req => {
+          const status = (req.status || '').toLowerCase();
+          return status !== 'completed' && status !== 'rejected' && status !== 'approved';
+        });
+
+        if (activeRequests.length > 0) {
+          activeRequestsBanner.style.display = 'flex';
+          
+          // Count by status
+          const statusCounts = {
+            pending: 0,
+            processing: 0,
+            verification: 0,
+            other: 0
+          };
+
+          activeRequests.forEach(req => {
+            const status = (req.status || '').toLowerCase();
+            if (status === 'pending') statusCounts.pending++;
+            else if (status === 'processing') statusCounts.processing++;
+            else if (status === 'verification') statusCounts.verification++;
+            else statusCounts.other++;
+          });
+
+          // Display stats
+          requestStats.innerHTML = `
+            ${statusCounts.pending > 0 ? `
+              <div class="request-stat-box">
+                <i class="fa-solid fa-hourglass-start"></i>
+                <div>
+                  <span class="label">Pending</span>
+                  <span class="count">${statusCounts.pending}</span>
+                </div>
+              </div>
+            ` : ''}
+            ${statusCounts.processing > 0 ? `
+              <div class="request-stat-box">
+                <i class="fa-solid fa-spinner"></i>
+                <div>
+                  <span class="label">Processing</span>
+                  <span class="count">${statusCounts.processing}</span>
+                </div>
+              </div>
+            ` : ''}
+            ${statusCounts.verification > 0 ? `
+              <div class="request-stat-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <div>
+                  <span class="label">Verification</span>
+                  <span class="count">${statusCounts.verification}</span>
+                </div>
+              </div>
+            ` : ''}
+            ${statusCounts.other > 0 ? `
+              <div class="request-stat-box">
+                <i class="fa-solid fa-file"></i>
+                <div>
+                  <span class="label">In Progress</span>
+                  <span class="count">${statusCounts.other}</span>
+                </div>
+              </div>
+            ` : ''}
+          `;
+        } else {
+          activeRequestsBanner.style.display = 'none';
+        }
+      } catch (error) {
+        console.warn('Failed to load active requests', error);
+        activeRequestsBanner.style.display = 'none';
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       updateStatus('connecting');
       updateCounter();
+      loadActiveRequests();
       fetchNotifications();
       connectWebSocket();
 
       const welcomeEvent = {
         type: 'system.welcome',
-        category: 'System Alerts',
-        title: 'Welcome to the live activity center',
-        message: 'This feed updates automatically whenever IDEAS events occur during ID processing.',
+        category: 'General Announcements',
+        title: 'Welcome to your notifications',
+        message: 'You'll receive updates about your request status, account changes, and important announcements here.',
         tone: 'blue',
         timestamp: new Date().toISOString(),
-        details: 'Notifications include new submissions, review progress, approvals, rejections, and account alerts.'
+        details: 'Check back often to stay informed on your submissions, approvals, and system messages.'
       };
       addNotification(welcomeEvent);
+      loadActiveRequests();
+
+      // Re-load active requests whenever a notification arrives
+      const originalAddNotification = addNotification;
+      window.addNotification = function(event) {
+        originalAddNotification(event);
+        loadActiveRequests();
+      };
     });
   </script>
 </body>

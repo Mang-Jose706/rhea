@@ -132,6 +132,8 @@ body {
         </div>
         <div class="input-box">
             <input type="text" id="studentId" placeholder="Enter your 6-digit Student ID" maxlength="6">
+            <small id="studentIdError" style="color: #d32f2f; display: none; margin-top: 5px; font-size: 12px;"></small>
+            <small id="studentIdStatus" style="color: #388e3c; display: none; margin-top: 5px; font-size: 12px;"></small>
         </div>
         <div class="input-row" style="margin-bottom: 18px; gap: 10px; justify-content: center;">
             <select id="dept" style="width: 40%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-primary); font-size: 14px;">
@@ -151,16 +153,20 @@ body {
             </select>
         </div>
         <div class="input-box">
-            <input type="email" id="email" placeholder="Enter your email address">
+            <input type="text" id="email" placeholder="Enter your email address">
+            <small id="emailError" style="color: #d32f2f; display: none; margin-top: 5px; font-size: 12px;"></small>
+            <small id="emailStatus" style="color: #388e3c; display: none; margin-top: 5px; font-size: 12px;"></small>
         </div>
         <div class="input-box">
             <input type="password" id="password" placeholder="Enter your password">
+            <small id="passwordError" style="color: #d32f2f; display: none; margin-top: 5px; font-size: 12px;"></small>
         </div>
         <div class="input-box">
             <input type="password" id="confirmPassword" placeholder="Confirm your password">
+            <small id="confirmPasswordError" style="color: #d32f2f; display: none; margin-top: 5px; font-size: 12px;"></small>
         </div>
 
-        <button class="auth-btn" onclick="signupForm()">SIGN UP</button>
+        <button class="auth-btn" id="signupBtn" onclick="signupForm()" style="opacity: 0.6; cursor: not-allowed;" disabled>SIGN UP</button>
 
         <div class="auth-text">
             Already have an account? <a href="login.html">Login</a>
@@ -168,13 +174,223 @@ body {
     </div>
 
     <script>
+        // Validation state tracker
+        const validationState = {
+            firstName: false,
+            lastName: false,
+            studentId: false,
+            dept: false,
+            program: false,
+            email: false,
+            mobileNumber: false,
+            password: false,
+            confirmPassword: false
+        };
+
+        // Debounce timer for API calls
+        let emailCheckTimer;
+        let studentIdCheckTimer;
+
+        function updateButtonState() {
+            const signupBtn = document.getElementById("signupBtn");
+            const allValid = Object.values(validationState).every(val => val === true);
+            
+            if (allValid) {
+                signupBtn.disabled = false;
+                signupBtn.style.opacity = "1";
+                signupBtn.style.cursor = "pointer";
+            } else {
+                signupBtn.disabled = true;
+                signupBtn.style.opacity = "0.6";
+                signupBtn.style.cursor = "not-allowed";
+            }
+        }
+
+        // Real-time validation for first name
+        document.getElementById("firstName").addEventListener("input", function() {
+            const value = this.value.trim();
+            validationState.firstName = value.length > 0;
+            updateButtonState();
+        });
+
+        // Real-time validation for last name
+        document.getElementById("lastName").addEventListener("input", function() {
+            const value = this.value.trim();
+            validationState.lastName = value.length > 0;
+            updateButtonState();
+        });
+
+        // Real-time validation for department
+        document.getElementById("dept").addEventListener("change", function() {
+            const value = this.value;
+            validationState.dept = value.length > 0;
+            updateButtonState();
+        });
+
+        // Real-time validation for program
+        document.getElementById("program").addEventListener("change", function() {
+            const value = this.value;
+            validationState.program = value.length > 0;
+            updateButtonState();
+        });
+
+        // Real-time validation for student ID
+        document.getElementById("studentId").addEventListener("input", function() {
+            const value = this.value;
+            const studentIdError = document.getElementById("studentIdError");
+            const studentIdStatus = document.getElementById("studentIdStatus");
+            clearTimeout(studentIdCheckTimer);
+            
+            studentIdError.style.display = "none";
+            studentIdStatus.style.display = "none";
+
+            if (!value) {
+                validationState.studentId = false;
+                updateButtonState();
+                return;
+            }
+
+            if (!/^\d{6}$/.test(value)) {
+                studentIdError.textContent = "Student ID must be exactly 6 digits";
+                studentIdError.style.display = "block";
+                validationState.studentId = false;
+                updateButtonState();
+                return;
+            }
+
+            // Check API for duplicates
+            studentIdCheckTimer = setTimeout(() => {
+                fetch(`http://localhost:3000/api/student/check-student-id?student_id=${value}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.available) {
+                            studentIdStatus.textContent = "✓ Student ID available";
+                            studentIdStatus.style.display = "block";
+                            validationState.studentId = true;
+                        } else {
+                            studentIdError.textContent = data.message;
+                            studentIdError.style.display = "block";
+                            validationState.studentId = false;
+                        }
+                        updateButtonState();
+                    })
+                    .catch(e => {
+                        console.error('Student ID check error:', e);
+                        validationState.studentId = false;
+                    });
+            }, 500);
+        });
+
+        // Real-time validation for email
+        document.getElementById("email").addEventListener("input", function() {
+            const value = this.value;
+            const emailError = document.getElementById("emailError");
+            const emailStatus = document.getElementById("emailStatus");
+            clearTimeout(emailCheckTimer);
+
+            emailError.style.display = "none";
+            emailStatus.style.display = "none";
+
+            if (!value) {
+                validationState.email = false;
+                updateButtonState();
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                emailError.textContent = "Invalid email format";
+                emailError.style.display = "block";
+                validationState.email = false;
+                updateButtonState();
+                return;
+            }
+
+            // Check API for duplicates
+            emailCheckTimer = setTimeout(() => {
+                fetch(`http://localhost:3000/api/student/check-email?email=${encodeURIComponent(value)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.available) {
+                            emailStatus.textContent = "✓ Email available";
+                            emailStatus.style.display = "block";
+                            validationState.email = true;
+                        } else {
+                            emailError.textContent = data.message;
+                            emailError.style.display = "block";
+                            validationState.email = false;
+                        }
+                        updateButtonState();
+                    })
+                    .catch(e => {
+                        console.error('Email check error:', e);
+                        validationState.email = false;
+                    });
+            }, 500);
+        });
+
+        // Real-time validation for password
+        document.getElementById("password").addEventListener("input", function() {
+            const value = this.value;
+            const passwordError = document.getElementById("passwordError");
+            passwordError.style.display = "none";
+
+            if (!value) {
+                validationState.password = false;
+                updateButtonState();
+                return;
+            }
+
+            if (value.length < 8) {
+                passwordError.textContent = "Password must be at least 8 characters";
+                passwordError.style.display = "block";
+                validationState.password = false;
+                updateButtonState();
+                return;
+            }
+
+            if (!/[A-Z]/.test(value) || !/[0-9]/.test(value)) {
+                passwordError.textContent = "Password must contain uppercase letters and numbers";
+                passwordError.style.display = "block";
+                validationState.password = false;
+                updateButtonState();
+                return;
+            }
+
+            validationState.password = true;
+            updateButtonState();
+        });
+
+        // Real-time validation for confirm password
+        document.getElementById("confirmPassword").addEventListener("input", function() {
+            const value = this.value;
+            const password = document.getElementById("password").value;
+            const confirmError = document.getElementById("confirmPasswordError");
+            confirmError.style.display = "none";
+
+            if (!value) {
+                validationState.confirmPassword = false;
+                updateButtonState();
+                return;
+            }
+
+            if (value !== password) {
+                confirmError.textContent = "Passwords do not match";
+                confirmError.style.display = "block";
+                validationState.confirmPassword = false;
+                updateButtonState();
+                return;
+            }
+
+            validationState.confirmPassword = true;
+            updateButtonState();
+        });
+
         function signupForm() {
             const firstName = document.getElementById("firstName").value;
             const lastName = document.getElementById("lastName").value;
             const studentId = document.getElementById("studentId").value;
             const dept = document.getElementById("dept").value;
             const program = document.getElementById("program").value;
-            const role = "student";
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
@@ -184,45 +400,55 @@ body {
                 return;
             }
 
-            if(studentId.length !== 6) {
-                alert("Student ID must be exactly 6 digits.");
-                return;
-            }
-
             if(!dept || !program) {
                 alert("Please select your department and program.");
                 return;
             }
 
-            if(password !== confirmPassword) {
-                alert("Passwords do not match.");
+            // Get mobile number
+            const mobile = prompt("Please enter your mobile number (required):");
+            if(!mobile) {
+                alert("Mobile number is required.");
                 return;
             }
 
-            if(password.length < 6) {
-                alert("Password must be at least 6 characters long.");
-                return;
-            }
-
-            // Save user data to localStorage
-            const userData = {
-                firstName: firstName,
-                lastName: lastName,
-                surname: lastName,
-                studentId: studentId,
-                authEmail: email,
+            // Submit to backend
+            const signupData = {
+                student_id: studentId,
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                mobile_number: mobile,
                 password: password,
-                accountType: role,
-                role: role,
-                dept: dept,
-                program: program,
-                activityHistory: []
+                confirmPassword: confirmPassword,
+                department: dept,
+                program: program
             };
-            localStorage.setItem("user", JSON.stringify(userData));
 
-            alert("Account created successfully! Redirecting to login...");
-            window.location.href = "login.html";
+            fetch('http://localhost:3000/api/student/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(signupData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.ok) {
+                    alert("Account created successfully! Redirecting to login...");
+                    window.location.href = "login.html";
+                } else {
+                    alert("Signup failed: " + (data.message || data.error));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred during signup. Please try again.");
+            });
         }
+
+        // Initialize button state
+        window.addEventListener('DOMContentLoaded', updateButtonState);
 
         const signupCourseMap = {
             cafnr: [

@@ -136,329 +136,121 @@
 </div>
 
 <script>
-    // ============ AUTHENTICATION & AUTHORIZATION ============
-    
-    /**
-     * Get current logged-in user from localStorage
-     */
+    // Role-based access control
     function getCurrentUser() {
         try {
             const user = JSON.parse(localStorage.getItem('user')) || {};
             return user;
         } catch (e) {
-            console.warn('Failed to parse user from localStorage', e);
             return {};
         }
     }
 
-    /**
-     * Check if current user is admin
-     */
     function isAdmin() {
         const user = getCurrentUser();
-        return user.role === 'admin' || user.accountType === 'admin' || user.role === 'superadmin';
+        return user.role === 'admin' || user.accountType === 'admin';
     }
 
-    /**
-     * Get current student ID (only for non-admin users)
-     */
     function getCurrentStudentId() {
         const user = getCurrentUser();
-        return user.studentId || user.id || null;
+        return user.studentId || null;
     }
 
-    /**
-     * Check if user is authenticated
-     */
-    function isAuthenticated() {
-        const user = getCurrentUser();
-        return user && (user.studentId || user.id || user.role);
-    }
-
-    // Redirect to login if not authenticated
-    if (!isAuthenticated()) {
-        window.location.href = 'login.html';
-    }
-
-    // ============ DATA RETRIEVAL ============
-
-    /**
-     * Get all requests from localStorage
-     */
+    // Request database: stores all requests with student associations
     function getAllRequests() {
         try {
             const stored = localStorage.getItem('requests');
-            return stored ? JSON.parse(stored) : [];
+            return stored ? JSON.parse(stored) : getDefaultRequests();
         } catch (e) {
-            console.warn('Failed to parse requests from localStorage', e);
-            return [];
+            return getDefaultRequests();
         }
     }
 
-    // Hidden requests that should not be displayed
-    const HIDDEN_REQUEST_IDS = new Set(['REQ-1780024153165']);
+    // Default sample requests with student IDs
+    function getDefaultRequests() {
+        return [
+            { id: 'ID-123456', type: 'New Student ID', date: 'Dec 15, 2024', status: 'processing', studentId: '123456' },
+            { id: 'ID-654321', type: 'ID Replacement', date: 'Dec 16, 2025', status: 'completed', studentId: '654321' },
+            { id: 'ID-234165', type: 'New Student ID', date: 'Dec 15, 2025', status: 'pending', studentId: '234165' },
+            { id: 'ID-987654', type: 'ID Replacement', date: 'Dec 17, 2025', status: 'rejected', studentId: '987654' }
+        ];
+    }
 
-    /**
-     * Get requests visible to current user (role-based filtering)
-     * - Admins see all requests
-     * - Students see only their own requests
-     */
+    // Filter requests based on role
     function getVisibleRequests() {
         const allRequests = getAllRequests();
-        const currentUser = getCurrentUser();
-        const adminMode = isAdmin();
-        const studentId = getCurrentStudentId();
+        const admin = isAdmin();
+        const currentStudentId = getCurrentStudentId();
 
-        if (adminMode) {
-            // Admins see everything except hidden requests
-            return allRequests.filter(req => !HIDDEN_REQUEST_IDS.has(req.id || req.request_id));
-        } else if (studentId) {
-            // Students see only their own requests, excluding hidden ones
-            return allRequests.filter(req => {
-                if (HIDDEN_REQUEST_IDS.has(req.id || req.request_id)) {
-                    return false; // Exclude hidden requests
-                }
-                const reqStudentId = req.studentId || req.student_id || '';
-                return reqStudentId === studentId || reqStudentId === String(studentId);
-            });
-        }
-        return [];
-    }
-
-    /**
-     * Get status icon based on request status
-     */
-    function getStatusIcon(status) {
-        const statusLower = (status || '').toLowerCase();
-        switch (statusLower) {
-            case 'submitted':
-                return '<i class="fa-solid fa-paper-plane"></i>';
-            case 'pending':
-                return '<i class="fa-solid fa-clock"></i>';
-            case 'processing':
-                return '<i class="fa-solid fa-spinner"></i>';
-            case 'verification':
-                return '<i class="fa-solid fa-magnifying-glass"></i>';
-            case 'completed':
-                return '<i class="fa-solid fa-circle-check"></i>';
-            case 'rejected':
-                return '<i class="fa-solid fa-circle-xmark"></i>';
-            default:
-                return '<i class="fa-solid fa-circle"></i>';
-        }
-    }
-
-    /**
-     * Get CSS class for status badge styling
-     */
-    function getStatusClass(status) {
-        const statusLower = (status || '').toLowerCase();
-        switch (statusLower) {
-            case 'submitted':
-            case 'pending':
-                return 'status-pending';
-            case 'processing':
-            case 'verification':
-                return 'status-processing';
-            case 'completed':
-                return 'status-completed';
-            case 'rejected':
-                return 'status-rejected';
-            default:
-                return 'status-pending';
-        }
-    }
-
-    /**
-     * Format date to readable format
-     */
-    function formatDate(dateString) {
-        if (!dateString) return '-';
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        } catch (e) {
-            return dateString;
-        }
-    }
-
-    // ============ TABLE POPULATION ============
-
-    /**
-     * Populate the requests table with filtered data
-     */
-    function populateTable() {
-        const tableBody = document.getElementById('tableBody');
-        const noDataMessage = document.getElementById('noDataMessage');
-        const searchInput = document.getElementById('searchInput');
-        const statusFilter = document.getElementById('statusFilter');
-        
-        const visibleRequests = getVisibleRequests();
-        const searchText = (searchInput.value || '').toLowerCase();
-        const selectedStatus = (statusFilter.value || '').toLowerCase();
-
-        // Filter requests based on search and status filter
-        const filteredRequests = visibleRequests.filter(req => {
-            const requestId = (req.id || req.request_id || '').toLowerCase();
-            const requestType = (req.type || '').toLowerCase();
-            const status = (req.status || '').toLowerCase();
-            
-            const matchesSearch = !searchText || requestId.includes(searchText) || requestType.includes(searchText);
-            const matchesStatus = !selectedStatus || status === selectedStatus;
-            
-            return matchesSearch && matchesStatus;
-        });
-
-        // Clear existing rows
-        tableBody.innerHTML = '';
-
-        // Show or hide no data message
-        if (filteredRequests.length === 0) {
-            noDataMessage.style.display = 'block';
-            return;
+        if (admin) {
+            return allRequests; // admins see all
         } else {
-            noDataMessage.style.display = 'none';
+            return allRequests.filter(req => req.studentId === currentStudentId);
         }
+    }
 
-        // Populate table rows
-        filteredRequests.forEach(req => {
-            const row = document.createElement('tr');
-            const requestId = req.id || req.request_id || '-';
-            const requestType = req.type || '-';
-            const dateSubmitted = formatDate(req.createdAt || req.date);
-            const status = req.status || 'pending';
-            const statusIcon = getStatusIcon(status);
-            const statusClass = getStatusClass(status);
+    const statusSelect = document.getElementById('statusFilter');
+    const tableRows = document.querySelectorAll('.table-card table tr');
+    const searchInput = document.querySelector('.search-row input');
+    const user = getCurrentUser();
+    const adminMode = isAdmin();
 
-            row.innerHTML = `
-                <td><strong>${requestId}</strong></td>
-                <td>${requestType}</td>
-                <td>${dateSubmitted}</td>
-                <td>
-                    <span class="status-badge ${statusClass}">
-                        ${statusIcon} ${status.charAt(0).toUpperCase() + status.slice(1)}
-                    </span>
-                </td>
-            `;
+    // Show admin indicator if user is admin
+    if (adminMode) {
+        const header = document.querySelector('.table-header');
+        if (header) {
+            const adminBadge = document.createElement('div');
+            adminBadge.style.cssText = 'display:inline-block;background:#3b82f6;color:white;padding:6px 12px;border-radius:6px;margin-left:12px;font-size:12px;font-weight:600';
+            adminBadge.textContent = 'ADMIN VIEW: All Requests';
+            header.parentNode.insertBefore(adminBadge, header.nextSibling);
+        }
+    }
 
-            tableBody.appendChild(row);
+    function filterTable() {
+        const selectedStatus = statusSelect.value.toLowerCase();
+        const searchText = searchInput.value.toLowerCase();
+        const visibleRequests = getVisibleRequests();
+        const visibleIds = new Set(visibleRequests.map(r => r.id));
+
+        tableRows.forEach((row, index) => {
+            if(index === 0) return; // skip header row
+
+            const requestId = row.querySelector('td:nth-child(1)')?.textContent?.trim();
+            const statusSpan = row.querySelector('td:nth-child(4) span');
+            const rowStatus = statusSpan?.getAttribute('data-status')?.toLowerCase() || '';
+            const rowText = row.innerText.toLowerCase();
+
+            // Check if this request is visible to the current user
+            const isAccessible = adminMode || visibleIds.has(requestId);
+            const statusMatch = selectedStatus === 'all' || rowStatus === selectedStatus;
+            const searchMatch = rowText.includes(searchText);
+
+            row.style.display = (isAccessible && statusMatch && searchMatch) ? '' : 'none';
         });
     }
 
-    // ============ COUNTER UPDATES ============
+    statusSelect.addEventListener('change', filterTable);
+    searchInput.addEventListener('input', filterTable);
 
-    /**
-     * Update all status counters
-     */
-    function updateCounters() {
-        const visibleRequests = getVisibleRequests();
-
-        const counts = {
-            total: visibleRequests.length,
-            pending: visibleRequests.filter(r => {
-                const status = (r.status || '').toLowerCase();
-                return status === 'submitted' || status === 'pending';
-            }).length,
-            processing: visibleRequests.filter(r => {
-                const status = (r.status || '').toLowerCase();
-                return status === 'processing' || status === 'verification';
-            }).length,
-            completed: visibleRequests.filter(r => 
-                (r.status || '').toLowerCase() === 'completed'
-            ).length,
-            rejected: visibleRequests.filter(r => 
-                (r.status || '').toLowerCase() === 'rejected'
-            ).length
-        };
-
-        // Update DOM
-        document.getElementById('totalCount').textContent = counts.total;
-        document.getElementById('pendingCount').textContent = counts.pending;
-        document.getElementById('processingCount').textContent = counts.processing;
-        document.getElementById('completedCount').textContent = counts.completed;
-        document.getElementById('rejectedCount').textContent = counts.rejected;
-    }
-
-    // ============ EVENT LISTENERS ============
-
-    /**
-     * Initialize event listeners for search and filter
-     */
-    function initializeEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        const statusFilter = document.getElementById('statusFilter');
-
-        if (searchInput) {
-            searchInput.addEventListener('input', populateTable);
-        }
-
-        if (statusFilter) {
-            statusFilter.addEventListener('change', populateTable);
-        }
-    }
-
-    // ============ INITIALIZATION ============
-
-    /**
-     * Initialize page on load
-     */
     document.addEventListener('DOMContentLoaded', () => {
-        try {
-            // Verify authentication
-            if (!isAuthenticated()) {
-                window.location.href = 'login.html';
-                return;
+        const rows = document.querySelectorAll('tr[data-id]');
+        rows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const status = localStorage.getItem(id + '_status');
+            if (status === 'rejected') {
+                row.remove();
             }
-
-            // Show admin indicator if applicable
-            const currentUser = getCurrentUser();
-            if (isAdmin()) {
-                const header = document.querySelector('.header');
-                if (header) {
-                    const adminBadge = document.createElement('div');
-                    adminBadge.style.cssText = `
-                        display: inline-block;
-                        background: #3b82f6;
-                        color: white;
-                        padding: 6px 12px;
-                        border-radius: 6px;
-                        margin-left: 12px;
-                        font-size: 12px;
-                        font-weight: 600;
-                    `;
-                    adminBadge.textContent = 'ADMIN VIEW: All Requests';
-                    header.appendChild(adminBadge);
-                }
-            }
-
-            // Initialize page
-            initializeEventListeners();
-            updateCounters();
-            populateTable();
-
-            // Set up real-time sync if needed (listen for localStorage changes)
-            window.addEventListener('storage', () => {
-                updateCounters();
-                populateTable();
-            });
-
-        } catch (e) {
-            console.error('Failed to initialize history page', e);
-        }
+        });
     });
 
-    // Initialize dark mode if enabled
-    window.addEventListener('load', () => {
+    // Initialize dark mode if enabled in localStorage
+    window.addEventListener('DOMContentLoaded', () => {
         try {
             const darkModeEnabled = localStorage.getItem('pref-darkMode') === '1';
             if (darkModeEnabled) {
                 document.body.classList.add('dark-mode');
             }
-        } catch (e) {}
+        } catch(e) {}
     });
 </script>
 

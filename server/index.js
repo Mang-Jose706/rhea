@@ -21,6 +21,19 @@ try {
 
   // Initialize database tables
   db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS students (
+      student_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      mobile_number TEXT UNIQUE NOT NULL,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      department TEXT,
+      program TEXT,
+      password_hash TEXT NOT NULL,
+      created_at TEXT,
+      updated_at TEXT
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS requests (
       request_id TEXT PRIMARY KEY,
       student_id TEXT,
@@ -35,6 +48,17 @@ try {
       action TEXT,
       details JSON,
       timestamp TEXT
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS duplicate_audit (
+      id TEXT PRIMARY KEY,
+      field_name TEXT,
+      field_value TEXT,
+      attempt_count INTEGER,
+      ip_address TEXT,
+      user_agent TEXT,
+      first_attempt TEXT,
+      last_attempt TEXT
     )`);
   });
 } catch (err) {
@@ -66,6 +90,79 @@ function loadRequestsFromDb(callback) {
       return callback(e);
     }
   });
+}
+
+function persistStudent(student) {
+  if (!sqliteAvailable || !db) return;
+  const stmt = db.prepare(`INSERT OR REPLACE INTO students (student_id, email, mobile_number, first_name, last_name, department, program, password_hash, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)`);
+  stmt.run(
+    student.student_id,
+    student.email,
+    student.mobile_number,
+    student.first_name,
+    student.last_name,
+    student.department || '',
+    student.program || '',
+    student.password_hash,
+    student.created_at,
+    student.updated_at
+  );
+  stmt.finalize();
+}
+
+function findStudentByIdDb(studentId, callback) {
+  if (!sqliteAvailable || !db) return callback(null, null);
+  db.get(`SELECT * FROM students WHERE student_id = ?`, [studentId], callback);
+}
+
+function findStudentByEmailDb(email, callback) {
+  if (!sqliteAvailable || !db) return callback(null, null);
+  db.get(`SELECT * FROM students WHERE email = ?`, [email], callback);
+}
+
+function findStudentByMobileDb(mobileNumber, callback) {
+  if (!sqliteAvailable || !db) return callback(null, null);
+  db.get(`SELECT * FROM students WHERE mobile_number = ?`, [mobileNumber], callback);
+}
+
+function logDuplicateAttempt(fieldName, fieldValue, ipAddress, userAgent) {
+  if (!sqliteAvailable || !db) {
+    console.log('[DUPLICATE_AUDIT]', { fieldName, fieldValue, ipAddress, timestamp: new Date().toISOString() });
+    return;
+  }
+
+  const auditId = `DUP-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const now = new Date().toISOString();
+  const compositeKey = `${fieldName}:${fieldValue}`;
+
+  db.get(
+    `SELECT * FROM duplicate_audit WHERE field_name = ? AND field_value = ?`,
+    [fieldName, fieldValue],
+    (err, row) => {
+      if (err) {
+        console.error('Error querying duplicate_audit:', err);
+        return;
+      }
+
+      if (row) {
+        // Update existing record
+        const newCount = (row.attempt_count || 0) + 1;
+        db.run(
+          `UPDATE duplicate_audit SET attempt_count = ?, last_attempt = ? WHERE field_name = ? AND field_value = ?`,
+          [newCount, now, fieldName, fieldValue]
+        );
+      } else {
+        // Create new record
+        const stmt = db.prepare(
+          `INSERT INTO duplicate_audit (id, field_name, field_value, attempt_count, ip_address, user_agent, first_attempt, last_attempt) VALUES (?,?,?,?,?,?,?,?)`
+        );
+        stmt.run(auditId, fieldName, fieldValue, 1, ipAddress || 'unknown', userAgent || 'unknown', now, now);
+        stmt.finalize();
+      }
+    }
+  );
+
+  console.log('[DUPLICATE_AUDIT]', { auditId, fieldName, fieldValue, ipAddress, timestamp: now });
 }
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -138,6 +235,35 @@ function authenticateAdmin(req, res, next) {
   return next();
 }
 
+function createStudentSession(student) {
+  const token = `student-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const expiresAt = Date.now() + SESSION_DURATION_MS;
+  studentSessions.set(token, { student, token, createdAt: new Date().toISOString(), expiresAt });
+  return token;
+}
+
+function getStudentSession(token) {
+  if (!token) return null;
+  const session = studentSessions.get(token);
+  if (!session) return null;
+  if (session.expiresAt < Date.now()) {
+    studentSessions.delete(token);
+    return null;
+  }
+  return session;
+}
+
+function authenticateStudent(req, res, next) {
+  const token = parseAuthorizationToken(req);
+  const session = getStudentSession(token);
+  if (!session) {
+    return res.status(401).json({ error: 'unauthorized', message: 'Student token invalid or missing.' });
+  }
+  req.studentSession = session;
+  req.studentUser = session.student;
+  return next();
+}
+
 // In-memory presence store: userId -> timestamp (ms)
 const presence = new Map();
 const PRESENCE_THRESHOLD_MS = 60000; // 60s
@@ -184,6 +310,12 @@ const admins = [
   { id: 'admin-001', username: 'admin', password: 'admin123', displayName: 'IDEase Admin', secretCode: 'ADMIN2026', role: 'admin' },
   { id: 'superadmin', username: 'superadmin', password: 'supersecure', displayName: 'Super Admin', secretCode: 'ADMIN2026', role: 'superadmin' }
 ];
+
+// In-memory student store for basic authentication (mirrors database).
+const students = [];
+
+// In-memory student sessions: token -> session
+const studentSessions = new Map();
 
 // In-memory admin requests store for superadmin approval workflow.
 const adminRequests = [];
@@ -400,6 +532,307 @@ function createRequestNotificationEvent(request, type, extra = {}) {
 }
 
 const ADMIN_SECRET_CODE = 'ADMIN2026';
+
+// Real-time duplicate check endpoints
+app.get('/api/student/check-student-id', (req, res) => {
+  const { student_id } = req.query;
+
+  if (!student_id || !/^\d{6}$/.test(student_id.toString())) {
+    return res.json({ available: true, message: 'Invalid student ID format' });
+  }
+
+  const existingInMemory = students.find(s => s.student_id === student_id.toString());
+  if (existingInMemory) {
+    logDuplicateAttempt('student_id', student_id, req.ip, req.get('user-agent'));
+    return res.json({ available: false, message: 'Student ID already registered' });
+  }
+
+  if (sqliteAvailable && db) {
+    findStudentByIdDb(student_id.toString(), (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: 'database_error' });
+      }
+      if (row) {
+        logDuplicateAttempt('student_id', student_id, req.ip, req.get('user-agent'));
+        return res.json({ available: false, message: 'Student ID already registered' });
+      }
+      return res.json({ available: true, message: 'Student ID is available' });
+    });
+  } else {
+    return res.json({ available: true, message: 'Student ID is available' });
+  }
+});
+
+app.get('/api/student/check-email', (req, res) => {
+  const { email } = req.query;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.json({ available: true, message: 'Invalid email format' });
+  }
+
+  const existingInMemory = students.find(s => s.email === email.toLowerCase());
+  if (existingInMemory) {
+    logDuplicateAttempt('email', email, req.ip, req.get('user-agent'));
+    return res.json({ available: false, message: 'Email already registered' });
+  }
+
+  if (sqliteAvailable && db) {
+    findStudentByEmailDb(email.toLowerCase(), (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: 'database_error' });
+      }
+      if (row) {
+        logDuplicateAttempt('email', email, req.ip, req.get('user-agent'));
+        return res.json({ available: false, message: 'Email already registered' });
+      }
+      return res.json({ available: true, message: 'Email is available' });
+    });
+  } else {
+    return res.json({ available: true, message: 'Email is available' });
+  }
+});
+
+app.get('/api/student/check-mobile', (req, res) => {
+  const { mobile_number } = req.query;
+
+  if (!mobile_number) {
+    return res.json({ available: true, message: 'Enter mobile number' });
+  }
+
+  const existingInMemory = students.find(s => s.mobile_number === mobile_number.toString());
+  if (existingInMemory) {
+    logDuplicateAttempt('mobile_number', mobile_number, req.ip, req.get('user-agent'));
+    return res.json({ available: false, message: 'Mobile number already registered' });
+  }
+
+  if (sqliteAvailable && db) {
+    findStudentByMobileDb(mobile_number.toString(), (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: 'database_error' });
+      }
+      if (row) {
+        logDuplicateAttempt('mobile_number', mobile_number, req.ip, req.get('user-agent'));
+        return res.json({ available: false, message: 'Mobile number already registered' });
+      }
+      return res.json({ available: true, message: 'Mobile number is available' });
+    });
+  } else {
+    return res.json({ available: true, message: 'Mobile number is available' });
+  }
+});
+
+// Student Signup Endpoint
+app.post('/api/student/signup', (req, res) => {
+  const { student_id, email, mobile_number, first_name, last_name, department, program, password, confirmPassword } = req.body || {};
+
+  // Validate required fields
+  if (!student_id || !email || !mobile_number || !first_name || !last_name || !password || !confirmPassword) {
+    return res.status(400).json({ error: 'missing_fields', message: 'All fields are required.' });
+  }
+
+  // Validate passwords match
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: 'password_mismatch', message: 'Passwords do not match.' });
+  }
+
+  // Validate password strength
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'weak_password', message: 'Password must be at least 8 characters long.' });
+  }
+  if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+    return res.status(400).json({ error: 'weak_password', message: 'Password must contain uppercase letters and numbers.' });
+  }
+
+  // Validate email format
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'invalid_email', message: 'Invalid email format.' });
+  }
+
+  // Validate student_id is 6 digits
+  if (!/^\d{6}$/.test(student_id.toString())) {
+    return res.status(400).json({ error: 'invalid_student_id', message: 'Student ID must be 6 digits.' });
+  }
+
+  // Check for duplicate student_id (memory)
+  const existingById = students.find(s => s.student_id === student_id.toString());
+  if (existingById) {
+    logDuplicateAttempt('student_id', student_id, req.ip, req.get('user-agent'));
+    return res.status(409).json({ error: 'duplicate_student_id', message: 'A student account with this ID already exists.' });
+  }
+
+  // Check for duplicate email (memory)
+  const existingByEmail = students.find(s => s.email === email.toLowerCase());
+  if (existingByEmail) {
+    logDuplicateAttempt('email', email, req.ip, req.get('user-agent'));
+    return res.status(409).json({ error: 'duplicate_email', message: 'A student account with this email already exists.' });
+  }
+
+  // Check for duplicate mobile number (memory)
+  const existingByMobile = students.find(s => s.mobile_number === mobile_number.toString());
+  if (existingByMobile) {
+    logDuplicateAttempt('mobile_number', mobile_number, req.ip, req.get('user-agent'));
+    return res.status(409).json({ error: 'duplicate_mobile', message: 'A student account with this mobile number already exists.' });
+  }
+
+  // If database available, also check in database
+  if (sqliteAvailable && db) {
+    let dbError = null;
+    let checksPassed = 0;
+    const checksNeeded = 3;
+
+    findStudentByIdDb(student_id.toString(), (err, row) => {
+      if (err) dbError = err;
+      if (row) {
+        logDuplicateAttempt('student_id', student_id, req.ip, req.get('user-agent'));
+        return res.status(409).json({ error: 'duplicate_student_id', message: 'A student account with this ID already exists.' });
+      }
+      checksPassed++;
+      if (checksPassed === checksNeeded && !dbError) proceedWithSignup();
+    });
+
+    findStudentByEmailDb(email.toLowerCase(), (err, row) => {
+      if (err) dbError = err;
+      if (row) {
+        logDuplicateAttempt('email', email, req.ip, req.get('user-agent'));
+        return res.status(409).json({ error: 'duplicate_email', message: 'A student account with this email already exists.' });
+      }
+      checksPassed++;
+      if (checksPassed === checksNeeded && !dbError) proceedWithSignup();
+    });
+
+    findStudentByMobileDb(mobile_number.toString(), (err, row) => {
+      if (err) dbError = err;
+      if (row) {
+        logDuplicateAttempt('mobile_number', mobile_number, req.ip, req.get('user-agent'));
+        return res.status(409).json({ error: 'duplicate_mobile', message: 'A student account with this mobile number already exists.' });
+      }
+      checksPassed++;
+      if (checksPassed === checksNeeded && !dbError) proceedWithSignup();
+    });
+
+    function proceedWithSignup() {
+      if (dbError) {
+        return res.status(500).json({ error: 'database_error', message: 'An error occurred during signup.' });
+      }
+      createNewStudent();
+    }
+  } else {
+    createNewStudent();
+  }
+
+  function createNewStudent() {
+    const now = new Date().toISOString();
+    const passwordHash = hashPassword(password);
+    const newStudent = {
+      id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      student_id: student_id.toString(),
+      email: email.toLowerCase(),
+      mobile_number: mobile_number.toString(),
+      first_name: first_name.toString().trim(),
+      last_name: last_name.toString().trim(),
+      department: department || '',
+      program: program || '',
+      password_hash: passwordHash,
+      created_at: now,
+      updated_at: now,
+      accountType: 'student'
+    };
+
+    students.push(newStudent);
+    persistStudent(newStudent);
+
+    logAdminAction('student_signup', { student_id: newStudent.student_id, email: newStudent.email });
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Student account created successfully. Please log in with your credentials.',
+      student: {
+        id: newStudent.id,
+        student_id: newStudent.student_id,
+        email: newStudent.email,
+        first_name: newStudent.first_name,
+        last_name: newStudent.last_name
+      }
+    });
+  }
+});
+
+// Student Login Endpoint
+app.post('/api/student/login', (req, res) => {
+  const { student_id, password } = req.body || {};
+
+  if (!student_id || !password) {
+    return res.status(400).json({ error: 'missing_credentials', message: 'Student ID and password are required.' });
+  }
+
+  const student = students.find(s => s.student_id === student_id.toString());
+  if (!student) {
+    return res.status(401).json({ error: 'invalid_credentials', message: 'Invalid student ID or password.' });
+  }
+
+  if (!verifyPassword(password, student.password_hash)) {
+    return res.status(401).json({ error: 'invalid_credentials', message: 'Invalid student ID or password.' });
+  }
+
+  const token = createStudentSession(student);
+  const responsePayload = {
+    ok: true,
+    token,
+    redirect: '/student-dashboard.html',
+    user: {
+      id: student.id,
+      student_id: student.student_id,
+      email: student.email,
+      first_name: student.first_name,
+      last_name: student.last_name,
+      department: student.department,
+      program: student.program,
+      accountType: 'student'
+    }
+  };
+
+  logAdminAction('student_login', { student_id: student.student_id, email: student.email });
+  return res.status(200).json(responsePayload);
+});
+
+// Student Me Endpoint
+app.get('/api/student/me', authenticateStudent, (req, res) => {
+  return res.json({ ok: true, user: req.studentUser });
+});
+
+// Duplicate audit logs endpoint (admin access)
+app.get('/api/admin/duplicate-audit-logs', authenticateAdmin, (req, res) => {
+  if (sqliteAvailable && db) {
+    db.all(`SELECT * FROM duplicate_audit ORDER BY last_attempt DESC`, (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: 'database_error', message: 'Failed to retrieve audit logs.' });
+      }
+      return res.json({ ok: true, duplicateAttempts: rows || [] });
+    });
+  } else {
+    return res.json({ ok: true, duplicateAttempts: [] });
+  }
+});
+
+// Get duplicate attempts for a specific field (admin access)
+app.get('/api/admin/duplicate-audit-logs/:fieldName/:fieldValue', authenticateAdmin, (req, res) => {
+  const { fieldName, fieldValue } = req.params;
+
+  if (sqliteAvailable && db) {
+    db.all(
+      `SELECT * FROM duplicate_audit WHERE field_name = ? AND field_value = ? ORDER BY last_attempt DESC`,
+      [fieldName, fieldValue],
+      (err, rows) => {
+        if (err) {
+          return res.status(500).json({ error: 'database_error', message: 'Failed to retrieve audit logs.' });
+        }
+        return res.json({ ok: true, duplicateAttempts: rows || [] });
+      }
+    );
+  } else {
+    return res.json({ ok: true, duplicateAttempts: [] });
+  }
+});
 
 app.post('/api/admin/login', (req, res) => {
   const { username, password, secretCode } = req.body || {};
@@ -680,15 +1113,30 @@ app.get('/api/requests/:id/status', (req, res) => {
   return res.json({ id: request.id, status: request.status, updatedAt: request.updatedAt });
 });
 
-app.post('/api/requests', enforceSingleActiveRequest, (req, res) => {
+app.post('/api/requests', optionalAdminAuth, (req, res) => {
+  // Check if student is authenticated
+  const token = parseAuthorizationToken(req);
+  const studentSession = getStudentSession(token);
+  
   const payload = req.body || {};
   if (!payload.studentId || !(payload.studentName || payload.fullName) || !payload.type) {
     return res.status(400).json({ error: 'missing required request data' });
   }
 
-  const record = createRequestRecord(payload);
-  createRequestNotificationEvent(record, 'request.new');
-  return res.status(201).json({ ok: true, request: record });
+  // If student is authenticated, ensure they're creating a request for themselves
+  if (studentSession) {
+    const studentId = studentSession.student.student_id;
+    if (payload.studentId.toString() !== studentId) {
+      return res.status(403).json({ error: 'forbidden', message: 'Students can only create requests for themselves.' });
+    }
+  }
+
+  // Run the single active request enforcement
+  return enforceSingleActiveRequest(req, res, () => {
+    const record = createRequestRecord(payload);
+    createRequestNotificationEvent(record, 'request.new');
+    return res.status(201).json({ ok: true, request: record });
+  });
 });
 
 app.patch('/api/requests/:id/status', authenticateAdmin, (req, res) => {

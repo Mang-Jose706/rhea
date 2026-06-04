@@ -130,21 +130,41 @@ function loginForm() {
         return;
     }
 
-    // Retrieve user from LocalStorage
-    const user = JSON.parse(localStorage.getItem("user")) || {};
-    if(user && user.studentId === studentId && user.password === password){
-        const now = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-        user.lastLogin = now;
-        user.activityHistory = user.activityHistory || [];
-        user.activityHistory.unshift(`Logged in on ${now}`);
-        user.activityHistory = user.activityHistory.slice(0, 5);
-        localStorage.setItem("user", JSON.stringify(user));
-
-        alert("Login successful!");
-        window.location.href = "student-dashboard.html"; // Redirect to dashboard
-    } else {
-        alert("Invalid Student ID or password.");
+    if(studentId.length !== 6 || !/^\d+$/.test(studentId)) {
+        alert("Student ID must be exactly 6 digits.");
+        return;
     }
+
+    // Call backend login endpoint
+    const loginData = {
+        student_id: studentId,
+        password: password
+    };
+
+    fetch('http://localhost:3000/api/student/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.ok) {
+            // Store token in localStorage
+            localStorage.setItem('student_token', data.token);
+            localStorage.setItem('student_user', JSON.stringify(data.user));
+            
+            alert("Login successful!");
+            window.location.href = data.redirect || "student-dashboard.html";
+        } else {
+            alert("Login failed: " + (data.message || data.error));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred during login. Please try again.");
+    });
 }
 
 // Initialize dark mode if enabled in localStorage

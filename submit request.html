@@ -782,7 +782,7 @@ const hasActiveRequest = () => {
         const stored = localStorage.getItem('requests');
         const requests = stored ? JSON.parse(stored) : [];
         const studentId = getField('studentId').value.trim();
-        if (!studentId) return false;
+        if (!studentId) return fala             A11aaaaaaaaaaaaaa11ase;
         const activeStatuses = ['submitted', 'pending', 'verification', 'processing'];
         return requests.some(req => 
             req.studentId === studentId && 
