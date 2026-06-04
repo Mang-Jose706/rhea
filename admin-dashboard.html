@@ -1892,21 +1892,22 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[verifyRequest] Starting verification for ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Processing');
-            if (updated) {
-                applyUpdatedRequest(updated);
-                console.log(`[Admin Action] Request ${requestId} moved to Processing`);
-                alert('✓ Request moved to Processing stage. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
+            const requests = getAllRequests();
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = 'pending';
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('requests', JSON.stringify(requests));
+                console.log(`[Admin Action] Request ${requestId} moved to pending`);
+                alert('✓ Request moved to pending stage. Student will see the update.');
                 populateRequestsTable();
+                updateStatusCounts();
             } else {
-                alert('⚠ No response from server. Request may not have been updated.');
+                alert('Request not found.');
             }
         } catch (error) {
             console.error('[verifyRequest] Error:', error);
-            alert(`✗ Failed to verify request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
+            alert(`✗ Failed to verify request: ${error.message}`);
         }
     }
 
@@ -1918,21 +1919,22 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[processRequest] Starting processing for ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Processing');
-            if (updated) {
-                applyUpdatedRequest(updated);
-                console.log(`[Admin Action] Request ${requestId} moved to Processing`);
-                alert('✓ Request moved to Processing stage. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
+            const requests = getAllRequests();
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = 'processing';
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('requests', JSON.stringify(requests));
+                console.log(`[Admin Action] Request ${requestId} moved to processing`);
+                alert('✓ Request moved to processing stage. Student will see the update.');
                 populateRequestsTable();
+                updateStatusCounts();
             } else {
-                alert('⚠ No response from server. Request may not have been updated.');
+                alert('Request not found.');
             }
         } catch (error) {
             console.error('[processRequest] Error:', error);
-            alert(`✗ Failed to process request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
+            alert(`✗ Failed to process request: ${error.message}`);
         }
     }
 
@@ -1944,21 +1946,22 @@ Updated: ${request.updatedAt || 'N/A'}
         }
         try {
             console.log(`[completeRequest] Completing request ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Completed');
-            if (updated) {
-                applyUpdatedRequest(updated);
-                console.log(`[Admin Action] Request ${requestId} moved to Completed`);
-                alert('✓ Request marked as Completed. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
+            const requests = getAllRequests();
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = 'completed';
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('requests', JSON.stringify(requests));
+                console.log(`[Admin Action] Request ${requestId} moved to completed`);
+                alert('✓ Request marked as completed. Student will see the update.');
                 populateRequestsTable();
+                updateStatusCounts();
             } else {
-                alert('⚠ No response from server. Request may not have been updated.');
+                alert('Request not found.');
             }
         } catch (error) {
             console.error('[completeRequest] Error:', error);
-            alert(`✗ Failed to complete request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
+            alert(`✗ Failed to complete request: ${error.message}`);
         }
     }
 
@@ -1978,23 +1981,23 @@ Updated: ${request.updatedAt || 'N/A'}
         
         try {
             console.log(`[rejectRequest] Rejecting request ${requestId}`);
-            const updated = await updateBackendRequestStatus(requestId, 'Rejected', {
-                details: reason || 'Your request has been declined by the review team.'
-            });
-            if (updated) {
-                applyUpdatedRequest(updated);
+            const requests = getAllRequests();
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex !== -1) {
+                requests[requestIndex].status = 'rejected';
+                requests[requestIndex].rejectionReason = reason || 'Your request has been declined by the review team.';
+                requests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('requests', JSON.stringify(requests));
                 console.log(`[Admin Action] Request ${requestId} rejected`);
-                alert('✓ Request rejected. Student will be notified automatically.');
-                // Trigger real-time update via WebSocket broadcast
-                await syncRequestsFromBackend();
-                await fetchRequestStatusSummary();
+                alert('✓ Request rejected. Student will see the update.');
                 populateRequestsTable();
+                updateStatusCounts();
             } else {
-                alert('⚠ No response from server. Request may not have been updated.');
+                alert('Request not found.');
             }
         } catch (error) {
             console.error('[rejectRequest] Error:', error);
-            alert(`✗ Failed to reject request: ${error.message}\n\nMake sure the server is running on http://localhost:3000`);
+            alert(`✗ Failed to reject request: ${error.message}`);
         }
     }
 
