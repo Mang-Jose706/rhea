@@ -617,8 +617,13 @@
             try {
                 const stored = localStorage.getItem('requests');
                 const requests = stored ? JSON.parse(stored) : [];
-                return requests.filter(req => req.studentId === studentId.toString());
+                // Use flexible filtering: check both studentId and student_id, with flexible string comparison
+                return requests.filter(req => {
+                    const reqStudentId = req.studentId || req.student_id || '';
+                    return reqStudentId === studentId || reqStudentId === String(studentId);
+                });
             } catch (e) {
+                console.warn('Failed to get local student requests', e);
                 return [];
             }
         }
