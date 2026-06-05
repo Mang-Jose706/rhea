@@ -1433,14 +1433,27 @@
       }
 
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
-          headers: getAuthHeaders()
-        });
-        if (!response.ok) {
+        // Check if session exists in localStorage
+        const adminSession = localStorage.getItem('adminSession');
+        if (!adminSession) {
+          console.warn('[Auth] No admin session found');
           return false;
         }
-        const payload = await response.json();
-        return Boolean(payload && payload.ok && payload.user && payload.user.role === 'admin');
+
+        const session = JSON.parse(adminSession);
+        // Validate session has required fields
+        if (!session || !session.token || !session.verified) {
+          console.warn('[Auth] Invalid session structure');
+          return false;
+        }
+
+        // Verify token matches
+        if (session.token !== token) {
+          console.warn('[Auth] Token mismatch');
+          return false;
+        }
+
+        return true;
       } catch (error) {
         console.warn('[Auth] Admin token validation failed:', error);
         return false;
