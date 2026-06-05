@@ -411,32 +411,8 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
     // Keep legacy single-request storage for compatibility
     const legacyNameInput = this.querySelector("input[type='text']");
     
-    // Send request data to backend for realtime dashboard updates and active-request enforcement
-    const backendPayload = {
-        id: requestId,
-        studentId: user.studentId,
-        studentName: fullName,
-        fullName,
-        type: requestType,
-        status: 'submitted',
-        photoName: photo.files[0]?.name || '',
-        createdBy: 'student'
-    };
-
-    fetch(`${BACKEND_BASE_URL}/api/requests`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(backendPayload)
-    }).then(async response => {
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok) {
-            const message = payload.message || 'Unable to submit request at this time.';
-            alert(message);
-            return;
-        }
-
+    // Save request to localStorage (no backend needed)
+    try {
         requests.push(newRequest);
         localStorage.setItem('requests', JSON.stringify(requests));
         localStorage.setItem("request_id", requestId);
@@ -445,11 +421,13 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
             localStorage.setItem("request_name", legacyNameInput.value);
         }
 
+        console.log('Request saved to localStorage:', newRequest);
+        alert('Request submitted successfully! You will see it in your dashboard.');
         window.location.href = "req submitted.html";
-    }).catch(error => {
-        console.warn('Unable to reach backend for request submission:', error);
-        alert('Unable to reach the request server. Please try again later.');
-    });
+    } catch (error) {
+        console.error('Failed to save request:', error);
+        alert('Error submitting request: ' + error.message);
+    }
 });
 
 function getAllRequests() {

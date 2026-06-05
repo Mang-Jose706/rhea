@@ -398,11 +398,13 @@
             if (!token) return;
 
             try {
-                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
-                    headers: getAuthHeaders()
-                });
-                if (response.ok) {
-                    window.location.href = '/admin-dashboard.html';
+                // Check if session exists in localStorage
+                const adminSession = localStorage.getItem('adminSession');
+                if (adminSession) {
+                    const session = JSON.parse(adminSession);
+                    if (session && session.token === token && session.verified) {
+                        window.location.href = 'admin-dashboard.html';
+                    }
                 }
             } catch (error) {
                 console.warn('[Admin Login] Token check failed:', error);
@@ -455,67 +457,53 @@
             }
 
             try {
-                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username: adminId, password: adminPassword, secretCode: adminKey })
-                });
+                // Get admins from localStorage
+                const stored = localStorage.getItem('admin_users');
+                const admins = stored ? JSON.parse(stored) : [];
 
-                const result = await response.json();
-                if (!response.ok) {
-                    showError(result.message || 'Login failed. Please check your credentials.');
+                // Find admin by username
+                const admin = admins.find(a => a.username === adminId);
+                if (!admin) {
+                    showError('Admin account not found.');
+                    console.warn('Failed admin login attempt: User not found - ' + adminId);
                     return;
                 }
 
-                const user = result.user || {
-                    id: adminId,
-                    username: adminId,
-                    role: 'admin',
+                // Validate password
+                if (admin.password !== adminPassword) {
+                    showError('Invalid password.');
+                    console.warn('Failed admin login attempt: Wrong password');
+                    return;
+                }
+
+                // Create session token
+                const token = 'admin_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+                const user = {
+                    id: admin.username,
+                    username: admin.username,
+                    displayName: admin.displayName,
+                    role: admin.role || 'admin',
                     accountType: 'admin'
                 };
 
+                // Save session to localStorage
                 localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('adminToken', result.token);
+                localStorage.setItem('adminToken', token);
                 localStorage.setItem('adminSession', JSON.stringify({
-                    userId: user.id || user.username,
-                    token: result.token,
+                    userId: admin.username,
+                    token: token,
                     loginTime: new Date().toISOString(),
                     verified: true
                 }));
 
-                const validateResponse = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${result.token}`
-                    }
-                });
-
-                if (!validateResponse.ok) {
-                    localStorage.removeItem('adminToken');
-                    localStorage.removeItem('adminSession');
-                    localStorage.removeItem('user');
-                    showError('Unable to validate session token. Please try again.');
-                    return;
-                }
-
-                const validated = await validateResponse.json();
-                if (!validated.ok || !validated.user) {
-                    localStorage.removeItem('adminToken');
-                    localStorage.removeItem('adminSession');
-                    localStorage.removeItem('user');
-                    showError('Session validation failed. Please log in again.');
-                    return;
-                }
-
-                window.location.href = '/admin-dashboard.html';
+                console.log('Admin login successful:', admin.username);
+                window.location.href = 'admin-dashboard.html';
             } catch (error) {
                 console.error('Admin login error:', error);
                 localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminSession');
                 localStorage.removeItem('user');
-                showError('Unable to reach the server. Please try again later.');
+                showError('Error during login: ' + error.message);
             }
         }
 
