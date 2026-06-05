@@ -386,6 +386,13 @@
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const BACKEND_BASE_URL = 'http://localhost:3000';
+
+    // Smart dashboard redirect based on user role
+    const returnDashboardLink = document.querySelector('.return-dashboard');
+    const isAdmin = localStorage.getItem('adminToken') && localStorage.getItem('adminSession');
+    if (returnDashboardLink) {
+      returnDashboardLink.href = isAdmin ? 'admin-dashboard.html' : 'student-dashboard.html';
+    }
     const eventCounts = { total: 0 };
     const filters = {
       'System Alerts': true,
@@ -408,7 +415,7 @@
       const states = {
         connecting: { label: 'Connecting to live feed...', icon: 'fa-circle-notch fa-spin', style: 'connecting' },
         connected: { label: 'Live feed active', icon: 'fa-signal', style: 'connected' },
-        disconnected: { label: 'Disconnected — retrying...', icon: 'fa-wifi-slash', style: 'disconnected' },
+        disconnected: { label: 'Disconnected ï¿½ retrying...', icon: 'fa-wifi-slash', style: 'disconnected' },
         unsupported: { label: 'Live updates unavailable', icon: 'fa-triangle-exclamation', style: 'disconnected' },
         received: { label: 'Received a notification', icon: 'fa-bell', style: 'received' }
       };

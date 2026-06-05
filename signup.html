@@ -204,24 +204,56 @@ body {
                 return;
             }
 
-            // Save user data to localStorage
-            const userData = {
-                firstName: firstName,
-                lastName: lastName,
-                surname: lastName,
-                studentId: studentId,
-                authEmail: email,
-                password: password,
-                accountType: role,
-                role: role,
-                dept: dept,
-                program: program,
-                activityHistory: []
-            };
-            localStorage.setItem("user", JSON.stringify(userData));
+            // Check if student ID already exists
+            let students = [];
+            try {
+                const stored = localStorage.getItem("student_users");
+                students = stored ? JSON.parse(stored) : [];
+            } catch (parseError) {
+                console.warn('Could not parse existing student_users:', parseError);
+                students = [];
+            }
+            
+            if(students.some(s => s.studentId === studentId)) {
+                alert("This Student ID is already registered. Please login or use a different ID.");
+                return;
+            }
 
-            alert("Account created successfully! Redirecting to login...");
-            window.location.href = "login.html";
+            try {
+                // Create new student account
+                const userData = {
+                    firstName: firstName,
+                    lastName: lastName,
+                    surname: lastName,
+                    studentId: studentId,
+                    authEmail: email,
+                    password: password,
+                    accountType: role,
+                    role: role,
+                    dept: dept,
+                    program: program,
+                    activityHistory: [],
+                    createdDate: new Date().toISOString()
+                };
+
+                // Add to student_users array
+                students.push(userData);
+                const serialized = JSON.stringify(students);
+                localStorage.setItem("student_users", serialized);
+                
+                // Verify save was successful
+                const verify = localStorage.getItem("student_users");
+                if (!verify) {
+                    throw new Error('Failed to save student account to localStorage');
+                }
+                
+                console.log('Student account saved successfully:', studentId);
+                alert("Account created successfully! Redirecting to login...");
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error('Error creating student account:', error);
+                alert("Error creating account: " + error.message);
+            }
         }
 
         const signupCourseMap = {

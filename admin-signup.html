@@ -632,7 +632,14 @@
 
             try {
                 // Store admin registration data locally
-                const admins = JSON.parse(localStorage.getItem('admin_users') || '[]');
+                let admins = [];
+                try {
+                    const stored = localStorage.getItem('admin_users');
+                    admins = stored ? JSON.parse(stored) : [];
+                } catch (parseError) {
+                    console.warn('Could not parse existing admin_users:', parseError);
+                    admins = [];
+                }
                 
                 // Check if username already exists
                 if (admins.some(admin => admin.username === username)) {
@@ -643,17 +650,27 @@
                 }
 
                 // Add new admin
-                admins.push({
+                const newAdmin = {
                     username: username,
-                    password: password, // In production, this should be hashed
+                    password: password,
                     role: role,
                     displayName: username.charAt(0).toUpperCase() + username.slice(1),
                     createdAt: new Date().toISOString(),
                     status: 'pending'
-                });
+                };
+                admins.push(newAdmin);
 
-                localStorage.setItem('admin_users', JSON.stringify(admins));
-
+                // Save to localStorage
+                const serialized = JSON.stringify(admins);
+                localStorage.setItem('admin_users', serialized);
+                
+                // Verify save was successful
+                const verify = localStorage.getItem('admin_users');
+                if (!verify) {
+                    throw new Error('Failed to save admin account to localStorage');
+                }
+                
+                console.log('Admin account saved successfully:', username);
                 showMessage('✓ Registration complete! Redirecting to login...', 'success');
                 document.getElementById('signupForm').reset();
                 setTimeout(() => {
@@ -662,7 +679,7 @@
                 }, 1500);
             } catch (error) {
                 console.error('Signup error:', error);
-                showMessage('❌ Registration failed. Please try again.', 'error');
+                showMessage('❌ Registration failed: ' + error.message, 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Register';

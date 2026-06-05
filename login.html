@@ -130,16 +130,24 @@ function loginForm() {
         return;
     }
 
-    // Retrieve user from LocalStorage
-    const user = JSON.parse(localStorage.getItem("user")) || {};
-    if(user && user.studentId === studentId && user.password === password){
+    // Retrieve all registered students from localStorage
+    const students = JSON.parse(localStorage.getItem("student_users") || "[]");
+    
+    // Find matching student account
+    const foundStudent = students.find(s => s.studentId === studentId && s.password === password);
+    
+    if(foundStudent) {
+        // Create session data for the logged-in student
         const now = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-        user.lastLogin = now;
-        user.activityHistory = user.activityHistory || [];
-        user.activityHistory.unshift(`Logged in on ${now}`);
-        user.activityHistory = user.activityHistory.slice(0, 5);
-        localStorage.setItem("user", JSON.stringify(user));
-
+        const sessionData = { ...foundStudent };
+        sessionData.lastLogin = now;
+        sessionData.activityHistory = sessionData.activityHistory || [];
+        sessionData.activityHistory.unshift(`Logged in on ${now}`);
+        sessionData.activityHistory = sessionData.activityHistory.slice(0, 5);
+        
+        // Save session data
+        localStorage.setItem("user", JSON.stringify(sessionData));
+        
         alert("Login successful!");
         window.location.href = "student-dashboard.html"; // Redirect to dashboard
     } else {

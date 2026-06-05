@@ -23,12 +23,6 @@
                 Dashboard
             </div>
         </a>
-        <a href="history.html" id="historyLink" style="display: none;">
-            <div class="menu-item">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                History
-            </div>
-        </a>
         <a href="help center.html">
             <div class="menu-item">
                 <i class="fa-solid fa-headset"></i>
@@ -388,7 +382,7 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
     }
 
     // =========================
-    // ADDED: REQUEST ID + STATUS + STUDENT ASSOCIATION
+    // ADDED: REQUEST ID + STATUS + STUDENT ASSOCIATION + FULL CREDENTIALS + FILES
     // =========================
     const user = getCurrentUser();
     const requestId = "REQ-" + Date.now();
@@ -396,38 +390,91 @@ document.getElementById("requestForm").addEventListener("submit", function (e) {
     const fullName = nameInput?.value.trim() || [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Student';
     const requestType = this.querySelector('textarea')?.value || 'ID Request';
     
-    const requests = getAllRequests();
-    const newRequest = {
-        id: requestId,
-        type: requestType,
-        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
-        status: 'submitted',
-        studentId: user.studentId,
-        studentName: fullName,
-        fullName,
-        submittedAt: new Date().toISOString()
-    };
-
-    // Keep legacy single-request storage for compatibility
-    const legacyNameInput = this.querySelector("input[type='text']");
+    // Capture all form fields
+    const studentIdInput = this.querySelector('input[placeholder="Enter your student ID"]');
+    const deptSelect = document.getElementById("course-category");
+    const progSelect = document.getElementById("sub-course");
+    const yearSelect = this.querySelectorAll('select')[2]; // Year level select
+    const reasonTextarea = this.querySelector('textarea');
     
-    // Save request to localStorage (no backend needed)
-    try {
-        requests.push(newRequest);
-        localStorage.setItem('requests', JSON.stringify(requests));
-        localStorage.setItem("request_id", requestId);
-        localStorage.setItem("request_status", "submitted");
-        if (legacyNameInput) {
-            localStorage.setItem("request_name", legacyNameInput.value);
-        }
-
-        console.log('Request saved to localStorage:', newRequest);
-        alert('Request submitted successfully! You will see it in your dashboard.');
-        window.location.href = "req submitted.html";
-    } catch (error) {
-        console.error('Failed to save request:', error);
-        alert('Error submitting request: ' + error.message);
+    const requests = getAllRequests();
+    
+    // Helper function to convert file to base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
+    
+    // Convert files to base64 before storing
+    Promise.all([
+        fileToBase64(photo.files[0]),
+        fileToBase64(doc.files[0]),
+        fileToBase64(sign.files[0])
+    ]).then(([photoBase64, docBase64, signBase64]) => {
+        const newRequest = {
+            id: requestId,
+            type: requestType,
+            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
+            status: 'pending',
+            studentId: user.studentId,
+            studentName: fullName,
+            fullName,
+            submittedAt: new Date().toISOString(),
+            // Store all credentials/details
+            credentials: {
+                fullName: nameInput?.value.trim() || '',
+                studentId: studentIdInput?.value.trim() || '',
+                department: deptSelect?.options[deptSelect.selectedIndex]?.text || '',
+                program: progSelect?.options[progSelect.selectedIndex]?.text || '',
+                yearLevel: yearSelect?.options[yearSelect.selectedIndex]?.text || '',
+                reason: reasonTextarea?.value.trim() || '',
+                // Store files as base64
+                photoFile: {
+                    name: photo.files[0].name,
+                    data: photoBase64,
+                    type: photo.files[0].type
+                },
+                docFile: {
+                    name: doc.files[0].name,
+                    data: docBase64,
+                    type: doc.files[0].type
+                },
+                signFile: {
+                    name: sign.files[0].name,
+                    data: signBase64,
+                    type: sign.files[0].type
+                }
+            }
+        };
+
+        // Keep legacy single-request storage for compatibility
+        const legacyNameInput = this.querySelector("input[type='text']");
+        
+        // Save request to localStorage (no backend needed)
+        try {
+            requests.push(newRequest);
+            localStorage.setItem('requests', JSON.stringify(requests));
+            localStorage.setItem("request_id", requestId);
+            localStorage.setItem("request_status", "pending");
+            if (legacyNameInput) {
+                localStorage.setItem("request_name", legacyNameInput.value);
+            }
+
+            console.log('Request saved to localStorage:', newRequest);
+            alert('Request submitted successfully! You will see it in your dashboard.');
+            window.location.href = "student-dashboard.html";
+        } catch (error) {
+            console.error('Failed to save request:', error);
+            alert('Error submitting request: ' + error.message);
+        }
+    }).catch(error => {
+        console.error('Error reading files:', error);
+        alert('Error reading uploaded files. Please try again.');
+    });
 });
 
 function getAllRequests() {

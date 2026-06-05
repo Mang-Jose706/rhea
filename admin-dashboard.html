@@ -718,6 +718,191 @@
         color: #34d399;
       }
 
+      .status-select {
+        padding: 6px 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--input-bg);
+        color: var(--primary-text);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .status-select:hover,
+      .status-select:focus {
+        border-color: var(--accent-blue);
+        outline: none;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        max-width: 750px;
+        width: 95%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--muted);
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-close:hover {
+        color: var(--primary-text);
+      }
+
+      .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-item label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .detail-item p {
+        margin: 0;
+        color: var(--primary-text);
+        font-size: 14px;
+        word-break: break-word;
+      }
+
+      .files-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .file-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .file-item label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .file-preview {
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 10px;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .file-preview img {
+        max-width: 100%;
+        max-height: 120px;
+        border-radius: 4px;
+        object-fit: contain;
+      }
+
+      .file-preview-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 12px;
+        padding: 6px 10px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .file-preview-link:hover {
+        background: rgba(59, 130, 246, 0.2);
+      }
+
+      .modal-footer {
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .btn-secondary {
+        padding: 8px 16px;
+        background: var(--input-bg);
+        color: var(--primary-text);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .btn-secondary:hover {
+        background: var(--border-color);
+      }
+
       .no-data {
         text-align: center;
         padding: 40px 20px;
@@ -1028,22 +1213,22 @@
         </div>
 
         <div class="menu">
-            <div class="menu-item active" id="dashboardTab" onclick="switchAdminTab('dashboard'); return false;">
-                <i class="fa-solid fa-chart-pie"></i>
-                Dashboard
-            </div>
-            <div class="menu-item" id="adminRequestsTab" onclick="switchAdminTab('adminRequests'); return false;">
-                <i class="fa-solid fa-inbox"></i>
-                Admin Requests
-            </div>
-            <a href="admin-history.html" id="historyLink" class="menu-item">
+                <div class="menu-item active" id="dashboardTab" onclick="switchAdminTab('dashboard'); return false;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    Dashboard
+                </div>
+                <div class="menu-item" id="studentRequestsTab" onclick="switchAdminTab('studentRequests'); return false;">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    Student Requests
+                </div>
+            <div class="menu-item" id="historyTab" onclick="switchAdminTab('history'); return false;">
                 <i class="fa-solid fa-history"></i>
-                History 
-            </a>
-            <a href="admin-settings.html" id="settingLink" class="menu-item">
+                History
+            </div>
+            <div class="menu-item" id="settingsTab" onclick="switchAdminTab('settings'); return false;">
                 <i class="fa-solid fa-gear"></i>
                 Settings
-            </a>
+            </div>
             <div class="menu-item" onclick="logout(); return false;" style="margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 12px;">
                 <i class="fa-solid fa-sign-out-alt"></i>
                 Logout
@@ -1058,10 +1243,6 @@
                 <p id="welcomeMsg">Welcome back, ADMIN! Manage all student ID requests and track their status.</p>
             </div>
             <div class="header-controls">
-                
-                <a href="notif.html" id="notifBell" class="icon-btn" title="Notifications">
-                    <i class="fa-regular fa-bell"></i>
-                </a>
             </div>
             <div id="requestBlockedNotice" class="request-warning hidden" role="status" aria-live="polite"></div>
         </div>
@@ -1118,12 +1299,12 @@
                     <div class="stat-card submitted">
                         <div class="stat-value" id="countSubmitted">0</div>
                         <div class="stat-label">Submitted</div>
-                        <div class="stat-sublabel">New requests</div>
+                        <div class="stat-sublabel">Total requests</div>
                     </div>
-                    <div class="stat-card pending">
-                        <div class="stat-value" id="countPending">0</div>
-                        <div class="stat-label">Pending</div>
-                        <div class="stat-sublabel">Awaiting review</div>
+                    <div class="stat-card processing">
+                        <div class="stat-value" id="countProcessing">0</div>
+                        <div class="stat-label">Processing</div>
+                        <div class="stat-sublabel">In progress</div>
                     </div>
                     <div class="stat-card completed">
                         <div class="stat-value" id="countCompleted">0</div>
@@ -1137,51 +1318,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- ANALYTICS STRIP -->
-            <div class="card">
-                <h2>Key Metrics</h2>
-                <div class="analytics-strip">
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="analyticsValue1">–</div>
-                        <div class="analytics-label" id="analyticsLabel1">Total Requests</div>
-                        <div class="analytics-detail" id="analyticsDetail1">All submissions</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value" id="analyticsValue2">2–3</div>
-                        <div class="analytics-label" id="analyticsLabel2">Avg Processing Time</div>
-                        <div class="analytics-detail" id="analyticsDetail2">Working days</div>
-                    </div>
-                    <div class="analytics-item">
-                        <div class="analytics-value">✓</div>
-                        <div class="analytics-label">System Status</div>
-                        <div class="analytics-detail">All systems operational</div>
-                    </div>
-                </div>
-            </div>
-
-            <section class="card">
-                <h2>Student Accounts</h2>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="userManagementBody">
-                            <!-- Rows populated by JavaScript -->
-                        </tbody>
-                    </table>
-                    <div id="noUsersMessage" class="no-data" style="display: none;">
-                        <p>No student accounts are currently available.</p>
-                    </div>
-                </div>
-            </section>
 
             <section class="card">
                 <h2>Reports & Analytics</h2>
@@ -1211,26 +1347,103 @@
         </div>
 
         <!-- ADMIN REQUESTS TAB -->
-        <div id="adminRequestsSection" class="tab-section">
+        <!-- STUDENT REQUESTS TAB -->
+        <div id="studentRequestsSection" class="tab-section">
             <div class="card">
-                <h2>Admin Requests (for Superadmin Approval)</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 style="margin: 0;">Student Requests</h2>
+                    <button class="action-btn danger" onclick="clearAllStudentRequests()" style="color: var(--accent-red); font-weight: 600;">Clear All Requests</button>
+                </div>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Admin Username</th>
-                                <th>Display Name</th>
+                                <th>Request ID</th>
+                                <th>Student Name</th>
+                                <th>Student ID</th>
+                                <th>Type</th>
+                                <th>Submitted Date</th>
                                 <th>Status</th>
-                                <th>Requested At</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="adminRequestsTableBody">
+                        <tbody id="studentRequestsTableBody">
                         </tbody>
                     </table>
                 </div>
-                <div id="noAdminRequestsMessage" class="no-data" style="display: none;">
-                    <p>No pending admin requests.</p>
+                <div id="noStudentRequestsMessage" class="no-data" style="display: none;">
+                    <p>No student requests submitted yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW DETAILS MODAL -->
+        <div id="detailsModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Request Details</h2>
+                    <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Request ID</label>
+                            <p id="detailRequestId">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Status</label>
+                            <p id="detailStatus">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Full Name</label>
+                            <p id="detailFullName">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Student ID</label>
+                            <p id="detailStudentId">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Department</label>
+                            <p id="detailDepartment">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Program</label>
+                            <p id="detailProgram">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Year Level</label>
+                            <p id="detailYearLevel">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Reason for Request</label>
+                            <p id="detailReason">—</p>
+                        </div>
+                        <div class="detail-item">
+                            <label>Submitted Date</label>
+                            <p id="detailSubmittedDate">—</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                        <h3 style="margin-top: 0; font-size: 16px;">Uploaded Documents</h3>
+                        <div class="files-grid">
+                            <div class="file-item">
+                                <label>Student Photo</label>
+                                <div id="photoPreview" class="file-preview">—</div>
+                            </div>
+                            <div class="file-item">
+                                <label>Document / COR</label>
+                                <div id="docPreview" class="file-preview">—</div>
+                            </div>
+                            <div class="file-item">
+                                <label>Signature</label>
+                                <div id="signPreview" class="file-preview">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeDetailsModal()">Close</button>
                 </div>
             </div>
         </div>
@@ -1340,6 +1553,106 @@
             </div>
         </div>
         </div>
+
+        <!-- SETTINGS TAB -->
+        <div id="settingsSection" class="tab-section">
+            <div class="card">
+                <h2>Admin Settings</h2>
+                <div class="analytics-strip">
+                    <div class="analytics-item">
+                        <div class="analytics-label">Request Notifications</div>
+                        <div class="analytics-detail">Manage key notifications</div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-label">Request Management</div>
+                        <div class="analytics-detail">Control request routing</div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-label">User Accounts</div>
+                        <div class="analytics-detail">Manage account defaults</div>
+                    </div>
+                    <div class="analytics-item">
+                        <div class="analytics-label">Display</div>
+                        <div class="analytics-detail">Theme control</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Preferences</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="font-size: 16px; margin-bottom: 12px;">Notifications</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">New Request Alerts</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Notify when new requests arrive</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="alertNewRequest" data-key="alertNewRequest" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Verification Alerts</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Notify when verification needed</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="alertVerification" data-key="alertVerification" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Completion Alerts</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Notify on completion/rejection</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="alertFinalStatus" data-key="alertFinalStatus" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 16px; margin-bottom: 12px;">Display & Management</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Dark Mode</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Enable dark theme</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="darkMode" data-key="darkMode" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Auto-assign Requests</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Automatically assign requests</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="autoAssign" data-key="autoAssign" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--input-bg); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 4px;">Maintenance Mode</div>
+                                    <div style="font-size: 12px; color: var(--muted);">Disable new submissions</div>
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="maintenanceMode" data-key="maintenanceMode" style="width: 18px; height: 18px; cursor: pointer;">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn-primary" onclick="saveAdminSettings()">Save Settings</button>
+                <div id="lastSavedTimestamp" style="padding: 12px; color: var(--muted); font-size: 13px;">Preferences not saved yet.</div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -1352,14 +1665,17 @@
             dashboard: 'dashboardOverview',
             history: 'historyLogs',
             requests: 'requestsManagement',
-            adminRequests: 'adminRequestsSection'
+            studentRequests: 'studentRequestsSection',
+            adminRequests: 'adminRequestsSection',
+            settings: 'settingsSection'
         };
 
         const tabs = {
             dashboard: 'dashboardTab',
             history: 'historyTab',
             requests: 'requestsTab',
-            adminRequests: 'adminRequestsTab'
+            studentRequests: 'studentRequestsTab',
+            settings: 'settingsTab'
         };
 
         Object.values(sections).forEach(sectionId => {
@@ -1385,18 +1701,20 @@
             else if (tabName === 'users') pageTitle.textContent = 'User Management';
             else if (tabName === 'reports') pageTitle.textContent = 'Reports / Analytics';
             else if (tabName === 'requests') pageTitle.textContent = 'Requests Management';
-            else if (tabName === 'adminRequests') pageTitle.textContent = 'Admin Requests';
+            else if (tabName === 'studentRequests') pageTitle.textContent = 'Student Requests';
+            else if (tabName === 'settings') pageTitle.textContent = 'Settings';
         }
 
         if (tabName === 'dashboard') {
-            populateUserManagementTable();
             renderReportsAnalytics();
         } else if (tabName === 'requests') {
             populateRequestsTable(true); // Show all requests for admin
         } else if (tabName === 'history') {
             populateHistoryTable();
-        } else if (tabName === 'adminRequests') {
-            populateAdminRequestsTable();
+        } else if (tabName === 'studentRequests') {
+            populateStudentRequestsTable();
+        } else if (tabName === 'settings') {
+            initializeSettingsPage();
         }
 
         logActivity('SWITCH_TAB', { tab: tabName });
@@ -1625,7 +1943,7 @@
             const summary = await response.json();
             if (summary && typeof summary === 'object') {
                 document.getElementById('countSubmitted').textContent = summary.submitted || 0;
-                document.getElementById('countPending').textContent = summary.pending || 0;
+                document.getElementById('countProcessing').textContent = summary.processing || 0;
                 document.getElementById('countCompleted').textContent = summary.completed || 0;
                 document.getElementById('countRejected').textContent = summary.rejected || 0;
 
@@ -2087,68 +2405,35 @@ Updated: ${request.updatedAt || 'N/A'}
     // ============================================
 
     function updateStatusCounts(summary) {
-        if (summary && typeof summary === 'object') {
-            document.getElementById('countSubmitted').textContent = summary.submitted || 0;
-            document.getElementById('countPending').textContent = summary.pending || 0;
-            document.getElementById('countCompleted').textContent = summary.completed || 0;
-            document.getElementById('countRejected').textContent = summary.rejected || 0;
-            return;
-        }
-
-        const requests = getVisibleRequests();
+        const storedRequests = localStorage.getItem('requests');
+        const allRequests = storedRequests ? JSON.parse(storedRequests) : [];
 
         let counts = {
             submitted: 0,
-            pending: 0,
+            processing: 0,
             completed: 0,
             rejected: 0
         };
 
-        requests.forEach(req => {
+        allRequests.forEach(req => {
             const status = (req.status || '').toLowerCase();
-            if (status === 'submitted') {
-                counts.submitted++;
-            } else if (status === 'pending' || status === 'verification' || status === 'processing') {
-                counts.pending++;
-            } else if (status === 'ready' || status === 'completed') {
+            if (status === 'processing') {
+                counts.processing++;
+            } else if (status === 'completed') {
                 counts.completed++;
             } else if (status === 'rejected') {
                 counts.rejected++;
             }
         });
 
+        counts.submitted = allRequests.length;
+
         document.getElementById('countSubmitted').textContent = counts.submitted;
-        document.getElementById('countPending').textContent = counts.pending;
+        document.getElementById('countProcessing').textContent = counts.processing;
         document.getElementById('countCompleted').textContent = counts.completed;
         document.getElementById('countRejected').textContent = counts.rejected;
     }
 
-    function updateAnalytics() {
-        const isAdminUser = isAdmin();
-        const requests = getVisibleRequests();
-        const latestRequest = getLatestRequest();
-
-        if (isAdminUser) {
-            // Admin metrics
-            document.getElementById('analyticsValue1').textContent = requests.length;
-            document.getElementById('analyticsLabel1').textContent = 'Total Requests';
-            document.getElementById('analyticsDetail1').textContent = 'All student submissions';
-
-            document.getElementById('analyticsValue2').textContent = '2–3';
-            document.getElementById('analyticsLabel2').textContent = 'Avg Processing Time';
-            document.getElementById('analyticsDetail2').textContent = 'Working days';
-        } else {
-            // Student metrics
-            const activeCount = requests.filter(r => {
-                const status = (r.status || '').toLowerCase();
-                return status === 'submitted' || status === 'pending' || status === 'processing';
-            }).length;
-
-            document.getElementById('analyticsValue1').textContent = activeCount;
-            document.getElementById('analyticsLabel1').textContent = 'My Active Requests';
-            document.getElementById('analyticsDetail1').textContent = 'Current submissions';
-        }
-    }
 
     function getAllUsers() {
         try {
@@ -2178,99 +2463,100 @@ Updated: ${request.updatedAt || 'N/A'}
         });
     }
 
-    async function populateAdminRequestsTable() {
-        const tbody = document.getElementById('adminRequestsTableBody');
-        const noDataMsg = document.getElementById('noAdminRequestsMessage');
+
+
+    function populateStudentRequestsTable() {
+        const tbody = document.getElementById('studentRequestsTableBody');
+        const noDataMsg = document.getElementById('noStudentRequestsMessage');
         
         try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests`, {
-                headers: getAuthHeaders()
-            });
+            const storedRequests = localStorage.getItem('requests');
+            const allRequests = storedRequests ? JSON.parse(storedRequests) : [];
             
-            if (!response.ok) {
-                console.warn('Failed to fetch admin requests:', response.status);
-                noDataMsg.style.display = 'block';
-                return;
-            }
-            
-            const adminRequests = await response.json();
             tbody.innerHTML = '';
             
-            if (adminRequests.length === 0) {
+            if (allRequests.length === 0) {
                 noDataMsg.style.display = 'block';
+                return;
             } else {
                 noDataMsg.style.display = 'none';
-                adminRequests.forEach(req => {
-                    const row = tbody.insertRow();
-                    const isPending = req.status === 'pending';
-                    let statusClass = 'status-pending';
-                    let statusLabel = 'Pending';
-
-                    if (req.status === 'approved') {
-                        statusClass = 'status-success';
-                        statusLabel = 'Approved';
-                    } else if (req.status === 'rejected') {
-                        statusClass = 'status-danger';
-                        statusLabel = 'Rejected';
-                    }
-
-                    row.innerHTML = `
-                        <td>${req.username}</td>
-                        <td>${req.displayName || '—'}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                        <td>${new Date(req.requestedAt).toLocaleDateString()}</td>
-                        <td>
-                            ${isPending ? `
-                                <a href="#" class="action-btn success" onclick="approveAdminRequest('${req.id}'); return false;">Approve</a>
-                                <a href="#" class="action-btn danger" onclick="rejectAdminRequest('${req.id}'); return false;">Reject</a>
-                            ` : '<span style="color: #999; font-size: 13px;">No actions available</span>'}
-                        </td>
-                    `;
-                });
             }
+            
+            allRequests.forEach((req, index) => {
+                const row = tbody.insertRow();
+                const statusClass = `status-${(req.status || 'pending').toLowerCase()}`;
+                const statusLabel = (req.status || 'pending').charAt(0).toUpperCase() + (req.status || 'pending').slice(1);
+                const submittedDate = new Date(req.submittedAt || req.date || '').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+                
+                row.innerHTML = `
+                    <td><strong>${req.id || 'N/A'}</strong></td>
+                    <td>${req.studentName || req.fullName || 'Unknown'}</td>
+                    <td>${req.studentId || 'N/A'}</td>
+                    <td>${req.type || 'Student ID Request'}</td>
+                    <td>${submittedDate}</td>
+                    <td>
+                        <select class="status-select" data-request-id="${req.id}" onchange="updateRequestStatus('${req.id}', this.value)">
+                            <option value="pending" ${req.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="processing" ${req.status === 'processing' ? 'selected' : ''}>Processing</option>
+                            <option value="completed" ${req.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="rejected" ${req.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                    <td style="display: flex; gap: 6px;">
+                        <button class="action-btn" onclick="viewRequestDetails('${req.id}')" style="color: var(--accent-blue);">View</button>
+                        <button class="action-btn success" onclick="saveRequestStatus('${req.id}')">Save</button>
+                    </td>
+                `;
+            });
         } catch (error) {
-            console.error('Error fetching admin requests:', error);
+            console.error('Error loading student requests:', error);
             noDataMsg.style.display = 'block';
         }
     }
 
-    async function approveAdminRequest(requestId) {
-        if (!confirm('Approve this admin request?')) return;
+    function updateRequestStatus(requestId, newStatus) {
+        // This function is called when the select dropdown changes
+        // We'll save it when the Save button is clicked
+    }
+
+    function saveRequestStatus(requestId) {
         try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests/${encodeURIComponent(requestId)}/approve`, {
-                method: 'POST',
-                headers: getAuthHeaders()
-            });
-            if (response.ok) {
-                alert('Admin request approved.');
-                populateAdminRequestsTable();
-            } else {
-                alert('Failed to approve admin request.');
+            const selectElement = document.querySelector(`select[data-request-id="${requestId}"]`);
+            if (!selectElement) return;
+            
+            const newStatus = selectElement.value;
+            const storedRequests = localStorage.getItem('requests');
+            const allRequests = storedRequests ? JSON.parse(storedRequests) : [];
+            
+            // Find and update the request
+            const requestIndex = allRequests.findIndex(r => r.id === requestId);
+            if (requestIndex !== -1) {
+                allRequests[requestIndex].status = newStatus;
+                allRequests[requestIndex].updatedAt = new Date().toISOString();
+                localStorage.setItem('requests', JSON.stringify(allRequests));
+                alert(`Request ${requestId} status updated to ${newStatus}`);
+                populateStudentRequestsTable(); // Refresh the table
+                updateStatusCounts(); // Update the Request Status Overview
             }
         } catch (error) {
-            console.error('Approve error:', error);
-            alert('Error approving request.');
+            console.error('Error saving request status:', error);
+            alert('Error updating request status');
         }
     }
 
-    async function rejectAdminRequest(requestId) {
-        const reason = prompt('Rejection reason (optional):');
-        if (reason === null) return;
+    function clearAllStudentRequests() {
+        if (!confirm('Are you sure you want to clear ALL student requests? This action cannot be undone.')) {
+            return;
+        }
+        
         try {
-            const response = await fetch(`${BACKEND_BASE_URL}/api/admin/requests/${encodeURIComponent(requestId)}/reject`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ reason })
-            });
-            if (response.ok) {
-                alert('Admin request rejected.');
-                populateAdminRequestsTable();
-            } else {
-                alert('Failed to reject admin request.');
-            }
+            localStorage.setItem('requests', JSON.stringify([]));
+            populateStudentRequestsTable();
+            alert('All student requests have been cleared.');
+            logActivity('CLEAR_ALL_REQUESTS', { message: 'All student requests cleared' });
         } catch (error) {
-            console.error('Reject error:', error);
-            alert('Error rejecting request.');
+            console.error('Error clearing requests:', error);
+            alert('Error clearing requests');
         }
     }
 
@@ -2494,6 +2780,7 @@ Updated: ${request.updatedAt || 'N/A'}
         // Sync dashboard requests with the backend before rendering
         await syncRequestsFromBackend();
         await fetchRequestStatusSummary();
+        updateStatusCounts(); // Update counts from localStorage on page load
 
         // Populate dashboard data
         const isAdminUser = isAdmin();
@@ -2676,6 +2963,130 @@ Updated: ${request.updatedAt || 'N/A'}
     document.getElementById('closeNewRequestBtn').addEventListener('click', closeNewRequestModal);
     document.getElementById('cancelNewRequestBtn').addEventListener('click', closeNewRequestModal);
     document.getElementById('newRequestForm').addEventListener('submit', submitNewRequest);
+
+    // ============================================
+    // SETTINGS PAGE FUNCTIONS
+    // ============================================
+
+    function initializeSettingsPage() {
+        const checkboxes = document.querySelectorAll('#settingsSection input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            const key = checkbox.getAttribute('data-key');
+            const saved = localStorage.getItem(`admin-pref-${key}`);
+            if (saved === '1') {
+                checkbox.checked = true;
+            }
+            
+            checkbox.addEventListener('change', (e) => {
+                const dataKey = e.target.getAttribute('data-key');
+                localStorage.setItem(`admin-pref-${dataKey}`, e.target.checked ? '1' : '0');
+                
+                // Apply dark mode immediately
+                if (dataKey === 'darkMode') {
+                    document.body.classList.toggle('dark-mode', e.target.checked);
+                }
+            });
+        });
+
+        // Load dark mode on page init
+        const darkModeCheckbox = document.getElementById('darkMode');
+        if (darkModeCheckbox && darkModeCheckbox.checked) {
+            document.body.classList.add('dark-mode');
+        }
+    }
+
+    function saveAdminSettings() {
+        const checkboxes = document.querySelectorAll('#settingsSection input[type="checkbox"]');
+        let saved = 0;
+        
+        checkboxes.forEach(checkbox => {
+            const key = checkbox.getAttribute('data-key');
+            localStorage.setItem(`admin-pref-${key}`, checkbox.checked ? '1' : '0');
+            saved++;
+        });
+
+        const timestamp = document.getElementById('lastSavedTimestamp');
+        if (timestamp) {
+            const now = new Date().toLocaleString();
+            timestamp.textContent = `✓ Settings saved at ${now}`;
+            timestamp.style.color = 'var(--accent-green)';
+            
+            setTimeout(() => {
+                timestamp.textContent = 'Preferences saved.';
+                timestamp.style.color = 'var(--muted)';
+            }, 3000);
+        }
+
+        logActivity('SAVE_SETTINGS', { preferencesCount: saved });
+    }
+
+    function viewRequestDetails(requestId) {
+        try {
+            const storedRequests = localStorage.getItem('requests');
+            const allRequests = storedRequests ? JSON.parse(storedRequests) : [];
+            const request = allRequests.find(r => r.id === requestId);
+            
+            if (!request) {
+                alert('Request not found');
+                return;
+            }
+            
+            // Populate modal with request details
+            document.getElementById('detailRequestId').textContent = request.id || '—';
+            document.getElementById('detailStatus').textContent = (request.status || '—').charAt(0).toUpperCase() + (request.status || '—').slice(1);
+            
+            const creds = request.credentials || {};
+            document.getElementById('detailFullName').textContent = creds.fullName || request.fullName || '—';
+            document.getElementById('detailStudentId').textContent = creds.studentId || request.studentId || '—';
+            document.getElementById('detailDepartment').textContent = creds.department || '—';
+            document.getElementById('detailProgram').textContent = creds.program || '—';
+            document.getElementById('detailYearLevel').textContent = creds.yearLevel || '—';
+            document.getElementById('detailReason').textContent = creds.reason || '—';
+            
+            const submittedDate = new Date(request.submittedAt || request.date || '').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+            document.getElementById('detailSubmittedDate').textContent = submittedDate || '—';
+            
+            // Display uploaded files
+            displayFilePreview('photoPreview', creds.photoFile);
+            displayFilePreview('docPreview', creds.docFile);
+            displayFilePreview('signPreview', creds.signFile);
+            
+            // Show modal
+            document.getElementById('detailsModal').style.display = 'flex';
+        } catch (error) {
+            console.error('Error viewing request details:', error);
+            alert('Error loading request details');
+        }
+    }
+
+    function displayFilePreview(elementId, fileData) {
+        const element = document.getElementById(elementId);
+        
+        if (!fileData || !fileData.data) {
+            element.textContent = '—';
+            return;
+        }
+        
+        // Check if it's an image
+        if (fileData.type && fileData.type.startsWith('image/')) {
+            element.innerHTML = `<img src="${fileData.data}" alt="${fileData.name}" />`;
+        } else {
+            // For non-image files (PDF, etc), show download link
+            element.innerHTML = `<a class="file-preview-link" href="${fileData.data}" download="${fileData.name}">📄 ${fileData.name}</a>`;
+        }
+    }
+
+    function closeDetailsModal() {
+        document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside of it
+    window.addEventListener('click', (event) => {
+        const modal = document.getElementById('detailsModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
   </script>
 </body>
     </script>
