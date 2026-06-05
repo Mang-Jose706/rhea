@@ -384,7 +384,10 @@
         <i class="fa-solid fa-gear"></i>
         Settings
       </a>
-    </div>
+      <a href="#" onclick="logout(); return false;" class="menu-item" style="margin-top:auto; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px;">
+        <i class="fa-solid fa-sign-out-alt"></i>
+        Logout
+      </a>
   </div>
 
   <main class="main">
@@ -698,6 +701,13 @@
         filterSettingsAdminRequests();
         alert(`Request ${requestId} updated to ${newStatus}`);
       }
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminSession');
+      localStorage.removeItem('user');
+      window.location.href = 'admin-login.html';
     }
 
     window.addEventListener('DOMContentLoaded', () => {
