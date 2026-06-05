@@ -365,7 +365,7 @@
         <i class="fa-solid fa-chart-pie"></i>
         Dashboard
       </a>
-      <a href="admin-settings.html#adminRequests" class="menu-item">
+      <a href="admin-dashboard.html#adminRequests" class="menu-item">
         <i class="fa-solid fa-inbox"></i>
         Admin Requests
       </a>
@@ -381,14 +381,13 @@
   </div>
 
   <main class="main">
-    <div id="settingsContent">
-      <div class="container">
-        <div class="header-row">
-          <div class="page-title">Admin Settings</div>
-          <div class="header-controls"></div>
-        </div>
+    <div class="container">
+      <div class="header-row">
+        <div class="page-title">Admin Settings</div>
+        <div class="header-controls"></div>
+      </div>
 
-        <div class="two-col">
+      <div class="two-col">
         <div style="display:flex;flex-direction:column;gap:20px">
           <section class="card" aria-labelledby="notif-heading">
             <h3 id="notif-heading">Request Notifications</h3>
@@ -483,35 +482,6 @@
       </div>
       <div id="lastSavedTimestamp" class="field-note" style="margin-top:12px;">Preferences not saved yet.</div>
     </div>
-    </div>
-
-    <div id="adminRequestsContent" style="display:none;">
-      <div class="container">
-        <div class="header-row">
-          <div class="page-title">Admin Requests</div>
-          <div class="header-controls"></div>
-        </div>
-        <div class="card">
-          <h2>Manage Requests</h2>
-          <div style="overflow-x:auto; margin-top:16px;">
-            <table style="width:100%; border-collapse:collapse;">
-              <thead>
-                <tr style="background:#f9fafb;">
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Request ID</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Student Name</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Student ID</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Type</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Status</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Date Submitted</th>
-                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="settingsAdminRequestsTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
   </main>
 
   <script>
@@ -572,47 +542,6 @@
       }
     }
 
-    function populateSettingsAdminRequestsTable() {
-      try {
-        const requests = JSON.parse(localStorage.getItem('requests')) || [];
-        const tbody = document.getElementById('settingsAdminRequestsTableBody');
-        tbody.innerHTML = '';
-        requests.forEach(req => {
-          const row = document.createElement('tr');
-          const statusClass = req.status === 'completed' ? 'completed' : req.status === 'processing' ? 'processing' : 'pending';
-          const statusIcon = req.status === 'completed' ? 'fa-circle-check' : req.status === 'processing' ? 'fa-spinner' : 'fa-clock';
-          row.style.borderBottom = '1px solid #e6eefc';
-          row.innerHTML = `
-            <td style="padding:12px;">${req.id}</td>
-            <td style="padding:12px;">${req.studentName || 'N/A'}</td>
-            <td style="padding:12px;">${req.studentId || 'N/A'}</td>
-            <td style="padding:12px;">${req.type || 'Standard'}</td>
-            <td style="padding:12px;"><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:20px; font-size:12px; font-weight:600; background:#eff8ff; color:#1d4ed8;"><i class="fa-solid ${statusIcon}"></i> ${req.status}</span></td>
-            <td style="padding:12px;">${new Date(req.submitted || req.submittedAt).toLocaleDateString()}</td>
-            <td style="padding:12px;"><button onclick="updateSettingsAdminRequest('${req.id}', 'completed')" style="padding:6px 12px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Complete</button></td>
-          `;
-          tbody.appendChild(row);
-        });
-      } catch (e) {
-        console.error('Error populating admin requests table:', e);
-      }
-    }
-
-    function updateSettingsAdminRequest(requestId, status) {
-      try {
-        const requests = JSON.parse(localStorage.getItem('requests')) || [];
-        const idx = requests.findIndex(r => r.id === requestId);
-        if (idx !== -1) {
-          requests[idx].status = status;
-          requests[idx].updated = new Date().toISOString();
-          localStorage.setItem('requests', JSON.stringify(requests));
-          populateSettingsAdminRequestsTable();
-        }
-      } catch (e) {
-        console.error('Error updating request:', e);
-      }
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
       switches.forEach(s => {
         const key = s.dataset.key;
@@ -646,13 +575,6 @@
 
       if (saveButton) {
         saveButton.addEventListener('click', savePreferences);
-      }
-
-      const hash = window.location.hash;
-      if (hash === '#adminRequests') {
-        document.getElementById('settingsContent').style.display = 'none';
-        document.getElementById('adminRequestsContent').style.display = 'block';
-        populateSettingsAdminRequestsTable();
       }
     });
   </script>

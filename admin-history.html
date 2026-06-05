@@ -67,88 +67,58 @@
     </div>
     <div class="menu">
       <a href="admin-dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-      <a href="admin-history.html#adminRequests" class="menu-item"><i class="fa-solid fa-inbox"></i> Admin Requests</a>
+      <a href="admin-dashboard.html#adminRequests" class="menu-item"><i class="fa-solid fa-inbox"></i> Admin Requests</a>
       <a href="admin-history.html" class="menu-item active"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
       <a href="admin-settings.html" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
     </div>
   </div>
 
   <main class="main">
-    <div id="historyContent">
-      <div class="header">
-        <div>
-          <h1>Admin History</h1>
-          <p>Review all student requests and audit history from the admin portal. Filter by status, search by request ID or student name, and monitor the latest processing activity.</p>
-        </div>
-        <button class="icon-btn" title="Refresh requests" id="refreshButton"><i class="fa-solid fa-arrows-rotate"></i></button>
+    <div class="header">
+      <div>
+        <h1>Admin History</h1>
+        <p>Review all student requests and audit history from the admin portal. Filter by status, search by request ID or student name, and monitor the latest processing activity.</p>
       </div>
-
-      <div class="stats-grid" id="summaryCards">
-        <div class="stat-card"><h3>Total Requests</h3><p id="totalRequests">0</p></div>
-        <div class="stat-card"><h3>Pending</h3><p id="pendingRequests">0</p></div>
-        <div class="stat-card"><h3>Processing</h3><p id="processingRequests">0</p></div>
-        <div class="stat-card"><h3>Completed</h3><p id="completedRequests">0</p></div>
-      </div>
-
-      <section class="content-card">
-        <div class="controls">
-          <input type="text" id="searchInput" placeholder="Search requests by ID, name, or student ID" />
-          <select id="statusFilter">
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="completed">Completed</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Request ID</th>
-                <th>Student Name</th>
-                <th>Student ID</th>
-                <th>Type</th>
-                <th>Date Submitted</th>
-                <th>Status</th>
-                <th>Last Updated</th>
-              </tr>
-            </thead>
-            <tbody id="historyTableBody"></tbody>
-          </table>
-          <div id="noRequestsMessage" class="no-data" style="display:none;">No request records found.</div>
-        </div>
-      </section>
+      <button class="icon-btn" title="Refresh requests" id="refreshButton"><i class="fa-solid fa-arrows-rotate"></i></button>
     </div>
 
-    <div id="adminRequestsContent" style="display:none;">
-      <div class="header">
-        <div>
-          <h1>Admin Requests</h1>
-          <p>View and manage all student ID requests.</p>
-        </div>
+    <div class="stats-grid" id="summaryCards">
+      <div class="stat-card"><h3>Total Requests</h3><p id="totalRequests">0</p></div>
+      <div class="stat-card"><h3>Pending</h3><p id="pendingRequests">0</p></div>
+      <div class="stat-card"><h3>Processing</h3><p id="processingRequests">0</p></div>
+      <div class="stat-card"><h3>Completed</h3><p id="completedRequests">0</p></div>
+    </div>
+
+    <section class="content-card">
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search requests by ID, name, or student ID" />
+        <select id="statusFilter">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="completed">Completed</option>
+          <option value="rejected">Rejected</option>
+        </select>
       </div>
 
-      <section class="content-card">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Request ID</th>
-                <th>Student Name</th>
-                <th>Student ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Date Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminRequestsTableBody"></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Request ID</th>
+              <th>Student Name</th>
+              <th>Student ID</th>
+              <th>Type</th>
+              <th>Date Submitted</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+        <div id="noRequestsMessage" class="no-data" style="display:none;">No request records found.</div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -241,36 +211,6 @@
       renderTable(filtered);
     }
 
-    function populateAdminRequestsTable() {
-      const requests = getAllRequests();
-      const tbody = document.getElementById('adminRequestsTableBody');
-      tbody.innerHTML = '';
-      requests.forEach(req => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${req.id}</td>
-          <td>${req.studentName}</td>
-          <td>${req.studentId}</td>
-          <td>${req.type}</td>
-          <td><span class="pill ${formatStatus(req.status).class}"><i class="fa-solid ${formatStatus(req.status).icon}"></i> ${formatStatus(req.status).label}</span></td>
-          <td>${new Date(req.submitted || req.submittedAt).toLocaleDateString()}</td>
-          <td><button onclick="updateAdminRequest('${req.id}', 'completed')" style="padding:6px 12px; background:#1e56d6; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Complete</button></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function updateAdminRequest(requestId, status) {
-      const requests = getAllRequests();
-      const idx = requests.findIndex(r => r.id === requestId);
-      if (idx !== -1) {
-        requests[idx].status = status;
-        requests[idx].updated = new Date().toISOString();
-        localStorage.setItem('requests', JSON.stringify(requests));
-        populateAdminRequestsTable();
-      }
-    }
-
     function initHistoryPage() {
       if (!isAdmin()) {
         document.body.innerHTML = '<div style="padding:40px;font-family:Inter,Arial,sans-serif"><h1>Access denied</h1><p>This page is only available for admin users.</p></div>';
@@ -280,13 +220,6 @@
       document.getElementById('searchInput').addEventListener('input', filterRequests);
       document.getElementById('statusFilter').addEventListener('change', filterRequests);
       document.getElementById('refreshButton').addEventListener('click', filterRequests);
-      
-      const hash = window.location.hash;
-      if (hash === '#adminRequests') {
-        document.getElementById('historyContent').style.display = 'none';
-        document.getElementById('adminRequestsContent').style.display = 'block';
-        populateAdminRequestsTable();
-      }
     }
 
     window.addEventListener('DOMContentLoaded', initHistoryPage);
