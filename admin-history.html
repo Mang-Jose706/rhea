@@ -54,12 +54,6 @@
     .pill.completed { background: #e9f8ef; color: #047857; }
     .pill.rejected { background: #fef3f2; color: #b91c1c; }
     .no-data { padding: 40px 0; text-align: center; color: var(--muted); }
-    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
-    .tab-btn { padding: 12px 20px; background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
     @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 760px) { body { flex-direction: column; } .sidebar { width: 100%; border-radius: 0 0 24px 24px; } .main { padding: 20px; } .stats-grid { grid-template-columns: 1fr; } .controls { flex-direction: column; } }
   </style>
@@ -76,26 +70,19 @@
       <a href="admin-history.html#adminRequests" class="menu-item"><i class="fa-solid fa-inbox"></i> Admin Requests</a>
       <a href="admin-history.html" class="menu-item active"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
       <a href="admin-settings.html" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="#" onclick="logout(); return false;" class="menu-item" style="margin-top:auto; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px;"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>
 
   <main class="main">
-    <div class="header">
-      <div>
-        <h1 id="pageTitle">Admin History</h1>
-        <p id="pageDesc">Review all student requests and audit history from the admin portal. Filter by status, search by request ID or student name, and monitor the latest processing activity.</p>
+    <div id="historyContent">
+      <div class="header">
+        <div>
+          <h1>Admin History</h1>
+          <p>Review all student requests and audit history from the admin portal. Filter by status, search by request ID or student name, and monitor the latest processing activity.</p>
+        </div>
+        <button class="icon-btn" title="Refresh requests" id="refreshButton"><i class="fa-solid fa-arrows-rotate"></i></button>
       </div>
-      <button class="icon-btn" title="Refresh requests" id="refreshButton"><i class="fa-solid fa-arrows-rotate"></i></button>
-    </div>
 
-    <div class="tab-bar">
-      <button class="tab-btn active" id="historyTab" onclick="switchHistoryTab('history')">History</button>
-      <button class="tab-btn" id="adminRequestsTab" onclick="switchHistoryTab('adminRequests')">Admin Requests</button>
-    </div>
-
-    <!-- HISTORY TAB CONTENT -->
-    <div id="historySection" class="tab-content active">
       <div class="stats-grid" id="summaryCards">
         <div class="stat-card"><h3>Total Requests</h3><p id="totalRequests">0</p></div>
         <div class="stat-card"><h3>Pending</h3><p id="pendingRequests">0</p></div>
@@ -135,29 +122,15 @@
       </section>
     </div>
 
-    <!-- ADMIN REQUESTS TAB CONTENT -->
-    <div id="adminRequestsSection" class="tab-content">
-      <div class="stats-grid" id="adminSummaryCards">
-        <div class="stat-card"><h3>Total Requests</h3><p id="adminTotalRequests">0</p></div>
-        <div class="stat-card"><h3>Pending</h3><p id="adminPendingRequests">0</p></div>
-        <div class="stat-card"><h3>Processing</h3><p id="adminProcessingRequests">0</p></div>
-        <div class="stat-card"><h3>Completed</h3><p id="adminCompletedRequests">0</p></div>
+    <div id="adminRequestsContent" style="display:none;">
+      <div class="header">
+        <div>
+          <h1>Admin Requests</h1>
+          <p>View and manage all student ID requests.</p>
+        </div>
       </div>
 
       <section class="content-card">
-        <h2>Manage Requests</h2>
-        <div class="controls">
-          <input type="text" id="adminSearchInput" placeholder="Search requests by ID, name, or student ID" />
-          <select id="adminStatusFilter">
-            <option value="all">All Status</option>
-            <option value="submitted">Submitted</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="completed">Completed</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-
         <div class="table-wrapper">
           <table>
             <thead>
@@ -173,7 +146,6 @@
             </thead>
             <tbody id="adminRequestsTableBody"></tbody>
           </table>
-          <div id="adminNoRequestsMessage" class="no-data" style="display:none;">No requests found.</div>
         </div>
       </section>
     </div>
@@ -269,108 +241,34 @@
       renderTable(filtered);
     }
 
-    function switchHistoryTab(tabName) {
-      document.getElementById('historySection').classList.remove('active');
-      document.getElementById('adminRequestsSection').classList.remove('active');
-      document.getElementById('historyTab').classList.remove('active');
-      document.getElementById('adminRequestsTab').classList.remove('active');
-
-      if (tabName === 'history') {
-        document.getElementById('historySection').classList.add('active');
-        document.getElementById('historyTab').classList.add('active');
-        document.getElementById('pageTitle').textContent = 'Admin History';
-        document.getElementById('pageDesc').textContent = 'Review all student requests and audit history from the admin portal. Filter by status, search by request ID or student name, and monitor the latest processing activity.';
-        filterRequests();
-      } else if (tabName === 'adminRequests') {
-        document.getElementById('adminRequestsSection').classList.add('active');
-        document.getElementById('adminRequestsTab').classList.add('active');
-        document.getElementById('pageTitle').textContent = 'Admin Requests';
-        document.getElementById('pageDesc').textContent = 'View and manage all student ID requests. Update statuses and process requests efficiently.';
-        loadAdminRequests();
-      }
-    }
-
-    function renderAdminSummary(requests) {
-      const total = requests.length;
-      const submitted = requests.filter(r => r.status === 'submitted').length;
-      const pending = requests.filter(r => r.status === 'pending').length;
-      const processing = requests.filter(r => r.status === 'processing').length;
-      const completed = requests.filter(r => r.status === 'completed').length;
-      document.getElementById('adminTotalRequests').textContent = total;
-      document.getElementById('adminPendingRequests').textContent = pending;
-      document.getElementById('adminProcessingRequests').textContent = processing;
-      document.getElementById('adminCompletedRequests').textContent = completed;
-    }
-
-    function renderAdminTable(requests) {
+    function populateAdminRequestsTable() {
+      const requests = getAllRequests();
       const tbody = document.getElementById('adminRequestsTableBody');
-      const noData = document.getElementById('adminNoRequestsMessage');
       tbody.innerHTML = '';
-      if (!requests.length) {
-        noData.style.display = 'block';
-        return;
-      }
-      noData.style.display = 'none';
       requests.forEach(req => {
-        const status = formatStatus(req.status);
         const row = document.createElement('tr');
-        const studentId = req.studentId || 'N/A';
-        const formattedDate = req.submittedAt ? new Date(req.submittedAt).toLocaleDateString() : new Date(req.date || req.submitted).toLocaleDateString();
         row.innerHTML = `
           <td>${req.id}</td>
-          <td>${req.studentName || 'N/A'}</td>
-          <td>${studentId}</td>
-          <td>${req.type || 'Standard'}</td>
-          <td><span class="pill ${status.class}"><i class="fa-solid ${status.icon}"></i> ${status.label}</span></td>
-          <td>${formattedDate}</td>
-          <td>
-            <button onclick="updateRequestStatus('${req.id}', 'pending')" style="margin-right:4px; padding:6px 10px; background:#1e56d6; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Verify</button>
-            <button onclick="updateRequestStatus('${req.id}', 'completed')" style="padding:6px 10px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Complete</button>
-          </td>
+          <td>${req.studentName}</td>
+          <td>${req.studentId}</td>
+          <td>${req.type}</td>
+          <td><span class="pill ${formatStatus(req.status).class}"><i class="fa-solid ${formatStatus(req.status).icon}"></i> ${formatStatus(req.status).label}</span></td>
+          <td>${new Date(req.submitted || req.submittedAt).toLocaleDateString()}</td>
+          <td><button onclick="updateAdminRequest('${req.id}', 'completed')" style="padding:6px 12px; background:#1e56d6; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Complete</button></td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    function filterAdminRequests() {
-      const search = document.getElementById('adminSearchInput').value.toLowerCase();
-      const status = document.getElementById('adminStatusFilter').value;
+    function updateAdminRequest(requestId, status) {
       const requests = getAllRequests();
-      const filtered = requests.filter(req => {
-        const text = `${req.id} ${req.studentName || ''} ${req.studentId || ''} ${req.type || ''}`.toLowerCase();
-        const matchesSearch = !search || text.includes(search);
-        const matchesStatus = status === 'all' || req.status === status;
-        return matchesSearch && matchesStatus;
-      });
-      renderAdminSummary(filtered);
-      renderAdminTable(filtered);
-    }
-
-    function loadAdminRequests() {
-      filterAdminRequests();
-      const searchInput = document.getElementById('adminSearchInput');
-      const statusFilter = document.getElementById('adminStatusFilter');
-      if (searchInput) searchInput.addEventListener('input', filterAdminRequests);
-      if (statusFilter) statusFilter.addEventListener('change', filterAdminRequests);
-    }
-
-    function updateRequestStatus(requestId, newStatus) {
-      const requests = getAllRequests();
-      const request = requests.find(r => r.id === requestId);
-      if (request) {
-        request.status = newStatus;
-        request.updatedAt = new Date().toISOString();
+      const idx = requests.findIndex(r => r.id === requestId);
+      if (idx !== -1) {
+        requests[idx].status = status;
+        requests[idx].updated = new Date().toISOString();
         localStorage.setItem('requests', JSON.stringify(requests));
-        filterAdminRequests();
-        alert(`Request ${requestId} updated to ${newStatus}`);
+        populateAdminRequestsTable();
       }
-    }
-
-    function logout() {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminSession');
-      localStorage.removeItem('user');
-      window.location.href = 'admin-login.html';
     }
 
     function initHistoryPage() {
@@ -383,9 +281,11 @@
       document.getElementById('statusFilter').addEventListener('change', filterRequests);
       document.getElementById('refreshButton').addEventListener('click', filterRequests);
       
-      const hash = window.location.hash.substring(1);
-      if (hash === 'adminRequests') {
-        switchHistoryTab('adminRequests');
+      const hash = window.location.hash;
+      if (hash === '#adminRequests') {
+        document.getElementById('historyContent').style.display = 'none';
+        document.getElementById('adminRequestsContent').style.display = 'block';
+        populateAdminRequestsTable();
       }
     }
 
