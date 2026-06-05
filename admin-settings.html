@@ -157,6 +157,13 @@
       color: #ffffff;
     }
 
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e6eefc; }
+    .tab-btn { padding: 12px 20px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .tab-btn:hover { color: var(--text-primary); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
     .main {
       flex: 1;
       min-height: 100vh;
@@ -383,11 +390,21 @@
   <main class="main">
     <div class="container">
       <div class="header-row">
-        <div class="page-title">Admin Settings</div>
+        <div>
+          <div class="page-title" id="settingsPageTitle">Admin Settings</div>
+          <p id="settingsPageDesc" style="color:#6b7280; margin-top:8px;">Manage your account preferences and settings.</p>
+        </div>
         <div class="header-controls"></div>
       </div>
 
-      <div class="two-col">
+      <div class="tab-bar" id="settingsTabBar">
+        <button class="tab-btn active" id="settingsTab" onclick="switchSettingsTab('settings')">Settings</button>
+        <button class="tab-btn" id="adminRequestsTabBtn" onclick="switchSettingsTab('adminRequests')">Admin Requests</button>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="settingsSection" class="tab-content active">
+        <div class="two-col">
         <div style="display:flex;flex-direction:column;gap:20px">
           <section class="card" aria-labelledby="notif-heading">
             <h3 id="notif-heading">Request Notifications</h3>
@@ -481,6 +498,42 @@
         <button class="save-btn" type="button">Save / Apply</button>
       </div>
       <div id="lastSavedTimestamp" class="field-note" style="margin-top:12px;">Preferences not saved yet.</div>
+      </div>
+
+      <!-- ADMIN REQUESTS TAB -->
+      <div id="adminRequestsSection" class="tab-content">
+        <div style="background:white; border-radius:12px; padding:24px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+          <h2 style="margin:0 0 20px; font-size:22px;">Manage Requests</h2>
+          <div style="display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap;">
+            <input type="text" id="settingsAdminSearchInput" placeholder="Search requests by ID, name, or student ID" style="border:1px solid #e6eefc; border-radius:8px; padding:10px 12px; min-width:200px; font-size:14px;" />
+            <select id="settingsAdminStatusFilter" style="border:1px solid #e6eefc; border-radius:8px; padding:10px 12px; min-width:150px; font-size:14px;">
+              <option value="all">All Status</option>
+              <option value="submitted">Submitted</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+              <thead>
+                <tr style="background:#f9fafb;">
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Request ID</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Student Name</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Student ID</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Type</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Status</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Date Submitted</th>
+                  <th style="text-align:left; padding:12px; color:#6b7280; font-size:12px; font-weight:600; border-bottom:1px solid #e6eefc;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="settingsAdminRequestsTableBody"></tbody>
+            </table>
+            <div id="settingsAdminNoRequestsMessage" style="padding:40px 0; text-align:center; color:#6b7280; display:none;">No requests found.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -539,6 +592,111 @@
         }
       } catch (e) {
         alert('Unable to save preferences at this time.');
+      }
+    }
+
+    function switchSettingsTab(tabName) {
+      document.getElementById('settingsSection').classList.remove('active');
+      document.getElementById('adminRequestsSection').classList.remove('active');
+      document.getElementById('settingsTab').classList.remove('active');
+      document.getElementById('adminRequestsTabBtn').classList.remove('active');
+
+      if (tabName === 'settings') {
+        document.getElementById('settingsSection').classList.add('active');
+        document.getElementById('settingsTab').classList.add('active');
+        document.getElementById('settingsPageTitle').textContent = 'Admin Settings';
+        document.getElementById('settingsPageDesc').textContent = 'Manage your account preferences and settings.';
+      } else if (tabName === 'adminRequests') {
+        document.getElementById('adminRequestsSection').classList.add('active');
+        document.getElementById('adminRequestsTabBtn').classList.add('active');
+        document.getElementById('settingsPageTitle').textContent = 'Admin Requests';
+        document.getElementById('settingsPageDesc').textContent = 'View and manage all student ID requests.';
+        loadSettingsAdminRequests();
+      }
+    }
+
+    function formatStatusSettings(status) {
+      const map = {
+        pending: { label: 'Pending', class: 'pending', icon: 'fa-clock' },
+        processing: { label: 'Processing', class: 'processing', icon: 'fa-spinner' },
+        completed: { label: 'Completed', class: 'completed', icon: 'fa-circle-check' },
+        rejected: { label: 'Rejected', class: 'rejected', icon: 'fa-circle-xmark' },
+        submitted: { label: 'Submitted', class: 'pending', icon: 'fa-hourglass-start' }
+      };
+      return map[status] || { label: status, class: 'pending', icon: 'fa-clock' };
+    }
+
+    function getAllRequestsSettings() {
+      try {
+        const stored = localStorage.getItem('requests');
+        return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderSettingsAdminTable(requests) {
+      const tbody = document.getElementById('settingsAdminRequestsTableBody');
+      const noData = document.getElementById('settingsAdminNoRequestsMessage');
+      tbody.innerHTML = '';
+      if (!requests.length) {
+        noData.style.display = 'block';
+        return;
+      }
+      noData.style.display = 'none';
+      requests.forEach(req => {
+        const status = formatStatusSettings(req.status);
+        const row = document.createElement('tr');
+        const studentId = req.studentId || 'N/A';
+        const formattedDate = req.submittedAt ? new Date(req.submittedAt).toLocaleDateString() : new Date(req.date || req.submitted).toLocaleDateString();
+        const statusColor = status.class === 'completed' ? '#10b981' : status.class === 'processing' ? '#1e56d6' : '#f59e0b';
+        row.style.borderBottom = '1px solid #f2f6ff';
+        row.innerHTML = `
+          <td style="padding:14px 12px;">${req.id}</td>
+          <td style="padding:14px 12px;">${req.studentName || 'N/A'}</td>
+          <td style="padding:14px 12px;">${studentId}</td>
+          <td style="padding:14px 12px;">${req.type || 'Standard'}</td>
+          <td style="padding:14px 12px;"><span style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:20px; font-size:12px; font-weight:600; background:${statusColor}22; color:${statusColor};"><i class="fa-solid ${status.icon}"></i> ${status.label}</span></td>
+          <td style="padding:14px 12px;">${formattedDate}</td>
+          <td style="padding:14px 12px;">
+            <button onclick="updateSettingsRequestStatus('${req.id}', 'pending')" style="margin-right:4px; padding:6px 10px; background:#1e56d6; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Verify</button>
+            <button onclick="updateSettingsRequestStatus('${req.id}', 'completed')" style="padding:6px 10px; background:#10b981; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">Complete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function filterSettingsAdminRequests() {
+      const search = document.getElementById('settingsAdminSearchInput').value.toLowerCase();
+      const status = document.getElementById('settingsAdminStatusFilter').value;
+      const requests = getAllRequestsSettings();
+      const filtered = requests.filter(req => {
+        const text = `${req.id} ${req.studentName || ''} ${req.studentId || ''} ${req.type || ''}`.toLowerCase();
+        const matchesSearch = !search || text.includes(search);
+        const matchesStatus = status === 'all' || req.status === status;
+        return matchesSearch && matchesStatus;
+      });
+      renderSettingsAdminTable(filtered);
+    }
+
+    function loadSettingsAdminRequests() {
+      filterSettingsAdminRequests();
+      const searchInput = document.getElementById('settingsAdminSearchInput');
+      const statusFilter = document.getElementById('settingsAdminStatusFilter');
+      if (searchInput) searchInput.addEventListener('input', filterSettingsAdminRequests);
+      if (statusFilter) statusFilter.addEventListener('change', filterSettingsAdminRequests);
+    }
+
+    function updateSettingsRequestStatus(requestId, newStatus) {
+      const requests = getAllRequestsSettings();
+      const request = requests.find(r => r.id === requestId);
+      if (request) {
+        request.status = newStatus;
+        request.updatedAt = new Date().toISOString();
+        localStorage.setItem('requests', JSON.stringify(requests));
+        filterSettingsAdminRequests();
+        alert(`Request ${requestId} updated to ${newStatus}`);
       }
     }
 
