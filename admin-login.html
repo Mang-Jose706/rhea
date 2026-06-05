@@ -398,13 +398,11 @@
             if (!token) return;
 
             try {
-                // Check if session exists in localStorage
-                const adminSession = localStorage.getItem('adminSession');
-                if (adminSession) {
-                    const session = JSON.parse(adminSession);
-                    if (session && session.token === token && session.verified) {
-                        window.location.href = 'admin-dashboard.html';
-                    }
+                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/me`, {
+                    headers: getAuthHeaders()
+                });
+                if (response.ok) {
+                    window.location.href = '/admin-dashboard.html';
                 }
             } catch (error) {
                 console.warn('[Admin Login] Token check failed:', error);
@@ -457,53 +455,42 @@
             }
 
             try {
-                // Get admins from localStorage
-                const stored = localStorage.getItem('admin_users');
-                const admins = stored ? JSON.parse(stored) : [];
+                // Check against locally stored admin accounts
+                const admins = JSON.parse(localStorage.getItem('admin_users') || '[]');
+                const admin = admins.find(a => a.username === adminId && a.password === adminPassword);
 
-                // Find admin by username
-                const admin = admins.find(a => a.username === adminId);
                 if (!admin) {
-                    showError('Admin account not found.');
-                    console.warn('Failed admin login attempt: User not found - ' + adminId);
+                    showError('Invalid username or password. Please check your credentials.');
                     return;
                 }
 
-                // Validate password
-                if (admin.password !== adminPassword) {
-                    showError('Invalid password.');
-                    console.warn('Failed admin login attempt: Wrong password');
-                    return;
-                }
+                // Generate a simple token for local session
+                const token = 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-                // Create session token
-                const token = 'admin_' + Date.now() + '_' + Math.random().toString(36).substring(7);
                 const user = {
-                    id: admin.username,
-                    username: admin.username,
-                    displayName: admin.displayName,
+                    id: adminId,
+                    username: adminId,
                     role: admin.role || 'admin',
+                    displayName: admin.displayName || adminId,
                     accountType: 'admin'
                 };
 
-                // Save session to localStorage
                 localStorage.setItem('user', JSON.stringify(user));
                 localStorage.setItem('adminToken', token);
                 localStorage.setItem('adminSession', JSON.stringify({
-                    userId: admin.username,
+                    userId: user.id,
                     token: token,
                     loginTime: new Date().toISOString(),
                     verified: true
                 }));
 
-                console.log('Admin login successful:', admin.username);
-                window.location.href = 'admin-dashboard.html';
+                showSuccess('✓ Login successful! Redirecting to dashboard...');
+                setTimeout(() => {
+                    window.location.href = 'admin-dashboard.html';
+                }, 1500);
             } catch (error) {
-                console.error('Admin login error:', error);
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminSession');
-                localStorage.removeItem('user');
-                showError('Error during login: ' + error.message);
+                console.error('Login error:', error);
+                showError('❌ Login failed. Please try again.');
             }
         }
 
@@ -543,5 +530,3 @@
     </script>
 </body>
 </html>
-
-
