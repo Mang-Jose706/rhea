@@ -391,11 +391,35 @@
         <div id="noRequestsMessage" class="no-data" style="display:none;">No request records found.</div>
       </div>
     </section>
+
+    <section class="content-card" style="margin-top: 30px;">
+      <h2 style="margin-bottom: 20px;">Activity History</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Admin</th>
+              <th>Action</th>
+              <th>Request ID</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="activityHistoryTableBody"></tbody>
+        </table>
+        <div id="noActivityMessage" class="no-data" style="display:none;">No activity records found.</div>
+      </div>
+    </section>
   </main>
 
   <script>
     function getCurrentUser() {
       try { return JSON.parse(localStorage.getItem('user')) || {}; } catch (e) { return {}; }
+    }
+
+    // Ensure activityHistory array exists in localStorage
+    if (!localStorage.getItem('activityHistory')) {
+      localStorage.setItem('activityHistory', JSON.stringify([]));
     }
 
     function isAdmin() {
@@ -483,15 +507,63 @@
       renderTable(filtered);
     }
 
+    function getActivityHistory() {
+      try {
+        const stored = localStorage.getItem('activityHistory') || '[]';
+        return JSON.parse(stored);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderActivityHistory() {
+      const tbody = document.getElementById('activityHistoryTableBody');
+      const noData = document.getElementById('noActivityMessage');
+      const activities = getActivityHistory();
+      
+      tbody.innerHTML = '';
+      if (!activities.length) {
+        noData.style.display = 'block';
+        return;
+      }
+      noData.style.display = 'none';
+      
+      // Display activities in reverse chronological order (newest first)
+      activities.slice().reverse().forEach(activity => {
+        const row = document.createElement('tr');
+        const timestamp = new Date(activity.timestamp).toLocaleString();
+        const admin = activity.userId || 'Unknown';
+        const action = activity.action || 'Unknown';
+        const requestId = activity.details?.requestId || activity.details?.id || '—';
+        const details = activity.details ? 
+          (activity.action === 'UPDATE_REQUEST_STATUS' ? 
+            `Changed status from ${activity.details.oldStatus} to ${activity.details.newStatus}` :
+            JSON.stringify(activity.details)) : '—';
+        
+        row.innerHTML = `
+          <td>${timestamp}</td>
+          <td>${admin}</td>
+          <td>${action}</td>
+          <td>${requestId}</td>
+          <td>${details}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
     function initHistoryPage() {
       if (!isAdmin()) {
         document.body.innerHTML = '<div style="padding:40px;font-family:Inter,Arial,sans-serif"><h1>Access denied</h1><p>This page is only available for admin users.</p></div>';
         return;
       }
       filterRequests();
+      renderActivityHistory();
       document.getElementById('searchInput').addEventListener('input', filterRequests);
       document.getElementById('statusFilter').addEventListener('change', filterRequests);
-      document.getElementById('refreshButton').addEventListener('click', filterRequests);
+      document.getElementById('refreshButton').addEventListener('click', () => {
+        filterRequests();
+        renderActivityHistory();
+      });
     }
 
     window.addEventListener('DOMContentLoaded', initHistoryPage);

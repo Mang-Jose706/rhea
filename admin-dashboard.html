@@ -1789,6 +1789,16 @@
             details
         };
         console.log('[AUDIT LOG]', logEntry);
+        
+        // Save activity to localStorage for persistence
+        try {
+            const stored = localStorage.getItem('activityHistory') || '[]';
+            const activityHistory = JSON.parse(stored);
+            activityHistory.push(logEntry);
+            localStorage.setItem('activityHistory', JSON.stringify(activityHistory));
+        } catch (error) {
+            console.error('Error logging activity to localStorage:', error);
+        }
         // In production, send to backend: POST /api/logs
     }
 
@@ -2532,9 +2542,20 @@ Updated: ${request.updatedAt || 'N/A'}
             // Find and update the request
             const requestIndex = allRequests.findIndex(r => r.id === requestId);
             if (requestIndex !== -1) {
+                const oldStatus = allRequests[requestIndex].status;
                 allRequests[requestIndex].status = newStatus;
                 allRequests[requestIndex].updatedAt = new Date().toISOString();
                 localStorage.setItem('requests', JSON.stringify(allRequests));
+                
+                // Log the status change to activity history
+                logActivity('UPDATE_REQUEST_STATUS', { 
+                    requestId: requestId,
+                    oldStatus: oldStatus,
+                    newStatus: newStatus,
+                    studentName: allRequests[requestIndex].studentName || 'Unknown',
+                    studentId: allRequests[requestIndex].studentId || 'Unknown'
+                });
+                
                 alert(`Request ${requestId} status updated to ${newStatus}`);
                 populateStudentRequestsTable(); // Refresh the table
                 updateStatusCounts(); // Update the Request Status Overview
