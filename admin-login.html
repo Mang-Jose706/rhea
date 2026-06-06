@@ -351,6 +351,11 @@
             if (localStorage.getItem('pref-darkMode') === '1') {
                 document.body.classList.add('dark-mode');
             }
+
+            // Ensure admin_users array exists in localStorage
+            if (!localStorage.getItem('admin_users')) {
+                localStorage.setItem('admin_users', JSON.stringify([]));
+            }
         }
 
         function toggleTheme() {

@@ -340,6 +340,11 @@ body {
             if (darkModeEnabled) {
               document.body.classList.add('dark-mode');
             }
+
+            // Ensure student_users array exists in localStorage
+            if (!localStorage.getItem('student_users')) {
+              localStorage.setItem('student_users', JSON.stringify([]));
+            }
           } catch(e) {}
         });
     </script>
