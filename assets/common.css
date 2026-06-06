@@ -21,3 +21,11 @@
 .return-btn {
   display: none;
 }
+
+@media (max-width:768px){
+  .return-dashboard{padding:10px 16px;font-size:13px;margin:15px auto 0}
+}
+
+@media (max-width:600px){
+  .return-dashboard{padding:8px 12px;font-size:12px;width:90%;margin:12px auto 0}
+}
