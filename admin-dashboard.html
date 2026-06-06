@@ -3102,10 +3102,27 @@ Updated: ${request.updatedAt || 'N/A'}
         
         // Check if it's an image
         if (fileData.type && fileData.type.startsWith('image/')) {
-            element.innerHTML = `<img src="${fileData.data}" alt="${fileData.name}" />`;
+            element.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                    <img src="${fileData.data}" alt="${fileData.name}" />
+                    <a href="${fileData.data}" download="${fileData.name}" class="action-btn" style="font-size: 12px; padding: 6px 12px; color: var(--accent-blue); text-decoration: none; border: 1px solid var(--accent-blue); border-radius: 4px;">
+                        <i class="fa-solid fa-download"></i> Download
+                    </a>
+                </div>
+            `;
         } else {
-            // For non-image files (PDF, etc), show download link
-            element.innerHTML = `<a class="file-preview-link" href="${fileData.data}" download="${fileData.name}">📄 ${fileData.name}</a>`;
+            // For non-image files (PDF, etc), show download link with icon
+            element.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 24px;">📄</span>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 12px; color: var(--muted);">${fileData.name}</span>
+                        <a href="${fileData.data}" download="${fileData.name}" class="action-btn" style="font-size: 12px; padding: 6px 12px; color: var(--accent-blue); text-decoration: none; border: 1px solid var(--accent-blue); border-radius: 4px; width: fit-content;">
+                            <i class="fa-solid fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            `;
         }
     }
 
