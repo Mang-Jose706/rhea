@@ -1328,7 +1328,7 @@
                         <div class="analytics-detail">All student submissions</div>
                     </div>
                     <div class="analytics-item">
-                        <div class="analytics-value" id="reportAvgProcessingTime">0 days</div>
+                        <div class="analytics-value" id="reportAvgProcessingTime">2-3 days</div>
                         <div class="analytics-label">Average Processing Time</div>
                         <div class="analytics-detail">Processed requests only</div>
                     </div>
@@ -1706,6 +1706,7 @@
         }
 
         if (tabName === 'dashboard') {
+            updateStatusCounts(); // Restore counts from localStorage
             renderReportsAnalytics();
         } else if (tabName === 'requests') {
             populateRequestsTable(true); // Show all requests for admin
@@ -2780,7 +2781,6 @@ Updated: ${request.updatedAt || 'N/A'}
         // Sync dashboard requests with the backend before rendering
         await syncRequestsFromBackend();
         await fetchRequestStatusSummary();
-        updateStatusCounts(); // Update counts from localStorage on page load
 
         // Populate dashboard data
         const isAdminUser = isAdmin();
