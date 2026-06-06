@@ -509,9 +509,11 @@
 
     function getActivityHistory() {
       try {
-        const stored = localStorage.getItem('activityHistory') || '[]';
-        return JSON.parse(stored);
+        const stored = localStorage.getItem('activityHistory');
+        console.log('Retrieved activityHistory from localStorage:', stored);
+        return stored ? JSON.parse(stored) : [];
       } catch (e) {
+        console.error('Error parsing activity history:', e);
         return [];
       }
     }
@@ -520,6 +522,9 @@
       const tbody = document.getElementById('activityHistoryTableBody');
       const noData = document.getElementById('noActivityMessage');
       const activities = getActivityHistory();
+      
+      console.log('Rendering activity history. Total activities:', activities.length);
+      console.log('Activities:', activities);
       
       tbody.innerHTML = '';
       if (!activities.length) {
@@ -556,14 +561,23 @@
         document.body.innerHTML = '<div style="padding:40px;font-family:Inter,Arial,sans-serif"><h1>Access denied</h1><p>This page is only available for admin users.</p></div>';
         return;
       }
+      
+      console.log('Initializing history page...');
+      
+      // Load and display both request history and activity history
       filterRequests();
       renderActivityHistory();
+      
+      // Add event listeners
       document.getElementById('searchInput').addEventListener('input', filterRequests);
       document.getElementById('statusFilter').addEventListener('change', filterRequests);
       document.getElementById('refreshButton').addEventListener('click', () => {
+        console.log('Refresh button clicked');
         filterRequests();
         renderActivityHistory();
       });
+      
+      console.log('History page initialization complete');
     }
 
     window.addEventListener('DOMContentLoaded', initHistoryPage);

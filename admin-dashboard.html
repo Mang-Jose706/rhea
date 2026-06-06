@@ -2556,6 +2556,10 @@ Updated: ${request.updatedAt || 'N/A'}
                     studentId: allRequests[requestIndex].studentId || 'Unknown'
                 });
                 
+                // Verify activity was saved
+                const verify = localStorage.getItem('activityHistory');
+                console.log('Activity saved. Current activity history:', verify);
+                
                 alert(`Request ${requestId} status updated to ${newStatus}`);
                 populateStudentRequestsTable(); // Refresh the table
                 updateStatusCounts(); // Update the Request Status Overview
@@ -2754,6 +2758,14 @@ Updated: ${request.updatedAt || 'N/A'}
     // ============================================
     // INITIALIZATION
     // ============================================
+
+    // Ensure critical localStorage arrays exist
+    if (!localStorage.getItem('requests')) {
+        localStorage.setItem('requests', JSON.stringify([]));
+    }
+    if (!localStorage.getItem('activityHistory')) {
+        localStorage.setItem('activityHistory', JSON.stringify([]));
+    }
 
     window.addEventListener('DOMContentLoaded', async () => {
         // Load dark mode preference from localStorage
