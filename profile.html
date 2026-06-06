@@ -58,7 +58,7 @@
     .sidebar {
       width: 220px;
       height: 100vh;
-      background: #0a1a33;
+      background: #0f2340;
       color: white;
       padding: 20px;
       display: flex;
@@ -615,12 +615,6 @@
       </div>
     </section>
 
-    <div style="text-align:center;margin-top:18px">
-      <button class="btn ghost" id="adminAccessBtn" onclick="requestAdminAccess()">
-        <i class="fa-solid fa-lock"></i> Admin
-      </button>
-    </div>
-
     <div style="height:40px"></div>
   </div>
 </main>
@@ -745,30 +739,6 @@
     saveUserToStorage(user);
     updateActivityPanel(user);
   });
-
-  const ADMIN_SECRET_CODE = 'ADMIN2026';
-
-  function requestAdminAccess() {
-    const code = prompt('Enter admin access code:');
-    if (code === null) return; // user cancelled
-
-    if (code.trim() === ADMIN_SECRET_CODE) {
-      const user = JSON.parse(localStorage.getItem('user')) || {};
-      user.role = 'admin';
-      user.accountType = 'admin';
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('adminSession', JSON.stringify({
-        userId: user.studentId || '',
-        loginTime: new Date().toISOString(),
-        verified: true
-      }));
-      alert('Admin access granted. Redirecting to admin dashboard...');
-      window.location.href = 'student-dashboard.html';
-      return;
-    }
-
-    alert('Invalid admin access code.');
-  }
 
   // Edit mode functions
   function enableEditMode() {
@@ -949,9 +919,6 @@
   });
 
   function logout() {
-    try {
-      localStorage.removeItem('adminSession');
-    } catch (e) {}
     window.location.href = 'login.html';
   }
 

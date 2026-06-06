@@ -12,6 +12,93 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
+    /* ================= SIDEBAR ================= */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0f2340;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+    }
+
+    .logo {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .logo h2 {
+      font-size: 24px;
+      margin: 10px 0 0;
+    }
+
+    .sidebar .logo i {
+      font-size: 34px;
+      color: #fff;
+    }
+
+    .logo span,
+    .logo p {
+      font-size: 12px;
+      color: #b9c6e0;
+    }
+
+    .menu {
+      margin-top: 20px;
+      flex-grow: 1;
+    }
+
+    .menu-item {
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d9e3f5;
+      text-decoration: none;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .profile-card {
+      background: #12294d;
+      padding: 15px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .profile-card img {
+      width: 50px;
+      height: 35px;
+      border-radius: 50%;
+    }
+
+    .profile-info p {
+      font-size: 12px;
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .student-tag {
+      background: #1f3a66;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 10px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
     /* Additional styles for help center */
     .support-cards {
       display: grid;

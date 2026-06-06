@@ -95,10 +95,10 @@ body {
     border: none;
 }
 
-.menu-item:hover,
-.nav-item:hover {
-    background: rgba(255,255,255,0.1);
-}
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255,255,255,0.1);
+    }
 
 /* FIX: Processing Status layout only */
 #studentStats.stats-section {
