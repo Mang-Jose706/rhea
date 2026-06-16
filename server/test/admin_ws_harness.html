@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Admin WS Harness</title></head>
+<body>
+  <h3>Admin WS Harness</h3>
+  <div id="log" style="white-space:pre-wrap;background:#f9f9f9;padding:8px;border:1px solid #eee;height:300px;overflow:auto"></div>
+  <button id="btnConnect">Connect WS</button>
+  <button id="btnPing">Send Ping</button>
+  <script>
+    let ws;
+    const log = (s)=>{ document.getElementById('log').textContent += s + '\n'; };
+    document.getElementById('btnConnect').onclick = ()=>{
+      const url = (location.protocol==='https:'?'wss://':'ws://') + location.host + '/ws';
+      ws = new WebSocket(url);
+      ws.onopen = ()=>{ log('open'); ws.send(JSON.stringify({type:'identify',role:'admin'})); };
+      ws.onmessage = (e)=>{ log('MSG: '+e.data); };
+      ws.onclose = ()=> log('closed');
+      ws.onerror = (e)=> log('error: '+e.message);
+    };
+    document.getElementById('btnPing').onclick = ()=>{ if(ws && ws.readyState===1) ws.send(JSON.stringify({type:'ping',ts:new Date().toISOString()})); };
+  </script>
+</body>
+</html>

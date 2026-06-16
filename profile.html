@@ -473,7 +473,7 @@
 
     <!-- MENU -->
     <div class="menu">
-        <a href="dashboard.html" class="menu-item">
+        <a href="student-dashboard.html" class="menu-item">
             <i class="fa-solid fa-house"></i> Dashboard
         </a>
         <a href="history.html" class="menu-item">
@@ -618,12 +618,6 @@
       </div>
     </section>
 
-    <div style="text-align:center;margin-top:18px">
-      <button class="btn ghost" id="adminAccessBtn" onclick="requestAdminAccess()">
-        <i class="fa-solid fa-lock"></i> Admin
-      </button>
-    </div>
-
     <div style="height:40px"></div>
   </div>
 </main>
@@ -766,7 +760,7 @@
         verified: true
       }));
       alert('Admin access granted. Redirecting to admin dashboard...');
-      window.location.href = 'dashboard.html';
+      window.location.href = 'student-dashboard.html';
       return;
     }
 
@@ -1051,3 +1045,4 @@
 </script>
 </body>
 </html>
+

@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Submit Request</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    :root {
+        font-family: "Inter", "Poppins", Arial, sans-serif;
+        color: #17223b;
+    }
+    .content-panel {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 16px 32px rgba(15, 35, 80, 0.06);
+        padding: 32px;
+        margin-bottom: 24px;
+    }
+    .progress-bar {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+    }
+    .progress-step {
+        flex: 1 1 180px;
+        min-width: 160px;
+        background: #f4f6ff;
+        border-radius: 18px;
+        padding: 16px 18px;
+        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #5a6b8f;
+    }
+    .progress-step.active {
+        background: #e6f0ff;
+        border-color: #aac4ff;
+        color: #1f4078;
+        box-shadow: 0 8px 20px rgba(59, 102, 246, 0.12);
+    }
+    .progress-step .step-index {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #dbe8ff;
+        color: #264b9d;
+        font-weight: 700;
+    }
+    .progress-step.active .step-index {
+        background: #3b66f6;
+        color: white;
+    }
+    .progress-step .step-label {
+        font-weight: 700;
+        font-size: 0.96rem;
+        line-height: 1.3;
+    }
+    .split-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 24px;
+    }
+    .panel-card {
+        background: #f9fbff;
+        border: 1px solid #eff4ff;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: inset 0 0 0 1px rgba(51, 102, 204, 0.04);
+    }
+    .panel-header {
+        margin-bottom: 22px;
+    }
+    .panel-header h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        letter-spacing: -0.02em;
+    }
+    .panel-header p {
+        margin: 10px 0 0;
+        color: #5f708f;
+        line-height: 1.65;
+    }
+    .panel-card .form-group {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 0;
+        width: 100%;
+    }
+    .panel-card > .form-group {
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .panel-card > .form-group:last-of-type {
+        margin-bottom: 0;
+    }
+    .form-group {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 0;
+        width: 100%;
+    }
+    .form-group label {
+        font-weight: 700;
+        color: #24304d;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        border: 1px solid #dbe1ee;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #1f324f;
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 42px;
+        line-height: 1.5;
+        font-family: "Inter", Arial, sans-serif;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #7ba3ff;
+        box-shadow: 0 0 0 4px rgba(59, 102, 246, 0.12);
+    }
+    .form-group textarea { min-height: 130px; resize: vertical; }
+    .upload-preview {
+        margin-top: 8px;
+        min-height: 120px;
+        border-radius: 12px;
+        border: 2px dashed #dbe1ee;
+        background: #fafbff;
+        display: grid;
+        place-items: center;
+        color: #617191;
+        text-align: center;
+        padding: 16px;
+        transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .upload-preview:hover {
+        border-color: #b5d0ff;
+        background: #f5f9ff;
+    }
+    .upload-preview img {
+        max-width: 100%;
+        max-height: 120px;
+        border-radius: 10px;
+        object-fit: contain;
+    }
+    .review-row .upload-preview {
+        max-width: 240px;
+        min-height: 120px;
+        padding: 12px;
+    }
+    .review-row .upload-preview img {
+        max-width: 100%;
+        max-height: 160px;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto;
+    }
+    .action-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+    .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        font-size: 0.95rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn:hover { 
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    }
+    .btn.primary {
+        background: #3b66f6;
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(59, 102, 246, 0.15);
+    }
+    .btn.primary:hover {
+        background: #2d50d9;
+    }
+    .btn.outline {
+        background: white;
+        color: #3b66f6;
+        border: 1.5px solid #3b66f6;
+        box-shadow: none;
+    }
+    .btn.outline:hover {
+        background: #f0f5ff;
+    }
+    .btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .form-group select:disabled {
+        background-color: #f3f5f9;
+        color: #9ca3af;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+    .form-group select option[disabled]:first-child {
+        color: #9ca3af;
+        font-style: italic;
+    }
+    .review-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e7ecfa;
+        padding: 20px;
+        display: grid;
+        gap: 16px;
+    }
+    .review-row {
+        display: grid;
+        gap: 6px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f7ff;
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-row label {
+        color: #7a8aa1;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .review-row strong {
+        color: #192b4d;
+        font-size: 0.98rem;
+        font-weight: 700;
+    }
+    .success-banner {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #e7f7ed;
+        border: 1px solid #c7ead6;
+        color: #1d6f3d;
+        border-radius: 18px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+    }
+    .success-banner i {
+        font-size: 1.4rem;
+    }
+    .tracker-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+    .tracker-step {
+        flex: 1 1 150px;
+        background: #f4f6ff;
+        border-radius: 16px;
+        padding: 14px 16px;
+        text-align: center;
+        color: #5a6b8f;
+        font-weight: 700;
+    }
+    .tracker-step.active {
+        background: #dce9ff;
+        color: #1f4078;
+        border: 1px solid #aac4ff;
+    }
+    .error-text {
+        color: #dc2626;
+        font-size: 0.88rem;
+        min-height: 1.2rem;
+        display: block;
+        margin-top: 4px;
+        line-height: 1.4;
+    }
+    .step-panel { display: none; }
+    .step-panel.active { display: block !important; }
+    .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        margin-bottom: 32px;
+        width: 100%;
+    }
+    .field-grid > div {
+        display: grid;
+        gap: 18px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .field-grid > div:first-child {
+        padding-right: 8px;
+        border-right: 1px solid #f0f3f9;
+    }
+    .field-grid > div:last-child {
+        padding-left: 8px;
+    }
+    .field-grid .form-group { 
+        margin-bottom: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .field-grid .form-group label {
+        flex-shrink: 0;
+    }
+    .field-grid .form-group input,
+    .field-grid .form-group select,
+    .field-grid .form-group textarea {
+        flex-grow: 0;
+        flex-shrink: 0;
+    }
+    .field-grid .form-group .error-text {
+        flex-shrink: 0;
+    }
+    @media (max-width: 1024px) {
+        .field-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        .field-grid > div {
+            gap: 18px;
+            padding: 0 !important;
+            border-right: none !important;
+        }
+        .field-grid > div:first-child,
+        .field-grid > div:last-child {
+            padding-right: 0;
+            padding-left: 0;
+        }
+    }
+    @media (max-width: 768px) {
+        .content-panel { padding: 24px; }
+        .panel-card { padding: 20px; }
+        .progress-bar { margin-bottom: 20px; }
+        .progress-step { min-width: 100%; font-size: 0.9rem; }
+        .status-grid { grid-template-columns: 1fr 1fr; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 11px 13px;
+            font-size: 0.93rem;
+            min-height: 40px;
+        }
+    }
+    @media (max-width: 480px) {
+        .content-panel { padding: 16px; }
+        .panel-card { padding: 16px; }
+        .field-grid { gap: 16px; margin-bottom: 20px; }
+        .field-grid > div { gap: 14px; }
+        .field-grid .form-group { gap: 6px; }
+        .status-grid { grid-template-columns: 1fr; gap: 12px; }
+        .progress-step { padding: 12px 14px; font-size: 0.85rem; }
+        .panel-header h2 { font-size: 1.2rem; }
+        .panel-header p { font-size: 0.9rem; }
+    }
+    .status-grid {
+        display: grid;
+        grid-template-columns: 2fr 2fr 2fr 2fr;
+        gap: 16px;
+        margin: 20px 0;
+    }
+    .status-box {
+        background: linear-gradient(135deg, #f5f7ff 0%, #f9fbff 100%);
+        border: 1px solid #e7ecfa;
+        border-radius: 14px;
+        padding: 16px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .status-box .label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7a8aa1;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .status-box .count {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #3b66f6;
+    }
+    .summary-row {
+        display: grid;
+        gap: 6px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f7ff;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row label {
+        color: #7a8aa1;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .summary-row strong {
+        color: #192b4d;
+        font-size: 0.98rem;
+        font-weight: 700;
+    }
+    .requests-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+        font-size: 0.95rem;
+    }
+    .requests-table thead {
+        background: #f3f7ff;
+        border-bottom: 2px solid #e7ecfa;
+    }
+    .requests-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 700;
+        color: #192b4d;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .requests-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f3f7ff;
+        color: #5a6b8f;
+    }
+    .requests-table tbody tr:hover {
+        background: #f9fbff;
+    }
+    .request-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    .notification-banner {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: #92400e;
+        font-size: 0.93rem;
+        font-weight: 500;
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .status-chip {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .status-chip.draft {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+    .status-chip.confirmed {
+        background: #e7f7ed;
+        color: #1d6f3d;
+        border: 1px solid #c7ead6;
+    }
+    .status-chip.submitted {
+        background: #e3f2fd;
+        color: #1976d2;
+        border: 1px solid #bbdefb;
+    }
+</style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h2>IDEease Portal</h2>
+        <p>Student Services</p>
+    </div>
+    <div class="menu">
+        <a href="student-dashboard.html"><div class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</div></a>
+        <a href="history.html"><div class="menu-item"><i class="fa-solid fa-clock-rotate-left"></i> History</div></a>
+        <a href="help center.html"><div class="menu-item"><i class="fa-solid fa-headset"></i> Help & Support</div></a>
+        <a href="Profile.html"><div class="menu-item"><i class="fa-solid fa-headset"></i>Profile</div></a>
+        <a href="settings.html"><div class="menu-item"><i class="fa-solid fa-gear"></i> Settings</div></a>
+    </div>
+</div>
+<div class="main1">
+    <div class="header1">
+        <div>
+            <h1>Submit Request</h1>
+            <p>Complete your request details on the left and review your summary on the right before confirming.</p>
+        </div>
+        <div class="header-right1"><i class="fa-regular fa-bell"></i></div>
+    </div>
+    <div class="content-panel">
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+                <div class="step-index">1</div>
+                <div class="step-label">Fill Details</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-index">2</div>
+                <div class="step-label">Review</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-index">3</div>
+                <div class="step-label">Confirmed</div>
+            </div>
+        </div>
+        <div class="step-panel active" data-step="1">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h2>Fill Details</h2>
+                    <p>Enter your student request information. Upload a required photo in JPG or PNG format.</p>
+                </div>
+                <div class="field-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input id="fullName" type="text" placeholder="Enter your full name" />
+                            <span class="error-text" id="errorFullName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentId">Student ID Number *</label>
+                            <input id="studentId" type="text" placeholder="Enter your student ID" />
+                            <span class="error-text" id="errorStudentId"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="department">Department / College *</label>
+                            <select id="department">
+                                <option value="cafnr" selected>College of Agriculture, Fisheries and Natural Resources</option>
+                                <option value="cac">College of Arts and Communication</option>
+                                <option value="cba">College of Business Administration</option>
+                                <option value="coed">College of Education</option>
+                                <option value="coe">College of Engineering</option>
+                                <option value="col">College of Law</option>
+                                <option value="cnahs">College of Nursing and Allied Health Sciences</option>
+                                <option value="cos">College of Science</option>
+                                <option value="cvm">College of Veterinary Medicine</option>
+                            </select>
+                            <span class="error-text" id="errorDepartment"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="program">Program / Degree *</label>
+                            <select id="program"><option value="">Select department first</option></select>
+                            <span class="error-text" id="errorProgram"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="yearLevel">Year Level *</label>
+                            <select id="yearLevel" disabled>
+                                <option value="">Select program first</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                            <span class="error-text" id="errorYearLevel"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="requestType">Request Type *</label>
+                    <select id="requestType">
+                        <option value="New ID">New ID</option>
+                        <option value="Photo Update">Photo Update</option>
+                        <option value="Lost ID Replacement">Lost ID Replacement</option>
+                    </select>
+                    <span class="error-text" id="errorRequestType"></span>
+                </div>
+                <div class="form-group">
+                    <label for="photoUpload">Upload Photo *</label>
+                    <input id="photoUpload" type="file" accept="image/png,image/jpeg" />
+                    <div class="upload-preview" id="uploadPreview">No photo selected</div>
+                    <span class="error-text" id="errorPhoto"></span>
+                </div>
+                <div class="action-row">
+                    <button type="button" class="btn outline" id="clearButton">Clear</button>
+                    <button type="button" class="btn primary" id="nextButton">Review Request</button>
+                </div>
+            </div>
+        </div>
+        <div class="step-panel" data-step="2">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h2>Review Request</h2>
+                    <p>Confirm the details below before submitting your request.</p>
+                </div>
+                <div class="review-card">
+                    <div class="review-row"><label>Full Name</label><strong id="reviewFullName">-</strong></div>
+                    <div class="review-row"><label>Student ID</label><strong id="reviewStudentId">-</strong></div>
+                    <div class="review-row"><label>Department / College</label><strong id="reviewDepartment">-</strong></div>
+                    <div class="review-row"><label>Program / Degree</label><strong id="reviewProgram">-</strong></div>
+                    <div class="review-row"><label>Year Level</label><strong id="reviewYearLevel">-</strong></div>
+                    <div class="review-row"><label>Request Type</label><strong id="reviewRequestType">-</strong></div>
+                    <div class="review-row"><label>Submission Date</label><strong id="reviewDate">-</strong></div>
+                    <div class="review-row"><label>Status</label><strong><span id="reviewStatus" class="status-chip draft">Draft</span></strong></div>
+                    <div class="review-row"><label>Uploaded Photo</label><div class="upload-preview" id="reviewPhotoPreview"></div></div>
+                </div>
+                <div class="action-row" style="justify-content: space-between; margin-top: 22px;">
+                    <button type="button" class="btn outline" id="editButton">Edit Details</button>
+                    <button type="button" class="btn primary" id="confirmButton">Confirm and Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="step-panel" data-step="3">
+            <div class="panel-card">
+                <div class="success-banner">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>
+                        <strong>Request Submitted Successfully.</strong>
+                        <div>Your request is now in the queue and will be reviewed shortly.</div>
+                    </div>
+                </div>
+                <div class="tracker-bar">
+                    <div class="tracker-step active">Submitted</div>
+                    <div class="tracker-step">Verification</div>
+                    <div class="tracker-step">Processing</div>
+                    <div class="tracker-step">Completed</div>
+                </div>
+                <div class="review-card">
+                    <div class="panel-header">
+                        <h2>Request Summary</h2>
+                        <p>Details for your submitted request are shown below.</p>
+                    </div>
+                    <div class="request-summary">
+                        <div class="summary-row"><label>Request ID</label><strong id="submittedRequestId">REQ-0000</strong></div>
+                        <div class="summary-row"><label>Full Name</label><strong id="confirmedFullName">-</strong></div>
+                        <div class="summary-row"><label>Student ID Number</label><strong id="confirmedStudentId">-</strong></div>
+                        <div class="summary-row"><label>Department / College</label><strong id="confirmedDepartment">-</strong></div>
+                        <div class="summary-row"><label>Program / Degree</label><strong id="confirmedProgram">-</strong></div>
+                        <div class="summary-row"><label>Year Level</label><strong id="confirmedYearLevel">-</strong></div>
+                        <div class="summary-row"><label>Request Type</label><strong id="confirmedRequestType">-</strong></div>
+                        <div class="summary-row"><label>Uploaded Photo</label><strong id="confirmedPhotoName">-</strong></div>
+                    </div>
+                </div>
+                <div class="status-grid">
+                    <div class="status-box"><span class="label">Pending</span><span class="count" id="countPending">1</span></div>
+                    <div class="status-box"><span class="label">Processing</span><span class="count" id="countProcessing">0</span></div>
+                    <div class="status-box"><span class="label">Completed</span><span class="count" id="countCompleted">0</span></div>
+                    <div class="status-box"><span class="label">Rejected</span><span class="count" id="countRejected">0</span></div>
+                </div>
+                <div class="panel-header" style="margin-top: 28px;">
+                    <h2>Your Requests</h2>
+                    <p>Track the latest requests submitted from your account.</p>
+                </div>
+                <table class="requests-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Type</th>
+                            <th>Department</th>
+                            <th>Program</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <tr>
+                            <td id="tableRequestId">REQ-0000</td>
+                            <td id="tableRequestType">-</td>
+                            <td id="tableDepartment">-</td>
+                            <td id="tableProgram">-</td>
+                            <td id="tableDate">-</td>
+                            <td><span class="request-badge" id="tableStatus">Submitted</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="notification-banner">
+                    You cannot submit another request until the current one is resolved.
+                </div>
+                <div class="action-row" style="justify-content: center; margin-top: 22px;">
+                    <button type="button" class="btn primary" id="dashboardButton">Back to Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+const getField = id => document.getElementById(id);
+const progressSteps = Array.from(document.querySelectorAll('.progress-step'));
+const stepPanels = Array.from(document.querySelectorAll('.step-panel'));
+const reviewFields = {
+    fullName: getField('reviewFullName'),
+    studentId: getField('reviewStudentId'),
+    department: getField('reviewDepartment'),
+    program: getField('reviewProgram'),
+    yearLevel: getField('reviewYearLevel'),
+    requestType: getField('reviewRequestType'),
+    submissionDate: getField('reviewDate'),
+    status: getField('reviewStatus'),
+    photoPreview: getField('reviewPhotoPreview'),
+    requestId: getField('submittedRequestId')
+};
+
+const confirmedFields = {
+    fullName: getField('confirmedFullName'),
+    studentId: getField('confirmedStudentId'),
+    department: getField('confirmedDepartment'),
+    program: getField('confirmedProgram'),
+    yearLevel: getField('confirmedYearLevel'),
+    requestType: getField('confirmedRequestType'),
+    photoName: getField('confirmedPhotoName'),
+    requestId: getField('submittedRequestId'),
+    tableRequestId: getField('tableRequestId'),
+    tableRequestType: getField('tableRequestType'),
+    tableDepartment: getField('tableDepartment'),
+    tableProgram: getField('tableProgram'),
+    tableDate: getField('tableDate'),
+    tableStatus: getField('tableStatus'),
+    countPending: getField('countPending'),
+    countProcessing: getField('countProcessing'),
+    countCompleted: getField('countCompleted'),
+    countRejected: getField('countRejected')
+};
+
+const setActiveStep = step => {
+    progressSteps.forEach(stepNode => {
+        stepNode.classList.toggle('active', stepNode.dataset.step === String(step));
+    });
+    stepPanels.forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.step === String(step));
+    });
+};
+
+const updateSummary = () => {
+    reviewFields.fullName.textContent = getField('fullName').value.trim() || '-';
+    reviewFields.studentId.textContent = getField('studentId').value.trim() || '-';
+    const deptVal = getField('department').value;
+    reviewFields.department.textContent = deptVal ? mapDeptCodeToLabel(deptVal) : '-';
+    reviewFields.program.textContent = getField('program').value || '-';
+    reviewFields.yearLevel.textContent = getField('yearLevel').value || '-';
+    reviewFields.requestType.textContent = getField('requestType').value || '-';
+    reviewFields.submissionDate.textContent = new Date().toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric'
+    });
+};
+
+const clearErrors = () => {
+    ['errorFullName', 'errorStudentId', 'errorDepartment', 'errorProgram', 'errorYearLevel', 'errorRequestType', 'errorPhoto'].forEach(id => {
+        const node = getField(id);
+        if (node) node.textContent = '';
+    });
+};
+
+const hasActiveRequest = () => {
+    try {
+        const stored = localStorage.getItem('requests');
+        const requests = stored ? JSON.parse(stored) : [];
+        const studentId = getField('studentId').value.trim();
+        if (!studentId) return fala             A11aaaaaaaaaaaaaa11ase;
+        const activeStatuses = ['submitted', 'pending', 'verification', 'processing'];
+        return requests.some(req => 
+            req.studentId === studentId && 
+            activeStatuses.includes((req.status || '').toLowerCase())
+        );
+    } catch (err) {
+        console.warn('Error checking for active request', err);
+        return false;
+    }
+};
+
+const hasActiveRequest = () => {
+    try {
+        const stored = localStorage.getItem('requests');
+        const requests = stored ? JSON.parse(stored) : [];
+        const studentId = getField('studentId').value.trim();
+        if (!studentId) return false;
+        const activeStatuses = ['submitted', 'pending', 'verification', 'processing'];
+        return requests.some(req => 
+            req.studentId === studentId && 
+            activeStatuses.includes((req.status || '').toLowerCase())
+        );
+    } catch (err) {
+        console.warn('Error checking for active request', err);
+        return false;
+    }
+};
+
+const validateFields = (requirePhoto = true) => {
+    let valid = true;
+    clearErrors();
+
+    if (!getField('fullName').value.trim()) {
+        getField('errorFullName').textContent = 'Full name is required.';
+        valid = false;
+    }
+    if (!getField('studentId').value.trim()) {
+        getField('errorStudentId').textContent = 'Student ID number is required.';
+        valid = false;
+    }
+    if (!getField('department').value.trim()) {
+        getField('errorDepartment').textContent = 'Department or college is required.';
+        valid = false;
+    }
+    if (!getField('program').value.trim()) {
+        getField('errorProgram').textContent = 'Program or degree is required.';
+        valid = false;
+    }
+    if (!getField('yearLevel').value.trim()) {
+        getField('errorYearLevel').textContent = 'Year level is required.';
+        valid = false;
+    }
+    if (!getField('requestType').value.trim()) {
+        getField('errorRequestType').textContent = 'Please select a request type.';
+        valid = false;
+    }
+    const file = getField('photoUpload').files[0];
+    if (requirePhoto) {
+        if (!file) {
+            getField('errorPhoto').textContent = 'A photo upload is required.';
+            valid = false;
+        } else if (!['image/png', 'image/jpeg'].includes(file.type)) {
+            getField('errorPhoto').textContent = 'Upload JPG or PNG only.';
+            valid = false;
+        }
+    } else if (file && !['image/png', 'image/jpeg'].includes(file.type)) {
+        getField('errorPhoto').textContent = 'Upload JPG or PNG only.';
+        valid = false;
+    }
+    return valid;
+};
+
+const setPhotoPreview = (file, targetId = 'uploadPreview') => {
+    const preview = getField(targetId);
+    if (!preview) return;
+    preview.innerHTML = '';
+    if (!file) {
+        preview.textContent = 'No photo selected';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+        const img = document.createElement('img');
+        img.src = reader.result;
+        img.alt = 'Photo preview';
+        preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+};
+
+const requestBroadcastChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('request-updates') : null;
+
+const syncLocalRequestStore = (request) => {
+    try {
+        const stored = localStorage.getItem('requests');
+        const requests = stored ? JSON.parse(stored) : [];
+        const idValue = request.id || request.requestId || request.request_id;
+        const exists = requests.some((item) => item.id === idValue || item.request_id === idValue);
+        if (!exists) {
+            requests.unshift({
+                id: idValue,
+                request_id: idValue,
+                studentId: request.studentId,
+                student_id: request.studentId,
+                fullName: request.fullName,
+                type: request.type,
+                status: request.status || 'Submitted',
+                date: request.date || new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+            localStorage.setItem('requests', JSON.stringify(requests));
+            if (requestBroadcastChannel) {
+                requestBroadcastChannel.postMessage({ type: 'request.submitted', request: { ...request, id: idValue } });
+            }
+        }
+    } catch (err) {
+        console.warn('Failed to sync request locally', err);
+    }
+};
+
+const renderConfirmedStep = (request) => {
+    if (!request) return;
+    confirmedFields.requestId.textContent = request.requestId || 'REQ-0000';
+    confirmedFields.fullName.textContent = request.fullName || '-';
+    confirmedFields.studentId.textContent = request.studentId || '-';
+    confirmedFields.department.textContent = request.department || '-';
+    confirmedFields.program.textContent = request.program || '-';
+    confirmedFields.yearLevel.textContent = request.yearLevel || '-';
+    confirmedFields.requestType.textContent = request.type || '-';
+    confirmedFields.photoName.textContent = request.photoName || '-';
+    confirmedFields.tableRequestId.textContent = request.requestId || 'REQ-0000';
+    confirmedFields.tableRequestType.textContent = request.type || '-';
+    confirmedFields.tableDepartment.textContent = request.department || '-';
+    confirmedFields.tableProgram.textContent = request.program || '-';
+    confirmedFields.tableDate.textContent = request.date || '-';
+    confirmedFields.tableStatus.textContent = 'Submitted';
+    confirmedFields.countPending.textContent = request.status === 'Submitted' ? '1' : '0';
+    confirmedFields.countProcessing.textContent = '0';
+    confirmedFields.countCompleted.textContent = '0';
+    confirmedFields.countRejected.textContent = '0';
+};
+
+const syncFields = () => {
+    updateSummary();
+    const file = getField('photoUpload').files[0];
+    setPhotoPreview(file);
+    const nextBtn = getField('nextButton');
+    const errNode = getField('errorPhoto');
+    if (!file) {
+        if (errNode) errNode.textContent = 'A photo upload is required.';
+        if (nextBtn) nextBtn.disabled = true;
+        return;
+    }
+    if (errNode) errNode.textContent = '';
+    if (nextBtn) nextBtn.disabled = false;
+};
+
+['fullName', 'studentId', 'department', 'program', 'yearLevel'].forEach(id => {
+    getField(id).addEventListener('input', syncFields);
+});
+['requestType', 'department', 'program', 'yearLevel'].forEach(id => {
+    getField(id).addEventListener('change', syncFields);
+});
+getField('photoUpload').addEventListener('change', syncFields);
+const nextBtn = getField('nextButton');
+if (nextBtn) nextBtn.disabled = true;
+
+getField('nextButton').addEventListener('click', () => {
+    if (!validateFields(false)) return;
+    if (hasActiveRequest()) {
+        alert('You already have an active request. Please wait for it to be completed or rejected before submitting another.');
+        return;
+    }
+    updateSummary();
+    reviewFields.status.className = 'status-chip draft';
+    reviewFields.status.textContent = 'Draft';
+    const file = getField('photoUpload').files[0];
+    setPhotoPreview(file, 'reviewPhotoPreview');
+    setActiveStep(2);
+});
+
+getField('clearButton').addEventListener('click', () => {
+    ['fullName', 'studentId', 'department', 'program', 'requestType'].forEach(id => {
+        const field = getField(id);
+        if (field) {
+            if (field.tagName === 'SELECT') field.selectedIndex = 0;
+            else field.value = '';
+        }
+    });
+    getField('photoUpload').value = '';
+    clearErrors();
+    reviewFields.fullName.textContent = '-';
+    reviewFields.studentId.textContent = '-';
+    reviewFields.department.textContent = '-';
+    reviewFields.program.textContent = '-';
+    reviewFields.requestType.textContent = '-';
+    reviewFields.submissionDate.textContent = '-';
+    reviewFields.status.className = 'status-chip draft';
+    reviewFields.status.textContent = 'Draft';
+    setPhotoPreview(null);
+    setPhotoPreview(null, 'reviewPhotoPreview');
+    syncFields();
+    setActiveStep(1);
+});
+
+getField('editButton').addEventListener('click', () => {
+    setActiveStep(1);
+    reviewFields.status.className = 'status-chip draft';
+    reviewFields.status.textContent = 'Draft';
+});
+
+getField('confirmButton').addEventListener('click', async () => {
+    if (!validateFields()) {
+        setActiveStep(1);
+        return;
+    }
+    if (hasActiveRequest()) {
+        alert('You already have an active request. Please wait for it to be completed or rejected before submitting another.');
+        return;
+    }
+    reviewFields.status.className = 'status-chip confirmed';
+    reviewFields.status.textContent = 'Confirmed';
+    const payload = {
+        fullName: getField('fullName').value.trim(),
+        studentName: getField('fullName').value.trim(),
+        studentId: getField('studentId').value.trim(),
+        type: getField('requestType').value,
+        department: mapDeptCodeToLabel(getField('department').value),
+        program: getField('program').value,
+        yearLevel: getField('yearLevel').value,
+        status: 'Submitted',
+        photoName: getField('photoUpload').files[0]?.name || ''
+    };
+    let requestId = 'REQ-0000';
+    let storedResult = null;
+    try {
+        const response = await fetch('http://localhost:3000/api/requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (!response.ok) {
+            if (response.status === 409) {
+                alert('Student already has an active request. Please wait for it to be completed or rejected before submitting another.');
+                return;
+            } else {
+                alert('Error: ' + (result.message || result.error || 'Failed to submit request'));
+                return;
+            }
+        }
+        storedResult = result;
+        if (result && result.request && result.request.request_id) {
+            requestId = result.request.request_id;
+            reviewFields.requestId.textContent = requestId;
+        }
+    } catch (error) {
+        console.warn('Request submission failed', error);
+        alert('Failed to submit request: ' + error.message);
+        return;
+    }
+    const confirmedRequest = {
+        id: storedResult?.request?.id || requestId,
+        requestId,
+        request_id: storedResult?.request?.request_id || requestId,
+        fullName: getField('fullName').value.trim(),
+        studentId: getField('studentId').value.trim(),
+        department: mapDeptCodeToLabel(getField('department').value),
+        program: getField('program').value,
+        yearLevel: getField('yearLevel').value,
+        type: getField('requestType').value,
+        photoName: getField('photoUpload').files[0]?.name || 'Uploaded photo',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        status: 'Submitted'
+    };
+    syncLocalRequestStore(confirmedRequest);
+    renderConfirmedStep(confirmedRequest);
+    setActiveStep(3);
+});
+
+getField('dashboardButton').addEventListener('click', () => {
+    window.location.href = 'student-dashboard.html';
+});
+
+function mapDeptCodeToLabel(code) {
+    const labels = {
+        cafnr: 'College of Agriculture, Fisheries and Natural Resources',
+        cac: 'College of Arts and Communication',
+        cba: 'College of Business Administration',
+        coe: 'College of Engineering',
+        col: 'College of Law',
+        coed: 'College of Education',
+        cnahs: 'College of Nursing and Allied Health Sciences',
+        cos: 'College of Science',
+        cvm: 'College of Veterinary Medicine'
+    };
+    return labels[code] || code;
+}
+
+const courseMap = {
+    cafnr: {
+        programs: [
+            'Bachelor of Science in Agribusiness',
+            'Bachelor of Science in Agriculture - Agricultural Economics',
+            'Bachelor of Science in Agriculture - Animal Science',
+            'Bachelor of Science in Agriculture - Crop Protection',
+            'Bachelor of Science in Fisheries',
+            'Bachelor of Science in Forestry'
+        ]
+    },
+    cac: {
+        programs: [
+            'Bachelor of Arts in Literature and Cultural Studies',
+            'Bachelor of Arts in English Language Studies',
+            'Bachelor of Arts major in Political Science',
+            'Bachelor of Arts major in Public Administration',
+            'Bachelor of Arts major in Sociology',
+            'Bachelor of Science in Community Development',
+            'Bachelor of Science in Criminology',
+            'Bachelor of Science in Development Communication'
+        ]
+    },
+    cba: {
+        programs: [
+            'Bachelor of Science in Accountancy',
+            'Bachelor of Science in Business Administration - Business Economics',
+            'Bachelor of Science in Business Administration - Human Resources Management',
+            'Bachelor of Science in Business Administration - Marketing Management',
+            'Bachelor of Science in Business Economics',
+            'Bachelor of Science in Entrepreneurship',
+            'Bachelor of Science in Hospitality Management'
+        ]
+    },
+    coed: {
+        programs: [
+            'Bachelor of Elementary Education',
+            'Bachelor of Secondary Education - English',
+            'Bachelor of Secondary Education - Filipino',
+            'Bachelor of Secondary Education - Mathematics',
+            'Bachelor of Secondary Education - Science',
+            'Bachelor of Secondary Education - Social Studies',
+            'Bachelor of Secondary Education - Values Education',
+            'Bachelor of Elementary Technology and Livelihood Education - Agri-Fishery Arts',
+            'Bachelor of Elementary Technology and Livelihood Education - Home Economics',
+            'Bachelor of Elementary Technology and Livelihood Education - Industrial Arts'
+        ]
+    },
+    coe: {
+        programs: [
+            'Bachelor of Science in Agricultural and Biosystems Engineering',
+            'Bachelor of Science in Civil Engineering',
+            'Bachelor of Science in Electrical Engineering',
+            'Bachelor of Science in Mechanical Engineering',
+            'Bachelor of Engineering Technology - Automotive Technology',
+            'Bachelor of Engineering Technology - Electrical Engineering'
+        ]
+    },
+    col: { programs: ['Bachelor of Laws'] },
+    cnahs: { programs: ['Bachelor of Science in Nursing', 'Bachelor of Science in Radiologic Technology'] },
+    cos: {
+        programs: [
+            'Bachelor of Science in Biology',
+            'Bachelor of Science in Chemistry',
+            'Bachelor of Science in Environmental Science',
+            'Bachelor of Science in Information Technology',
+            'Bachelor of Science in Marine Biology',
+            'Bachelor of Science in Mathematics'
+        ]
+    },
+    cvm: { programs: ['Bachelor of Science in Meat Technology', 'Doctor of Veterinary Medicine'] }
+};
+
+function populateProgramOptions(deptCode, selectedProgram) {
+    const select = getField('program');
+    if (!select) {
+        console.error('Program select element not found');
+        return;
+    }
+    
+    console.log('Populating programs for department:', deptCode);
+    
+    select.innerHTML = '';
+    
+    const list = (courseMap[deptCode] && courseMap[deptCode].programs) ? courseMap[deptCode].programs : [];
+    
+    if (!list || list.length === 0) {
+        console.warn('No programs found for department:', deptCode);
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No data available';
+        opt.disabled = true;
+        select.appendChild(opt);
+        return;
+    }
+    
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select program';
+    placeholder.disabled = true;
+    placeholder.selected = !selectedProgram;
+    select.appendChild(placeholder);
+    
+    list.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        opt.selected = (p === selectedProgram);
+        select.appendChild(opt);
+    });
+    
+    console.log('Programs added:', list.length);
+    
+    // Reset year level when program changes
+    const yearLevelSelect = getField('yearLevel');
+    if (yearLevelSelect) {
+        yearLevelSelect.disabled = true;
+        yearLevelSelect.value = '';
+    }
+}
+
+function enableYearLevel() {
+    const programSelect = getField('program');
+    const yearLevelSelect = getField('yearLevel');
+    
+    if (!yearLevelSelect) {
+        console.error('Year Level select element not found');
+        return;
+    }
+    
+    if (programSelect && programSelect.value) {
+        console.log('Program selected:', programSelect.value);
+        yearLevelSelect.disabled = false;
+        yearLevelSelect.value = '';
+    } else {
+        console.log('No program selected, disabling year level');
+        yearLevelSelect.disabled = true;
+        yearLevelSelect.value = '';
+    }
+}
+
+function loadProfileToForm() {
+    try {
+        const raw = localStorage.getItem('user');
+        if (!raw) {
+            // No user profile, just populate programs for the first selected department
+            const cur = getField('department').value;
+            populateProgramOptions(cur);
+            return;
+        }
+        const user = JSON.parse(raw);
+        if (user.fullName && !getField('fullName').value.trim()) getField('fullName').value = user.fullName;
+        if (user.studentId && !getField('studentId').value.trim()) getField('studentId').value = user.studentId;
+
+        if (user.dept) {
+            const deptSelect = getField('department');
+            if (deptSelect) {
+                const has = Array.from(deptSelect.options).some(o => o.value === user.dept);
+                if (has) deptSelect.value = user.dept;
+                else deptSelect.value = deptSelect.options[0].value;
+                populateProgramOptions(user.dept, user.program);
+            }
+        } else {
+            const cur = getField('department').value;
+            populateProgramOptions(cur);
+        }
+
+        if (user.program) {
+            const programSelect = getField('program');
+            if (programSelect && user.program) programSelect.value = user.program;
+        }
+
+        syncFields();
+    } catch (e) {
+        console.warn('Failed to load profile into form', e);
+        // Fallback: populate programs for current department
+        const cur = getField('department').value;
+        if (cur) populateProgramOptions(cur);
+    }
+}
+
+const deptSel = getField('department');
+if (deptSel) {
+    console.log('Setting up department change listener');
+    deptSel.addEventListener('change', (e) => {
+        console.log('Department changed to:', e.target.value);
+        populateProgramOptions(e.target.value);
+    });
+}
+
+const programSel = getField('program');
+if (programSel) {
+    console.log('Setting up program change listener');
+    programSel.addEventListener('change', () => {
+        console.log('Program changed');
+        enableYearLevel();
+    });
+}
+
+// Load profile and populate initial programs
+loadProfileToForm();
+
+// Also trigger population immediately in case loadProfileToForm didn't do it
+setTimeout(() => {
+    const deptVal = getField('department').value;
+    console.log('Initial department value:', deptVal);
+    if (deptVal) {
+        populateProgramOptions(deptVal);
+    }
+    // Disable year level on load
+    const yearLevelSelect = getField('yearLevel');
+    if (yearLevelSelect) {
+        yearLevelSelect.disabled = true;
+    }
+}, 100);
+
+setActiveStep(1);
+</script>
+</body>
+</html>

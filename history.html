@@ -21,7 +21,7 @@
     </div>
 
     <div class="menu">
-        <a href="dashboard.html" class="menu-item">
+        <a href="student-dashboard.html" class="menu-item">
             <i class="fa-solid fa-house"></i>
             Dashboard
         </a>
@@ -63,203 +63,76 @@
             <i class="fa-solid fa-list-check"></i>
             <div class="stat-text">
                 <h3>Total Requests:</h3>
-                <p>24</p>
+                <p id="totalCount">0</p>
             </div>
         </div>
 
         <div class="stat-card stat-inline">
-            <i class="fa-solid fa-clock" style="color: orange;"></i>
+            <i class="fa-solid fa-clock" style="color: #f59e0b;"></i>
             <div class="stat-text">
                 <h3>Pending:</h3>
-                <p>8</p>
+                <p id="pendingCount">0</p>
             </div>
         </div>
 
         <div class="stat-card stat-inline">
-            <i class="fa-solid fa-spinner" style="color: blue;"></i>
+            <i class="fa-solid fa-spinner" style="color: #3b82f6;"></i>
             <div class="stat-text">
                 <h3>Processing:</h3>
-                <p>5</p>
+                <p id="processingCount">0</p>
             </div>
         </div>
 
         <div class="stat-card stat-inline">
-            <i class="fa-solid fa-circle-check" style="color: rgb(31, 184, 31);"></i>
+            <i class="fa-solid fa-circle-check" style="color: #10b981;"></i>
             <div class="stat-text">
                 <h3>Completed:</h3>
-                <p>11</p>
+                <p id="completedCount">0</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-inline">
+            <i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>
+            <div class="stat-text">
+                <h3>Rejected:</h3>
+                <p id="rejectedCount">0</p>
             </div>
         </div>
     </div>
 
-    <!-- Table with Request ID column -->
-<!-- Updated Search Row -->
+    <!-- Updated Search Row -->
 <div class="search-row">
-    <input type="text" placeholder="Search requests...">
+    <input type="text" id="searchInput" placeholder="Search by Request ID or Type...">
     <select id="statusFilter">
-        <option value="all">All Status</option>
+        <option value="">All Status</option>
+        <option value="submitted">Submitted</option>
         <option value="pending">Pending</option>
         <option value="processing">Processing</option>
+        <option value="verification">Verification</option>
         <option value="completed">Completed</option>
         <option value="rejected">Rejected</option>
     </select>
 </div>
 
-<!-- Table with Rejected Row -->
+<!-- Table with Dynamic Data -->
 <div class="table-card">
-    <table>
-        <tr>
-            <th>Request ID</th>
-            <th>Request Type</th>
-            <th>Date Submitted</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-
-        <tr>
-            <td>#ID-123456</td>
-            <td>New Student ID</td>
-            <td>Dec 15, 2024</td>
-            <td>
-                <span class="pill processing" data-status="processing">
-                    <i class="fa-solid fa-spinner"></i> Processing
-                </span>
-            </td>
-            <td><a href="proccessing.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr>
-            <td>#ID-654321</td>
-            <td>ID Replacement</td>
-            <td>Dec 16, 2025</td>
-            <td>
-                <span class="pill completed" data-status="completed">
-                    <i class="fa-solid fa-circle-check"></i> Completed
-                </span>
-            </td>
-            <td><a href="req completed.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr data-id="234165">
-            <td >#ID-234165</td>
-            <td>New Student ID</td>
-            <td>Dec 15, 2025</td>
-            <td>
-                <span class="pill pending" data-status="pending">
-                    <i class="fa-solid fa-clock"></i> Pending
-                </span>
-            </td>
-            <td><a href="pending.html" class="action">View Details</a></td>
-        </tr>
-
-        <!-- New Rejected Row -->
-        <tr>
-            <td>#ID-987654</td>
-            <td>ID Replacement</td>
-            <td>Dec 17, 2025</td>
-            <td>
-                <span class="pill rejected" data-status="rejected">
-                    <i class="fa-solid fa-circle-xmark"></i> Rejected
-                </span>
-            </td>
-            <td><a href="req rejected.html" class="action">View Details</a></td>
-        </tr>
-                <tr>
-            <td>#ID-123456</td>
-            <td>New Student ID</td>
-            <td>Dec 15, 2024</td>
-            <td>
-                <span class="pill processing" data-status="processing">
-                    <i class="fa-solid fa-spinner"></i> Processing
-                </span>
-            </td>
-            <td><a href="proccessing.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr>
-            <td>#ID-654321</td>
-            <td>ID Replacement</td>
-            <td>Dec 16, 2025</td>
-            <td>
-                <span class="pill completed" data-status="completed">
-                    <i class="fa-solid fa-circle-check"></i> Completed
-                </span>
-            </td>
-            <td><a href="req completed.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr>
-            <td>#ID-234165</td>
-            <td>Photo Update</td>
-            <td>Dec 15, 2025</td>
-            <td>
-                <span class="pill pending" data-status="pending">
-                    <i class="fa-solid fa-clock"></i> Pending
-                </span>
-            </td>
-            <td><a href="pending.html" class="action">View Details</a></td>
-        </tr>
-
-        <!-- New Rejected Row -->
-        <tr>
-            <td>#ID-987654</td>
-            <td>ID Replacement</td>
-            <td>Dec 17, 2025</td>
-            <td>
-                <span class="pill rejected" data-status="rejected">
-                    <i class="fa-solid fa-circle-xmark"></i> Rejected
-                </span>
-            </td>
-            <td><a href="req rejected.html" class="action">View Details</a></td>
-        </tr>        <tr>
-            <td>#ID-123456</td>
-            <td>New Student ID</td>
-            <td>Dec 15, 2024</td>
-            <td>
-                <span class="pill processing" data-status="processing">
-                    <i class="fa-solid fa-spinner"></i> Processing
-                </span>
-            </td>
-            <td><a href="proccessing.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr>
-            <td>#ID-654321</td>
-            <td>ID Replacement</td>
-            <td>Dec 16, 2025</td>
-            <td>
-                <span class="pill completed" data-status="completed">
-                    <i class="fa-solid fa-circle-check"></i> Completed
-                </span>
-            </td>
-            <td><a href="req completed.html" class="action">View Details</a></td>
-        </tr>
-
-        <tr>
-            <td>#ID-234165</td>
-            <td>Photo Update</td>
-            <td>Dec 15, 2025</td>
-            <td>
-                <span class="pill pending" data-status="pending">
-                    <i class="fa-solid fa-clock"></i> Pending
-                </span>
-            </td>
-            <td><a href="pending.html" class="action">View Details</a></td>
-        </tr>
-
-        <!-- New Rejected Row -->
-        <tr>
-            <td>#ID-987654</td>
-            <td>ID Replacement</td>
-            <td>Dec 17, 2025</td>
-            <td>
-                <span class="pill rejected" data-status="rejected">
-                    <i class="fa-solid fa-circle-xmark"></i> Rejected
-                </span>
-            </td>
-            <td><a href="req rejected.html" class="action">View Details</a></td>
-        </tr>
+    <table id="requestsTable">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Request Type</th>
+                <th>Date Submitted</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Dynamic rows will be inserted here -->
+        </tbody>
     </table>
+    <div id="noDataMessage" style="text-align: center; padding: 40px; color: #666;">
+        <i class="fa-solid fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+        <p style="font-size: 16px;">No requests found</p>
+    </div>
 </div>
 
 <script>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration - SRS Portal</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --background: #eef4ff;
+            --surface: #ffffff;
+            --surface-alt: #f5f8ff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border: #d1d5db;
+            --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #eef4ff 0%, #d7e7ff 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #11121a 0%, #1f2433 100%);
+            color: #eceff4;
+            --surface: #1f2230;
+            --surface-alt: #272b39;
+            --text-primary: #eceff4;
+            --text-secondary: #a8b0c2;
+            --border: #3b3f51;
+            --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .admin-container {
+            width: min(560px, 100%);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            border-radius: 28px;
+            padding: 36px 34px;
+            position: relative;
+        }
+
+        .admin-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--danger-color);
+            margin: 0 auto;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+
+        .admin-header p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .security-notice {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin-bottom: 26px;
+            color: #7f1d1d;
+            font-size: 14px;
+        }
+
+        body.dark-mode .security-notice {
+            background: rgba(248, 113, 113, 0.12);
+            border-color: rgba(248, 113, 113, 0.35);
+            color: #f5c6cb;
+        }
+
+        .security-notice i {
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .offline-banner {
+            display: none;
+            gap: 12px;
+            align-items: flex-start;
+            background: #fff7dd;
+            border: 1px solid #f5c06e;
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            color: #664d03;
+            font-size: 14px;
+        }
+
+        .offline-banner i {
+            margin-top: 2px;
+            color: #d97706;
+        }
+
+        body.dark-mode .offline-banner {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: #f6d186;
+        }
+
+        .offline-banner.hidden {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-secondary);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface-alt);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        body.dark-mode .input-group input,
+        body.dark-mode .input-group select {
+            background: #232635;
+            border-color: #3b3f51;
+            color: var(--text-primary);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.12);
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 52px;
+        }
+
+        .password-toggle .toggle-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            background: #2c81d3;
+            box-shadow: 0 18px 36px rgba(52, 152, 219, 0.18);
+        }
+
+        .login-btn:disabled {
+            background: #a3c4f5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message,
+        .error-message {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .message {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+        .message.success {
+            background: #d1fae5;
+            border: 1px solid #34d399;
+            color: #065f46;
+            display: flex;
+        }
+        .message.error {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            display: flex;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border: 1px solid #34d399;
+            color: #065f46;
+        }
+
+        body.dark-mode .success-message {
+            background: rgba(16, 185, 129, 0.16);
+            border-color: rgba(16, 185, 129, 0.45);
+            color: #d1fae5;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        body.dark-mode .error-message {
+            background: rgba(248, 113, 113, 0.18);
+            border-color: rgba(248, 113, 113, 0.42);
+            color: #fca5a5;
+        }
+
+        .footer-links {
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .footer-links a {
+            color: var(--primary-color);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .form-info {
+            background: #e8f4f8;
+            padding: 16px 18px;
+            border-radius: 16px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .form-info {
+            background: rgba(52, 152, 219, 0.12);
+            color: #f0f7ff;
+        }
+
+        .requirements-list {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 8px;
+            color: var(--text-secondary);
+            padding-left: 18px;
+        }
+
+        .requirements-list li {
+            margin-bottom: 8px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+        }
+
+        .checkbox-row label {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: none;
+            background: var(--surface);
+            color: var(--text-primary);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+            z-index: 20;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2c2f3c;
+            color: #f8fafc;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 560px) {
+            .admin-container {
+                padding: 28px 20px;
+            }
+
+            .admin-header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <button class="dark-mode-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="admin-badge">
+                <i class="fa-solid fa-shield"></i> Admin Portal
+            </div>
+            <h1>Register New Admin</h1>
+            <p>Request access to the administrator dashboard. Approval is reviewed by a superadmin.</p>
+        </div>
+
+        <div class="offline-banner hidden" id="localModeBanner">
+            <i class="fa-solid fa-wifi-slash"></i>
+            <div><strong>Local registration available:</strong> Admin accounts can be stored locally and used when the backend is offline.</div>
+        </div>
+
+        <div class="security-notice">
+            <i class="fa-solid fa-lock"></i>
+            <span>Admin registration is restricted and monitored. Only authorized personnel should proceed.</span>
+        </div>
+
+        <div id="messageBox" class="message" aria-live="polite"></div>
+        <div class="success-message" id="successMessage">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="successText"></span>
+        </div>
+        <div class="error-message" id="errorMessage">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <form id="signupForm" autocomplete="off" onsubmit="submitAdminSignup(event)">
+            <div class="form-info">
+                <strong>Registration requirements:</strong>
+                <ul class="requirements-list">
+                    <li>Provide a unique admin username and strong password.</li>
+                    <li>Use the secret admin code to verify authorization.</li>
+                    <li>Account remains pending until a superadmin approves it.</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Admin Username</label>
+                <input type="text" id="username" autocomplete="off" placeholder="Enter desired admin username" required>
+            </div>
+
+            <div class="input-group password-toggle">
+                <label for="password">Password</label>
+                <input type="password" id="password" autocomplete="new-password" placeholder="Enter your password" required>
+                <button type="button" class="toggle-btn" data-target="password" onclick="togglePasswordVisibility(event)">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            <div class="password-strength">
+                <div id="passwordStrengthBar" class="password-strength-bar"></div>
+            </div>
+            <div class="strength-text" id="strengthText"></div>
+
+            <div class="input-group password-toggle">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your password" required>
+                <button type="button" class="toggle-btn" data-target="confirmPassword" onclick="togglePasswordVisibility(event)">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+            <small id="passwordMatch" style="color: #e74c3c; display: none;">Passwords do not match</small>
+
+            <div class="input-group">
+                <label for="secretCode"><i class="fa-solid fa-key"></i> Admin Secret Code</label>
+                <input type="password" id="secretCode" autocomplete="off" placeholder="Enter admin secret code" required>
+            </div>
+
+            <div class="input-group">
+                <label for="role">Role</label>
+                <select id="role" required>
+                    <option value="admin" selected>Admin</option>
+                    <option value="superadmin" disabled>Super Admin (not available)</option>
+                </select>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="agreeTerms" required>
+                <label for="agreeTerms">I agree to follow administrative policies and procedures.</label>
+            </div>
+
+            <button type="submit" class="login-btn" id="submitBtn">Register</button>
+            <div class="footer-links">
+                <p>Already have an account? <a href="admin-login.html">Sign in here</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const ADMIN_SECRET_CODE = "ADMIN2026";
+        const BACKEND_BASE_URL = (() => {
+            if (window.location.protocol === 'file:') return 'http://localhost:3000';
+            if (window.location.hostname === 'localhost' && window.location.port === '3000') return window.location.origin;
+            if (window.location.hostname === '127.0.0.1' && window.location.port === '3000') return window.location.origin;
+            return 'http://localhost:3000';
+        })();
+
+        function initDarkMode() {
+            if (localStorage.getItem('pref-darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('pref-darkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
+        }
+
+        function togglePasswordVisibility(event) {
+            const button = event.currentTarget;
+            const targetId = button.dataset.target;
+            const input = document.getElementById(targetId);
+            const icon = button.querySelector('i');
+
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'flex';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageBox.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function clearMessages() {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.className = 'message';
+            messageBox.style.display = 'none';
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('strengthText');
+
+            let strength = 0;
+            const rules = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                numbers: /[0-9]/.test(password),
+                special: /[!@#$%^&*]/.test(password)
+            };
+
+            Object.values(rules).forEach(value => { if (value) strength++; });
+
+            strengthBar.className = 'password-strength-bar';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = '❌ Weak - add uppercase, number, and symbol';
+                strengthText.style.color = '#e74c3c';
+            } else if (strength <= 3) {
+                strengthBar.classList.add('strength-fair');
+                strengthText.textContent = '⚠️ Fair - consider more variety';
+                strengthText.style.color = '#f39c12';
+            } else {
+                strengthBar.classList.add('strength-good');
+                strengthText.textContent = '✓ Strong password';
+                strengthText.style.color = '#27ae60';
+            }
+        }
+
+        function getLocalAdminAccounts() {
+            try {
+                return JSON.parse(localStorage.getItem('adminAccounts') || '[]');
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function initLocalModeBanner() {
+            const banner = document.getElementById('localModeBanner');
+            if (!banner) return;
+            const accounts = getLocalAdminAccounts();
+            if (accounts.length > 0) {
+                banner.classList.remove('hidden');
+                banner.querySelector('div').innerHTML = `<strong>Local registration available:</strong> ${accounts.length} admin account${accounts.length > 1 ? 's' : ''} are stored locally and can be used if the backend is offline.`;
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function saveLocalAdminAccount(admin) {
+            const accounts = getLocalAdminAccounts();
+            const normalized = admin.username.trim().toLowerCase();
+            const existingIndex = accounts.findIndex(acc => acc.username.toLowerCase() === normalized);
+            if (existingIndex >= 0) {
+                accounts[existingIndex] = admin;
+            } else {
+                accounts.push(admin);
+            }
+            localStorage.setItem('adminAccounts', JSON.stringify(accounts));
+        }
+
+        function findLocalAdminAccount(username) {
+            const normalized = username.trim().toLowerCase();
+            return getLocalAdminAccounts().find(acc => acc.username.toLowerCase() === normalized) || null;
+        }
+
+        function registerLocalAdmin(admin) {
+            const adminRecord = {
+                id: admin.id || `local-admin-${Date.now()}`,
+                username: admin.username.trim(),
+                password: admin.password,
+                displayName: admin.displayName || admin.username.trim(),
+                role: admin.role || 'admin',
+                accountType: 'admin',
+                createdAt: new Date().toISOString()
+            };
+            saveLocalAdminAccount(adminRecord);
+            return adminRecord;
+        }
+
+        async function submitAdminSignup(event) {
+            event.preventDefault();
+            clearMessages();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const secretCode = document.getElementById('secretCode').value;
+            const role = document.getElementById('role').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!username || username.length < 3) {
+                showMessage('❌ Username must be at least 3 characters long', 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showMessage('❌ Passwords do not match', 'error');
+                return;
+            }
+            if (password.length < 8) {
+                showMessage('❌ Password must be at least 8 characters long', 'error');
+                return;
+            }
+            if (!/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+                showMessage('❌ Password must contain uppercase letters and numbers', 'error');
+                return;
+            }
+            if (secretCode !== ADMIN_SECRET_CODE) {
+                showMessage('❌ Invalid secret code', 'error');
+                return;
+            }
+            if (!agreeTerms) {
+                showMessage('❌ You must agree to the administrative policies', 'error');
+                return;
+            }            if (findLocalAdminAccount(username)) {
+                showMessage('❌ An admin with this username already exists locally. Please sign in or use another username.', 'error');
+                return;
+            }
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registering...';
+
+            const localAdminData = {
+                username,
+                password,
+                role,
+                displayName: username.charAt(0).toUpperCase() + username.slice(1)
+            };
+
+            try {
+                const response = await fetch(`${BACKEND_BASE_URL}/api/admin/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role, displayName: localAdminData.displayName, secretCode })
+                });
+                const data = await response.json().catch(() => ({ message: response.statusText }));
+
+                if (!response.ok) {
+                    showMessage(`❌ ${data.message || 'Registration failed'}`, 'error');
+                    return;
+                }
+
+                registerLocalAdmin(localAdminData);
+                showMessage('✓ Registration complete! Redirecting to login...', 'success');
+                document.getElementById('signupForm').reset();
+                setTimeout(() => {
+                    window.location.href = `admin-login.html?registered=true&username=${encodeURIComponent(username)}`;
+                }, 1400);
+            } catch (error) {
+                console.warn('Signup backend failed, saving locally', error);
+                registerLocalAdmin(localAdminData);
+                showMessage('✓ Registration saved locally. Redirecting to login...', 'success');
+                document.getElementById('signupForm').reset();
+                setTimeout(() => {
+                    window.location.href = `admin-login.html?registered=true&username=${encodeURIComponent(username)}`;
+                }, 1400);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDarkMode();
+            initLocalModeBanner();
+            ['username', 'password', 'confirmPassword', 'secretCode'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.value = '';
+            });
+            document.getElementById('password').addEventListener('input', checkPasswordStrength);
+            document.getElementById('confirmPassword').addEventListener('input', () => {
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                const mismatch = document.getElementById('passwordMatch');
+                mismatch.style.display = password && confirm && password !== confirm ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
